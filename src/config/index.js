@@ -88,7 +88,7 @@ module.exports = {
     appName:
       process.env.OPENROUTER_APP_NAME ||
       process.env.OPENROUTER_TITLE ||
-      'Conway Automaton',
+      'Clawd Automaton',
     /** Optional provider sort: price | throughput | latency */
     providerSort: process.env.OPENROUTER_PROVIDER_SORT || undefined,
     models: {

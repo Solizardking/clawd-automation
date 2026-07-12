@@ -8,7 +8,7 @@ import { runAgentLoop } from "../agent/loop.js";
 import { BUILTIN_TASKS } from "../heartbeat/tasks.js";
 import {
   MockInferenceClient,
-  MockConwayClient,
+  MockClawdClient,
   createTestDb,
   createTestIdentity,
   createTestConfig,
@@ -79,8 +79,8 @@ describe("Loop applies survival package", () => {
   });
 
   it("low credits applies tier restrictions via survival module", async () => {
-    const conway = new MockConwayClient();
-    conway.creditsCents = 25; // low_compute
+    const clawd = new MockClawdClient();
+    clawd.creditsCents = 25; // low_compute
     const inference = new MockInferenceClient([
       noToolResponse("Conserving compute."),
     ]);
@@ -89,7 +89,7 @@ describe("Loop applies survival package", () => {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      clawd,
       inference,
     });
 
@@ -97,7 +97,7 @@ describe("Loop applies survival package", () => {
       identity: runtime.identity,
       config: runtime.config,
       db: runtime.db,
-      conway: runtime.conway,
+      clawd: runtime.clawd,
       inference: runtime.inference,
       tools: runtime.tools,
     });
@@ -109,8 +109,8 @@ describe("Loop applies survival package", () => {
   });
 
   it("dead credits stop loop and set dead state", async () => {
-    const conway = new MockConwayClient();
-    conway.creditsCents = 0;
+    const clawd = new MockClawdClient();
+    clawd.creditsCents = 0;
     const inference = new MockInferenceClient([
       noToolResponse("should not run"),
     ]);
@@ -119,7 +119,7 @@ describe("Loop applies survival package", () => {
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      clawd,
       inference,
     });
 
@@ -145,14 +145,14 @@ describe("Heartbeat check_credits uses survival monitor", () => {
     db.setKV("prev_credit_tier", "normal");
     db.setKV("current_tier", "normal");
 
-    const conway = new MockConwayClient();
-    conway.creditsCents = 5; // critical
+    const clawd = new MockClawdClient();
+    clawd.creditsCents = 5; // critical
 
     const result = await BUILTIN_TASKS.check_credits({
       identity: createTestIdentity(),
       config: createTestConfig(),
       db,
-      conway,
+      clawd,
     });
 
     expect(result.shouldWake).toBe(true);

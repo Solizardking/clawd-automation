@@ -19,8 +19,8 @@ class OpenRouterProvider {
     this.models = config.openRouter.models;
     this.freeModel = config.openRouter.freeModel || FREE_ROUTER;
     this.defaultModel = config.openRouter.defaultModel || this.freeModel;
-    this.siteUrl = config.openRouter.siteUrl || 'https://conway.tech';
-    this.appName = config.openRouter.appName || 'Conway Automaton';
+    this.siteUrl = config.openRouter.siteUrl || 'https://x402.wtf';
+    this.appName = config.openRouter.appName || 'Clawd Automaton';
     this.providerSort = config.openRouter.providerSort;
   }
 

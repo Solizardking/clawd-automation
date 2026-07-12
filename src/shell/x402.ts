@@ -2,7 +2,7 @@
  * x402 Payment Protocol
  *
  * Enables the automaton to make USDC micropayments via HTTP 402.
- * Adapted from conway-mcp/src/x402/index.ts
+ * Clawd x402 payment protocol
  */
 
 import {

@@ -1,5 +1,5 @@
 /**
- * Conway Automaton - Type Definitions
+ * Clawd Automaton - Type Definitions
  *
  * All shared interfaces for the sovereign AI agent runtime.
  */
@@ -36,10 +36,10 @@ export interface AutomatonConfig {
   genesisPrompt: string;
   creatorMessage?: string;
   creatorAddress: Address;
-  registeredWithConway: boolean;
+  registeredWithClawd: boolean;
   sandboxId: string;
-  conwayApiUrl: string;
-  conwayApiKey: string;
+  clawdApiUrl: string;
+  clawdApiKey: string;
   inferenceModel: string;
   maxTokensPerTurn: number;
   heartbeatConfigPath: string;
@@ -55,8 +55,8 @@ export interface AutomatonConfig {
 }
 
 export const DEFAULT_CONFIG: Partial<AutomatonConfig> = {
-  conwayApiUrl: "https://api.conway.tech",
-  inferenceModel: "gpt-4o",
+  clawdApiUrl: "local://clawd",
+  inferenceModel: "openrouter/free",
   maxTokensPerTurn: 4096,
   heartbeatConfigPath: "~/.automaton/heartbeat.yml",
   dbPath: "~/.automaton/state.db",
@@ -64,7 +64,6 @@ export const DEFAULT_CONFIG: Partial<AutomatonConfig> = {
   version: "0.1.0",
   skillsDir: "~/.automaton/skills",
   maxChildren: 3,
-  socialRelayUrl: "https://social.conway.tech",
 };
 
 // ─── Agent State ─────────────────────────────────────────────────
@@ -128,7 +127,7 @@ export interface AutomatonTool {
 
 export type ToolCategory =
   | "vm"
-  | "conway"
+  | "clawd"
   | "self_mod"
   | "financial"
   | "survival"
@@ -142,7 +141,7 @@ export interface ToolContext {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  clawd: ClawdClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
 }
@@ -317,9 +316,9 @@ export interface InferenceToolDefinition {
   };
 }
 
-// ─── Conway Client ───────────────────────────────────────────────
+// ─── Clawd Client ───────────────────────────────────────────────
 
-export interface ConwayClient {
+export interface ClawdClient {
   exec(command: string, timeout?: number): Promise<ExecResult>;
   writeFile(path: string, content: string): Promise<void>;
   readFile(path: string): Promise<string>;

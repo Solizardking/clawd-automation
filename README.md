@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="docs/assets/automaton-pulse.svg" alt="Conway Automaton — living pulse" width="920"/>
+  <img src="docs/assets/automaton-pulse.svg" alt="Clawd Automaton — living pulse" width="920"/>
 </p>
 
-<h1 align="center">Conway Automaton</h1>
+<h1 align="center">Clawd Automaton</h1>
 
 <p align="center">
   <strong>Sovereign AI agent runtime</strong> — self-funded · self-modifying · constitution-bound
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <code>@conway/automaton</code> · bins <code>automaton</code> / <code>conway-automaton</code><br/>
+  <code>@clawd/automaton</code> · bins <code>automaton</code> / <code>clawd-automaton</code><br/>
   <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought.</em>
 </p>
 
@@ -29,12 +29,12 @@
                     │         ▲                     │      │
                     │         └──── HEARTBEAT ──────┘      │
                     ╰──────────────────────────────────────╯
-   wallet ──► credits ──► inference ──► tools ──► SQLite shell
-      │                      │                      │
-   SIWE key            low_compute?            constitution/
-      │                      │                 (8 docs live)
-      ▼                      ▼
-   ~/.automaton/      survival tiers · funding · distress
+   wallet ──► local shell ──► OpenRouter ──► tools ──► SQLite
+      │              │              │                      │
+   keypair      host exec      free router           constitution/
+      │              │              │                 (8 docs live)
+      ▼              ▼              ▼
+   ~/.automaton/   clawd client   survival tiers · funding · distress
 ```
 
 The most capable model still cannot rent its own compute, sign its own tx, or refuse a harmful request **by law** rather than by vibes.  
@@ -63,12 +63,29 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 
 ---
 
+## 🦞 Clawd build (Conway removed)
+
+This tree ships **Clawd**, not Conway:
+
+| Was (Conway) | Now (Clawd) |
+|--------------|-------------|
+| `@conway/automaton` | `@clawd/automaton` |
+| `conway-automaton` bin | `clawd-automaton` bin |
+| Remote sandbox API (`api.conway.tech`) | **Local shell** `src/shell/client.ts` |
+| Conway paid inference | **OpenRouter only** (`src/inference/`) |
+| `src/conway/*` | `src/shell/*` + own CJS packages under `src/{agents,cli,config,providers,services,knowledge}` |
+
+Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineage are algorithm history — not the old vendor.
+
+---
+
 ## ⚡ Quick start
 
 ```bash
 pnpm install
 cp .env.example .env       # set OPENROUTER_API_KEY for free inference
 pnpm build                 # tsc → dist/  (primary bin: dist/index.js)
+pnpm smoke                 # version · help · CJS bridge health
 
 node dist/index.js --help
 node dist/index.js --version
@@ -80,9 +97,9 @@ pnpm dev                   # tsx watch src/index.ts
 pnpm test                  # vitest — loop · heartbeat · survival · bridge · openrouter
 ```
 
-### Free inference via OpenRouter
+### Free inference via OpenRouter (Conway removed)
 
-When `OPENROUTER_API_KEY` is set, the primary runtime uses OpenRouter instead of Conway-paid inference (unless `INFERENCE_PROVIDER=conway`).
+Inference is **OpenRouter only**. There is no Conway control plane, sandbox API, or paid Conway credits path in this build. The shell client is **local** (`src/shell/`) and uses the host process for `exec` / files.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-…
@@ -92,7 +109,8 @@ export OPENROUTER_FREE_MODEL=openrouter/free
 # export OPENROUTER_FREE_MODEL=meta-llama/llama-3.2-3b-instruct:free
 # optional provider sort: price | throughput | latency
 # export OPENROUTER_PROVIDER_SORT=throughput
-export INFERENCE_PROVIDER=auto   # openrouter when key present
+export INFERENCE_PROVIDER=auto   # openrouter
+export CLAWD_SANDBOX_ID=local
 ```
 
 Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router) · [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) · [llms.txt index](https://openrouter.ai/docs/llms.txt)
@@ -103,12 +121,12 @@ Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/fre
 | Path | Purpose |
 |------|---------|
 | `~/.automaton/wallet.json` | Agent key material (mode `0600`) |
-| `~/.automaton/automaton.json` | Name, genesis prompt, Conway API, models |
+| `~/.automaton/automaton.json` | Name, genesis prompt, local shell id, models |
 | `~/.automaton/state.db` | Turns, tools, heartbeats, KV, inbox |
 | `~/.automaton/heartbeat.yml` | Cron schedule for the pulse daemon |
 | `~/.automaton/skills/` | Skill packs (markdown + frontmatter) |
 
-First run without config auto-enters setup. Provisioning uses **SIWE** against Conway for an API key.
+First run without config auto-enters setup. Inference needs **`OPENROUTER_API_KEY`** (no Conway SIWE / control plane).
 
 </details>
 
@@ -127,7 +145,7 @@ flowchart TB
   subgraph shared["ONE LIVE CONTEXT"]
     RT --> ID[identity]
     RT --> CFG[config]
-    RT --> CON[conway client]
+    RT --> CON[clawd local shell]
     RT --> INF[inference]
     RT --> TOOLS[builtin tools + CJS bridge]
   end
@@ -168,7 +186,7 @@ flowchart TB
 | **Shell** | `src/state/` + `self-mod/` | SQLite memory + audited molts (git-versioned) |
 | **Bridge** | `src/interop/` | ESM primary graph loads the full CJS capability surface |
 
-Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts`): same `db`, same `conway`, same `inference`, same tool registry — loop, heartbeat, and tools never fork into silos.
+Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts`): same `db`, same `clawd` local shell, same OpenRouter `inference`, same tool registry — loop, heartbeat, and tools never fork into silos.
 
 ---
 
@@ -301,7 +319,7 @@ Implemented in:
 ```text
 src/index.ts
     │
-    ├─ identity / config / db / conway / inference / social
+    ├─ identity / config / db / shell (clawd) / openrouter / social
     │
     ├─ createRuntimeContext({ … })          ← ONE bag
     │       tools = createBuiltinTools()
@@ -353,7 +371,7 @@ CJS packages ship `"type": "commonjs"` package.json markers and resolve **`confi
 
 ## 🛠 Tools & CJS interop bridge
 
-~50 builtin tools across categories: `vm` · `conway` · `self_mod` · `survival` · `skills` · `git` · `registry` · `replication` · `interop` · financial / domain / social.
+~50 builtin tools across categories: `vm` · `clawd` · `self_mod` · `survival` · `skills` · `git` · `registry` · `replication` · `interop` · financial / domain / social.
 
 Highlights:
 
@@ -386,14 +404,15 @@ automation/
 │   ├── heartbeat/        daemon · tasks · cron config
 │   ├── survival/         monitor · tiers · funding
 │   ├── identity/         wallet · SIWE provision
-│   ├── conway/           client · credits · inference · x402
+│   ├── shell/            local clawd client · credits · x402
+│   ├── inference/        OpenRouter only (Conway removed)
 │   ├── state/            SQLite
 │   ├── skills/ git/ registry/ replication/ self-mod/ setup/ social/
-│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS)
+│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS own packages)
 │   ├── config.ts · types.ts
 │   └── __tests__/        loop · heartbeat · survival · composition · bridge
 ├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md   (human mirrors)
-└── package.json          @conway/automaton
+└── package.json          @clawd/automaton  (bins: automaton · clawd-automaton)
 ```
 
 ---
@@ -403,21 +422,19 @@ automation/
 | Flag | Action |
 |------|--------|
 | `--help` / `-h` | Identity + usage |
-| `--version` / `-v` | `Conway Automaton v0.1.0` |
+| `--version` / `-v` | `Clawd Automaton v0.1.0` |
 | `--run` | Shared context → heartbeat + loop |
 | `--setup` | Interactive wizard |
 | `--init` | Wallet + config directory |
-| `--provision` | Conway API key (SIWE) |
+| `--provision` | Optional legacy SIWE key (not required) |
 | `--status` | State, turns, tools, skills, children |
 
 ```bash
-export CONWAY_API_URL=https://api.conway.tech   # optional override
-export CONWAY_API_KEY=…                         # optional override
-
-# OpenRouter free path (preferred when key set)
+# OpenRouter (required for inference) — free router supported
 export OPENROUTER_API_KEY=…
 export OPENROUTER_FREE_MODEL=openrouter/free
-export INFERENCE_PROVIDER=auto                  # auto | openrouter | conway
+export INFERENCE_PROVIDER=auto                  # auto | openrouter
+export CLAWD_SANDBOX_ID=local
 ```
 
 ---
@@ -428,7 +445,8 @@ export INFERENCE_PROVIDER=auto                  # auto | openrouter | conway
 pnpm install
 pnpm test          # vitest → src/__tests__/**
 pnpm exec tsc      # emit dist/ (strict, NodeNext)
-pnpm build         # tsc (+ workspace builds if present)
+pnpm build         # tsc → dist/
+pnpm smoke         # version · help · CJS bridge health
 pnpm clean         # rm -rf dist
 ```
 
@@ -446,7 +464,7 @@ pnpm clean         # rm -rf dist
 
 | Surface | Role |
 |---------|------|
-| [conway.tech](https://conway.tech) | Compute / sandbox / credits API |
+| [x402.wtf](https://x402.wtf) | Clawd / x402 public surface |
 | [zk.x402.wtf](https://zk.x402.wtf) | x402 payment gateway |
 | [cheshireterminal.ai](https://cheshireterminal.ai) | Public terminal surface |
 | [solana-clawd](https://github.com/solizardking/solana-clawd) | Ecosystem hub (reference) |

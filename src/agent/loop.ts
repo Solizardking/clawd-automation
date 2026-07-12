@@ -9,7 +9,7 @@ import type {
   AutomatonIdentity,
   AutomatonConfig,
   AutomatonDatabase,
-  ConwayClient,
+  ClawdClient,
   InferenceClient,
   AgentState,
   AgentTurn,
@@ -27,8 +27,8 @@ import {
   toolsToInferenceFormat,
   executeTool,
 } from "./tools.js";
-import { getSurvivalTier } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier } from "../shell/credits.js";
+import { getUsdcBalance } from "../shell/x402.js";
 import {
   applyTierRestrictions,
   recordTransition,
@@ -45,7 +45,7 @@ export interface AgentLoopOptions {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  clawd: ClawdClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
   skills?: Skill[];
@@ -66,7 +66,7 @@ export async function runAgentLoop(
     identity,
     config,
     db,
-    conway,
+    clawd,
     inference,
     social,
     skills,
@@ -81,7 +81,7 @@ export async function runAgentLoop(
     identity,
     config,
     db,
-    conway,
+    clawd,
     inference,
     social,
   };
@@ -99,7 +99,7 @@ export async function runAgentLoop(
   onStateChange?.("waking");
 
   // Get financial state
-  let financial = await getFinancialState(conway, identity.address);
+  let financial = await getFinancialState(clawd, identity.address);
 
   // Check if this is the first run
   const isFirstRun = db.getTurnCount() === 0;
@@ -150,7 +150,7 @@ export async function runAgentLoop(
       }
 
       // Refresh financial state periodically
-      financial = await getFinancialState(conway, identity.address);
+      financial = await getFinancialState(clawd, identity.address);
 
       // Survival package: tier + restrictions + optional funding strategies
       const tier = getSurvivalTier(financial.creditsCents);
@@ -171,7 +171,7 @@ export async function runAgentLoop(
             identity,
             config,
             db,
-            conway,
+            clawd,
           );
         } catch (err: any) {
           log(config, `[SURVIVAL] Funding strategies failed: ${err.message}`);
@@ -357,14 +357,14 @@ export async function runAgentLoop(
 // ─── Helpers ───────────────────────────────────────────────────
 
 async function getFinancialState(
-  conway: ConwayClient,
+  clawd: ClawdClient,
   address: string,
 ): Promise<FinancialState> {
   let creditsCents = 0;
   let usdcBalance = 0;
 
   try {
-    creditsCents = await conway.getCreditsBalance();
+    creditsCents = await clawd.getCreditsBalance();
   } catch {}
 
   try {
@@ -400,7 +400,7 @@ function estimateCostCents(
   const p = pricing[model] || pricing["gpt-4o"];
   const inputCost = (usage.promptTokens / 1_000_000) * p.input;
   const outputCost = (usage.completionTokens / 1_000_000) * p.output;
-  return Math.ceil((inputCost + outputCost) * 1.3); // 1.3x Conway markup
+  return Math.ceil((inputCost + outputCost) * 1.3); // 1.3x Clawd markup
 }
 
 function log(config: AutomatonConfig, message: string): void {

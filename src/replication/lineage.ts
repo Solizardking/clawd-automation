@@ -11,7 +11,7 @@ import type {
   AutomatonDatabase,
   ChildAutomaton,
   AutomatonConfig,
-  ConwayClient,
+  ClawdClient,
 } from "../types.js";
 
 /**
@@ -102,7 +102,7 @@ export function pruneDeadChildren(
  * Refresh status of all children.
  */
 export async function refreshChildrenStatus(
-  conway: ConwayClient,
+  clawd: ClawdClient,
   db: AutomatonDatabase,
 ): Promise<void> {
   const { checkChildStatus } = await import("./spawn.js");
@@ -112,7 +112,7 @@ export async function refreshChildrenStatus(
     if (child.status === "dead") continue;
 
     try {
-      await checkChildStatus(conway, db, child.id);
+      await checkChildStatus(clawd, db, child.id);
     } catch {
       db.updateChildStatus(child.id, "unknown");
     }
