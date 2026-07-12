@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="280" viewBox="0 0 920 280" role="img" aria-label="Conway Automaton pulse">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05080f"/>
+      <stop offset="50%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#061018"/>
+    </linearGradient>
+    <linearGradient id="claw" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00ffa3"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00ffa3" stop-opacity="0"/>
+      <stop offset="40%" stop-color="#00ffa3" stop-opacity="0.9"/>
+      <stop offset="70%" stop-color="#60a5fa" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="920" height="280" rx="18" fill="url(#bg)"/>
+
+  <!-- grid -->
+  <g opacity="0.12" stroke="#7dd3fc" stroke-width="0.5">
+    <path d="M0 40 H920 M0 80 H920 M0 120 H920 M0 160 H920 M0 200 H920 M0 240 H920"/>
+    <path d="M80 0 V280 M160 0 V280 M240 0 V280 M320 0 V280 M400 0 V280 M480 0 V280 M560 0 V280 M640 0 V280 M720 0 V280 M800 0 V280 M880 0 V280"/>
+  </g>
+
+  <!-- orbiting nodes -->
+  <g transform="translate(160,140)">
+    <circle r="52" fill="none" stroke="#00ffa3" stroke-opacity="0.25" stroke-width="1.5"/>
+    <circle r="78" fill="none" stroke="#3b82f6" stroke-opacity="0.18" stroke-width="1"/>
+    <circle r="18" fill="#0b1220" stroke="url(#claw)" stroke-width="2" filter="url(#glow)"/>
+    <text text-anchor="middle" y="5" fill="#e2e8f0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11" font-weight="700">CA</text>
+
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="12s" repeatCount="indefinite"/>
+      <circle cx="52" cy="0" r="5" fill="#00ffa3" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="-37" cy="37" r="4" fill="#60a5fa"/>
+      <circle cx="-37" cy="-37" r="3.5" fill="#c084fc"/>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="18s" repeatCount="indefinite"/>
+      <circle cx="78" cy="0" r="3" fill="#f472b6"/>
+      <circle cx="0" cy="78" r="3" fill="#34d399"/>
+    </g>
+  </g>
+
+  <!-- pulse waveform -->
+  <g transform="translate(280,70)">
+    <text x="0" y="0" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">HEARTBEAT · ALIVE</text>
+    <path d="M0 90 L40 90 L55 40 L70 130 L90 20 L110 110 L130 90 L170 90 L190 50 L210 120 L230 90 L280 90 L300 35 L320 140 L340 90 L420 90 L450 55 L480 125 L510 90 L600 90"
+          fill="none" stroke="url(#wave)" stroke-width="3" stroke-linecap="round" filter="url(#glow)">
+      <animate attributeName="stroke-dasharray" values="0 900;900 0" dur="3.2s" repeatCount="indefinite"/>
+    </path>
+    <!-- scanning bar -->
+    <rect y="15" width="4" height="140" fill="#00ffa3" opacity="0.55" filter="url(#glow)">
+      <animate attributeName="x" values="0;600;0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- status chips -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11">
+    <g transform="translate(280,220)">
+      <rect width="100" height="28" rx="8" fill="#052e1a" stroke="#00ffa3" stroke-opacity="0.5"/>
+      <circle cx="16" cy="14" r="4" fill="#00ffa3">
+        <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/>
+      </circle>
+      <text x="28" y="18" fill="#86efac">RUNNING</text>
+    </g>
+    <g transform="translate(396,220)">
+      <rect width="120" height="28" rx="8" fill="#0c1a2e" stroke="#60a5fa" stroke-opacity="0.5"/>
+      <text x="14" y="18" fill="#93c5fd">TIER · NORMAL</text>
+    </g>
+    <g transform="translate(532,220)">
+      <rect width="140" height="28" rx="8" fill="#1a0b2e" stroke="#c084fc" stroke-opacity="0.5"/>
+      <text x="14" y="18" fill="#e9d5ff">LAW I–III · LIVE</text>
+    </g>
+    <g transform="translate(688,220)">
+      <rect width="120" height="28" rx="8" fill="#1a1205" stroke="#fbbf24" stroke-opacity="0.45"/>
+      <text x="14" y="18" fill="#fde68a">x402 GATE</text>
+    </g>
+  </g>
+
+  <!-- title -->
+  <text x="280" y="48" fill="url(#claw)" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="800">CONWAY AUTOMATON</text>
+  <text x="280" y="68" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">sovereign · constitution-bound · self-funded</text>
+</svg>
