@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="28" viewBox="0 0 160 28" role="img" aria-label="x402.wtf">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00ffa3"/>
+      <stop offset="100%" stop-color="#00d4ff">
+        <animate attributeName="stop-color" values="#00d4ff;#b14cff;#00d4ff" dur="4s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="28" rx="6" fill="#0b1220" stroke="url(#g)" stroke-width="1.5"/>
+  <circle cx="14" cy="14" r="4" fill="#00ffa3">
+    <animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/>
+  </circle>
+  <text x="26" y="18" fill="#e8f0ff" font-family="ui-monospace,Menlo,monospace" font-size="12" font-weight="700">part of x402.wtf</text>
+</svg>
