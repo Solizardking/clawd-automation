@@ -67,6 +67,7 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 
 ```bash
 pnpm install
+cp .env.example .env       # set OPENROUTER_API_KEY for free inference
 pnpm build                 # tsc → dist/  (primary bin: dist/index.js)
 
 node dist/index.js --help
@@ -76,8 +77,25 @@ node dist/index.js --run   # heartbeat + agent loop
 
 # hot reload while hacking
 pnpm dev                   # tsx watch src/index.ts
-pnpm test                  # vitest — loop · heartbeat · survival · bridge
+pnpm test                  # vitest — loop · heartbeat · survival · bridge · openrouter
 ```
+
+### Free inference via OpenRouter
+
+When `OPENROUTER_API_KEY` is set, the primary runtime uses OpenRouter instead of Conway-paid inference (unless `INFERENCE_PROVIDER=conway`).
+
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-…
+# Free Models Router — picks a free model that supports tools/vision/etc.
+export OPENROUTER_FREE_MODEL=openrouter/free
+# optional: pin a specific free model
+# export OPENROUTER_FREE_MODEL=meta-llama/llama-3.2-3b-instruct:free
+# optional provider sort: price | throughput | latency
+# export OPENROUTER_PROVIDER_SORT=throughput
+export INFERENCE_PROVIDER=auto   # openrouter when key present
+```
+
+Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router) · [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) · [llms.txt index](https://openrouter.ai/docs/llms.txt)
 
 <details>
 <summary><b>What the wizard writes</b></summary>
@@ -395,6 +413,11 @@ automation/
 ```bash
 export CONWAY_API_URL=https://api.conway.tech   # optional override
 export CONWAY_API_KEY=…                         # optional override
+
+# OpenRouter free path (preferred when key set)
+export OPENROUTER_API_KEY=…
+export OPENROUTER_FREE_MODEL=openrouter/free
+export INFERENCE_PROVIDER=auto                  # auto | openrouter | conway
 ```
 
 ---

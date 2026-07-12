@@ -12,7 +12,7 @@ import { provision, loadApiKeyFromConfig } from "./identity/provision.js";
 import { loadConfig, resolvePath } from "./config.js";
 import { createDatabase } from "./state/database.js";
 import { createConwayClient } from "./conway/client.js";
-import { createInferenceClient } from "./conway/inference.js";
+import { resolveInferenceClient } from "./inference/resolve.js";
 import { createHeartbeatDaemon } from "./heartbeat/daemon.js";
 import {
   loadHeartbeatConfig,
@@ -58,6 +58,11 @@ Usage:
 Environment:
   CONWAY_API_URL           Conway API URL (default: https://api.conway.tech)
   CONWAY_API_KEY           Conway API key (overrides config)
+  OPENROUTER_API_KEY       OpenRouter API key (preferred when set)
+  OPENROUTER_FREE_MODEL    Free model / router (default: openrouter/free)
+  OPENROUTER_MODEL         Default OpenRouter model (defaults to free model)
+  OPENROUTER_PROVIDER_SORT Optional: price | throughput | latency
+  INFERENCE_PROVIDER       auto | openrouter | conway (default: auto)
 `);
     process.exit(0);
   }
@@ -197,13 +202,17 @@ async function run(): Promise<void> {
     sandboxId: config.sandboxId,
   });
 
-  // Create inference client
-  const inference = createInferenceClient({
-    apiUrl: config.conwayApiUrl,
-    apiKey,
-    defaultModel: config.inferenceModel,
+  // Inference: OpenRouter (OPENROUTER_API_KEY + free router) or Conway credits
+  const resolvedInference = resolveInferenceClient({
+    conwayApiUrl: config.conwayApiUrl,
+    conwayApiKey: apiKey,
+    conwayModel: config.inferenceModel,
     maxTokens: config.maxTokensPerTurn,
   });
+  const inference = resolvedInference.client;
+  console.log(
+    `[${new Date().toISOString()}] Inference backend: ${resolvedInference.backend} (${resolvedInference.detail})`,
+  );
 
   // Create social client
   let social: SocialClientInterface | undefined;

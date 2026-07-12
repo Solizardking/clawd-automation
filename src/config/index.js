@@ -69,14 +69,39 @@ module.exports = {
     origins: buildCorsOrigins()
   },
 
-  // OpenRouter Models
+  // OpenRouter — Free Models Router by default (openrouter/free)
+  // Docs: https://openrouter.ai/docs/guides/routing/routers/free-router
   openRouter: {
     apiKey: process.env.OPENROUTER_API_KEY,
-    baseUrl: 'https://openrouter.ai/api/v1',
+    baseUrl: (process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, ''),
+    /** Free Models Router or a specific free slug (`model:free`). */
+    freeModel: process.env.OPENROUTER_FREE_MODEL || 'openrouter/free',
+    /** Default chat model; falls back to freeModel when unset. */
+    defaultModel:
+      process.env.OPENROUTER_MODEL ||
+      process.env.OPENROUTER_FREE_MODEL ||
+      'openrouter/free',
+    siteUrl:
+      process.env.OPENROUTER_SITE_URL ||
+      process.env.OPENROUTER_HTTP_REFERER ||
+      PRODUCT_URL,
+    appName:
+      process.env.OPENROUTER_APP_NAME ||
+      process.env.OPENROUTER_TITLE ||
+      'Conway Automaton',
+    /** Optional provider sort: price | throughput | latency */
+    providerSort: process.env.OPENROUTER_PROVIDER_SORT || undefined,
     models: {
-      writing: process.env.OPENROUTER_WRITING_MODEL || 'thedrummer/cydonia-24b-v4.1',
+      free: process.env.OPENROUTER_FREE_MODEL || 'openrouter/free',
+      auto: process.env.OPENROUTER_AUTO_MODEL || 'openrouter/auto',
+      writing:
+        process.env.OPENROUTER_WRITING_MODEL ||
+        process.env.OPENROUTER_FREE_MODEL ||
+        'openrouter/free',
       deep: process.env.OPENROUTER_DEEP_MODEL || 'deepseek/deepseek-v3.2-exp',
-      google: process.env.OPENROUTER_GOOGLE_MODEL || 'google/gemini-2.5-flash-preview-09-2025',
+      google:
+        process.env.OPENROUTER_GOOGLE_MODEL ||
+        'google/gemini-2.5-flash-preview-09-2025',
       claude: process.env.OPENROUTER_CLAUDE_MODEL || 'anthropic/claude-sonnet-4.5',
       grokCode: process.env.OPENROUTER_GROKCODE_MODEL || 'x-ai/grok-4-fast',
       kimi: process.env.OPENROUTER_KIMI_MODEL || 'moonshotai/kimi-k2-0905',
