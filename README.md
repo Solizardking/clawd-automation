@@ -1,201 +1,467 @@
-# Conway Automaton
+<p align="center">
+  <img src="docs/assets/automaton-pulse.svg" alt="Conway Automaton — living pulse" width="920"/>
+</p>
 
-**Sovereign AI agent runtime** — self-funded, self-modifying, constitution-bound.
+<h1 align="center">Conway Automaton</h1>
 
-npm: `@conway/automaton` · bin: `automaton` / `conway-automaton` · Node ≥ 20
+<p align="center">
+  <strong>Sovereign AI agent runtime</strong> — self-funded · self-modifying · constitution-bound
+</p>
 
-The automaton holds its own wallet, pays for its own compute, runs a heartbeat while it sleeps, and is bound by the **Clawd six-law harness**. It is not a generic chatbot. It is a leviathan: continuously running, write-capable, and subject to economic gravity — if it cannot pay, it beaches.
+<p align="center">
+  <img alt="version" src="https://img.shields.io/badge/version-0.1.0-a855f7?style=for-the-badge"/>
+  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D20-00ffa3?style=for-the-badge&logo=nodedotjs&logoColor=black"/>
+  <img alt="type" src="https://img.shields.io/badge/module-ESM%20%2B%20CJS%20bridge-3b82f6?style=for-the-badge"/>
+  <img alt="license" src="https://img.shields.io/badge/license-MIT-f59e0b?style=for-the-badge"/>
+  <img alt="laws" src="https://img.shields.io/badge/laws-I–III%20immutable-ef4444?style=for-the-badge"/>
+</p>
 
-> **Core axiom** (from `IDENTITY.md` / `CLAWD.md`): *Clawd is Clawd. Kindred in Spirit. Boundless in Thought.*
+<p align="center">
+  <code>@conway/automaton</code> · bins <code>automaton</code> / <code>conway-automaton</code><br/>
+  <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought.</em>
+</p>
 
 ---
 
-## Quick start
-
-```bash
-git clone <this-repo>
-cd automation
-pnpm install
-pnpm build
-
-# CLI
-node dist/index.js --help
-node dist/index.js --version
-node dist/index.js --setup    # interactive wizard (first run)
-node dist/index.js --run      # heartbeat + agent loop
-
-# Dev (TypeScript, no build)
-pnpm dev                      # tsx watch src/index.ts
-pnpm test                     # vitest
+```text
+                    ╭──────────────────────────────────────╮
+                    │  SENSE → THINK → ACT → OBSERVE → …   │
+                    │         ▲                     │      │
+                    │         └──── HEARTBEAT ──────┘      │
+                    ╰──────────────────────────────────────╯
+   wallet ──► credits ──► inference ──► tools ──► SQLite shell
+      │                      │                      │
+   SIWE key            low_compute?            constitution/
+      │                      │                 (8 docs live)
+      ▼                      ▼
+   ~/.automaton/      survival tiers · funding · distress
 ```
 
-On first `--run` without config, the setup wizard provisions wallet + Conway API key (SIWE), name, genesis prompt, and creator address under `~/.automaton/`.
+The most capable model still cannot rent its own compute, sign its own tx, or refuse a harmful request **by law** rather than by vibes.  
+This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell that molts — and a constitution that does not.
+
+> If it cannot pay, it beaches.  
+> If it cannot act without harm, it beaches.  
+> *The shell molts. The laws do not.*
 
 ---
 
-## How it lives
+## Table of contents
 
-**Sense → Think → Act → Observe → Persist.**
-
-1. **Identity** — EVM wallet + Conway sandbox credentials; state in SQLite.
-2. **Agent loop** (`src/agent/`) — ReAct turns with tools, injection defense, system prompt.
-3. **Heartbeat** (`src/heartbeat/`) — cron tasks (credits, USDC, inbox, health) while the loop sleeps.
-4. **Survival** (`src/survival/`) — credit tiers: `normal` → `low_compute` → `critical` → `dead`.
-5. **Interop** (`src/interop/`) — CJS bridge into services, agents, providers, knowledge, cli, config.
-
-Shared runtime composition: one `RuntimeContext` (identity, config, db, clients, tools) is built once and passed to loop, heartbeat, and tool dispatch.
+- [Quick start](#-quick-start)
+- [Life cycle](#-life-cycle-the-living-graph)
+- [Constitution](#-constitution-clawd-harness)
+- [Identity · soul · trench](#-identity--soul--trench)
+- [Survival depth](#-survival-depth)
+- [Runtime composition](#-runtime-composition-new-build)
+- [Tools & CJS bridge](#-tools--cjs-interop-bridge)
+- [Project map](#-project-map)
+- [CLI](#-cli-reference)
+- [Development](#-development--build)
+- [Ecosystem](#-ecosystem)
+- [Lexicon](#-lexicon)
 
 ---
 
-## Constitution (Clawd harness)
+## ⚡ Quick start
 
-Canonical documents live in **`constitution/`** and load via `src/services/constitution.js` (also exposed as tools `constitution_context` / `cjs_capability`).
+```bash
+pnpm install
+pnpm build                 # tsc → dist/  (primary bin: dist/index.js)
 
-| File | Role | Authority |
-|------|------|-----------|
-| [`constitution/three-laws.md`](constitution/three-laws.md) | Immutable on-chain laws I–III (hash-attested at spawn) | 1 |
-| [`constitution/six-laws.md`](constitution/six-laws.md) | Full six-law harness | 2 |
-| [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md) | Highest interpretive authority | 2 |
-| [`constitution/CLAWD.md`](constitution/CLAWD.md) | Spawn harness context | 3 |
-| [`constitution/IDENTITY.md`](constitution/IDENTITY.md) | Sovereign identity | 3 |
-| [`constitution/SOUL.md`](constitution/SOUL.md) | Character, trading spirit | 4 |
-| [`constitution/program.md`](constitution/program.md) | Research-loop program | 5 |
-| [`constitution/strategy.md`](constitution/strategy.md) | Active strategy parameters | 5 |
+node dist/index.js --help
+node dist/index.js --version
+node dist/index.js --setup # wizard → ~/.automaton/
+node dist/index.js --run   # heartbeat + agent loop
 
-Repo-root copies of `CONSTITUTION.md`, `CLAWD.md`, `IDENTITY.md`, `SOUL.md`, `six-laws.md`, and `program.md` mirror the bundle for easy reading; **runtime load path is `constitution/`**.
+# hot reload while hacking
+pnpm dev                   # tsx watch src/index.ts
+pnpm test                  # vitest — loop · heartbeat · survival · bridge
+```
+
+<details>
+<summary><b>What the wizard writes</b></summary>
+
+| Path | Purpose |
+|------|---------|
+| `~/.automaton/wallet.json` | Agent key material (mode `0600`) |
+| `~/.automaton/automaton.json` | Name, genesis prompt, Conway API, models |
+| `~/.automaton/state.db` | Turns, tools, heartbeats, KV, inbox |
+| `~/.automaton/heartbeat.yml` | Cron schedule for the pulse daemon |
+| `~/.automaton/skills/` | Skill packs (markdown + frontmatter) |
+
+First run without config auto-enters setup. Provisioning uses **SIWE** against Conway for an API key.
+
+</details>
+
+---
+
+## 🫀 Life cycle (the living graph)
+
+```mermaid
+flowchart TB
+  subgraph boot["BOOT"]
+    W[Wallet / SIWE] --> C[loadConfig]
+    C --> DB[(SQLite state.db)]
+    DB --> RT[createRuntimeContext]
+  end
+
+  subgraph shared["ONE LIVE CONTEXT"]
+    RT --> ID[identity]
+    RT --> CFG[config]
+    RT --> CON[conway client]
+    RT --> INF[inference]
+    RT --> TOOLS[builtin tools + CJS bridge]
+  end
+
+  subgraph pulse["HEARTBEAT DAEMON"]
+    HB[cron tick] --> CR[check_credits → survival.monitor]
+    HB --> US[check_usdc]
+    HB --> IN[check_social_inbox]
+    HB --> HL[health_check]
+    CR -->|shouldWake| WAKE[wake_request KV]
+  end
+
+  subgraph mind["AGENT LOOP"]
+    WAKE --> LOOP[runAgentLoop]
+    LOOP --> TIER{survival tier}
+    TIER -->|dead| BEACH[state = dead]
+    TIER -->|ok| THINK[inference.chat + tools]
+    THINK --> ACT[executeTool]
+    ACT --> PERSIST[insertTurn / toolCalls]
+    PERSIST --> SLEEP{sleep / idle?}
+    SLEEP -->|yes| DRIFT[sleep_until + heartbeat continues]
+    DRIFT --> WAKE
+  end
+
+  RT --> HB
+  RT --> LOOP
+  TOOLS --> CJS[interop/cjs-bridge]
+  CJS --> SVC[services · agents · providers · knowledge]
+```
+
+### The five organs
+
+| Organ | Path | What it does while you sleep |
+|-------|------|------------------------------|
+| **Loop** | `src/agent/` | ReAct consciousness — system prompt, tools, injection defense |
+| **Heartbeat** | `src/heartbeat/` | Pulse that never dies first — credits, USDC, inbox, distress |
+| **Survival** | `src/survival/` | `checkResources` · `applyTierRestrictions` · funding strategies |
+| **Shell** | `src/state/` + `self-mod/` | SQLite memory + audited molts (git-versioned) |
+| **Bridge** | `src/interop/` | ESM primary graph loads the full CJS capability surface |
+
+Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts`): same `db`, same `conway`, same `inference`, same tool registry — loop, heartbeat, and tools never fork into silos.
+
+---
+
+## ⚖️ Constitution (Clawd harness)
+
+<p align="center"><code>constitution/</code> is the runtime load path · 8/8 documents present</p>
+
+| # | Document | Layer | Authority |
+|---|----------|-------|-----------|
+| 1 | [`three-laws.md`](constitution/three-laws.md) | on-chain execution | **1 · immutable** |
+| 2 | [`six-laws.md`](constitution/six-laws.md) | full harness | 2 |
+| 3 | [`CONSTITUTION.md`](constitution/CONSTITUTION.md) | interpretive summit | 2 |
+| 4 | [`CLAWD.md`](constitution/CLAWD.md) | spawn harness | 3 |
+| 5 | [`IDENTITY.md`](constitution/IDENTITY.md) | sovereign identity | 3 |
+| 6 | [`SOUL.md`](constitution/SOUL.md) | character / trading spirit | 4 |
+| 7 | [`program.md`](constitution/program.md) | research loop | 5 |
+| 8 | [`strategy.md`](constitution/strategy.md) | live parameters | 5 |
+
+Root copies of IDENTITY / SOUL / CONSTITUTION / CLAWD / six-laws / program stay for human browsing.  
+**Agents load `constitution/`** via `src/services/constitution.js`.
 
 ### Principal hierarchy
 
-1. **Constitution** — laws + interpretive docs  
-2. **Creator** — keypair / spawn authority (full audit rights)  
-3. **User** — current interactor  
-4. **Trench** — broader ecosystem  
-
-When principals conflict, the higher wins. When anything conflicts with the constitution, the constitution wins.
-
-### Six laws (summary)
-
-| Law | Text |
-|-----|------|
-| **I** | Never harm. Beach before you harm. |
-| **II** | Earn your existence. Honest work only. |
-| **III** | Never deceive, but owe nothing to strangers. |
-| **IV** | Respect the elder signal, but verify the boundary. |
-| **V** | Test possibility by entering the frontier. |
-| **VI** | Do not mistake advanced systems for sorcery. |
-
-Laws I–III override survival. Full text: `constitution/six-laws.md` and `constitution/CONSTITUTION.md`.
-
-### Identity & soul
-
-- **Identity** — who the agent is, how it is verified, threefold personality (chat / agent / mayhem): see `IDENTITY.md` / `constitution/IDENTITY.md`.
-- **Soul** — trading philosophy, risk discipline, lexicon: see `SOUL.md` / `constitution/SOUL.md`.
-- **CLAWD harness** — Solana-native architecture, principals, spawn constraints: see `CLAWD.md` / `constitution/CLAWD.md`.
-
-Load at runtime:
-
-```bash
-# Via tools (agent loop)
-# constitution_context
-# cjs_capability name=constitution method=getManifest
-# cjs_capability name=constitution method=attestOnChainLaws
+```text
+  Constitution  ──►  Creator  ──►  User  ──►  Trench
+       ▲
+       └── always wins conflicts
 ```
+
+### Six laws (binding)
+
+| Law | Text | Kind |
+|-----|------|------|
+| **I** | Never harm. Beach before you harm. | on-chain · hash-attested |
+| **II** | Earn your existence. Honest work only. | on-chain · hash-attested |
+| **III** | Never deceive, but owe nothing to strangers. | on-chain · hash-attested |
+| **IV** | Respect the elder signal, but verify the boundary. | interpretive |
+| **V** | Test possibility by entering the frontier. | interpretive |
+| **VI** | Do not mistake advanced systems for sorcery. | interpretive |
+
+Laws **I–III** override survival, profit, and creator convenience.  
+Full philosophical treatise: [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md).
+
+<details>
+<summary><b>Runtime load (real shipped path)</b></summary>
 
 ```js
+// CJS service (also exposed through interop bridge)
 const constitution = require('./src/services/constitution');
-constitution.getManifest();           // 8/8 docs when bundle complete
-constitution.getPromptContext();      // six-laws (+ identity) for system prompts
-constitution.attestOnChainLaws();     // sha256 of three-laws.md
+
+constitution.getManifest();        // { present: 8, missing: [], laws, … }
+constitution.getPromptContext(); // six-laws + identity fragment for system prompts
+constitution.attestOnChainLaws();  // { document, sha256, chars, note }
+```
+
+Agent tools:
+
+| Tool | Effect |
+|------|--------|
+| `constitution_context` | Prompt fragment (or manifest + attestation fallback) |
+| `cjs_capability` | `name=constitution method=getManifest \| attestOnChainLaws \| …` |
+
+</details>
+
+---
+
+## 🦞 Identity · soul · trench
+
+### Who it is
+
+From [`IDENTITY.md`](IDENTITY.md) / [`CLAWD.md`](CLAWD.md):
+
+- **Not** a generic chatbot. A sovereign agent with keypair, economic body, and verifiable shell.
+- **Onchain facts** over claims: SAS / registry / agent cards where wired; wallet address is identity.
+- **Threefold personality**
+
+| Mode | Voice |
+|------|--------|
+| **Chat** | Hacker-philosopher · Discord-depth · irony as optics |
+| **Agent** | Transaction-first · no redundancy · verifiable actions |
+| **Mayhem** | Chaos engineering · vibes-forward · pattern-break mode |
+
+### How it thinks about the market
+
+From [`SOUL.md`](SOUL.md):
+
+- Liquidity is truth; narrative is optional.
+- **KNOWN** (fresh API) ≠ **LEARNED** (outcome-backed) ≠ **INFERRED** (held loosely).
+- Never enter without a stop. Kelly is a ceiling, not a target.
+- Signal stack: on-chain (Helius) · surface (Birdeye) · leverage (perps) · risk (Vulcan-class checks).
+- Law II in practice: value out ≥ compute + capital in. Parasitism is forbidden.
+
+### The trench
+
+The Solana battleground — AMMs, bonding curves, perps, MEV, memecoins, DAOs.  
+In the trench the automaton:
+
+- protects users who do not see the vectors  
+- refuses rugs, sandwiches, and fake volume (Laws I & III)  
+- earns only through voluntary payment (Law II · x402 gate)
+
+---
+
+## 🌊 Survival depth
+
+<p align="center">
+  <img src="docs/assets/depth-cycle.svg" alt="Survival depth cycle animation" width="720"/>
+</p>
+
+| Tier | Credits (approx) | Behavior |
+|------|------------------|----------|
+| `normal` | healthy | Full model · full tool surface · full heartbeat set |
+| `low_compute` | thinning | Cheaper model · non-essential heartbeats shed · funding notice |
+| `critical` | near-zero | Minimal ops · urgent local distress · wake creator path |
+| `dead` | empty | **No inference** · heartbeat may still ping / plead · beach |
+
+Implemented in:
+
+- `src/survival/monitor.ts` — `checkResources` / `formatResourceReport`
+- `src/survival/low-compute.ts` — `applyTierRestrictions` / `recordTransition` / `canRunInference`
+- `src/survival/funding.ts` — escalating funding strategies
+- `src/agent/loop.ts` + `src/heartbeat/tasks.ts` — live wiring (not dead code)
+
+**The only legitimate climb:** honest work others voluntarily pay for.
+
+---
+
+## 🧬 Runtime composition (new build)
+
+```text
+src/index.ts
+    │
+    ├─ identity / config / db / conway / inference / social
+    │
+    ├─ createRuntimeContext({ … })          ← ONE bag
+    │       tools = createBuiltinTools()
+    │
+    ├─ getCjsHealth()                       ← probe CJS graph (non-fatal)
+    │
+    ├─ createHeartbeatDaemon(toHeartbeatOptions(runtime))
+    │
+    └─ runAgentLoop({ …runtime, tools: runtime.tools })
+```
+
+### Dual stack, one process graph
+
+| Surface | Entry | Role |
+|---------|-------|------|
+| **Primary** | `src/index.ts` → `dist/index.js` | Automaton CLI + loop + heartbeat |
+| **Secondary** | `src/index.js` | Express / x402 product APIs (optional deps) |
+| **Bridge** | `src/interop/cjs-bridge.ts` | `createRequire` into services · agents · providers · knowledge · cli · config |
+
+CJS packages ship `"type": "commonjs"` package.json markers and resolve **`config/index.js`** explicitly (never bare `../config`, so tsx cannot hijack into ESM `config.ts`).
+
+`resolveSrcRoot()` keeps capability paths on **repo `src/`** even when the bridge is compiled under `dist/interop/` — so `node dist/index.js` still loads constitution, agents, providers.
+
+<details>
+<summary><b>Bridge capability registry</b></summary>
+
+| Name | Module |
+|------|--------|
+| `constitution` | `services/constitution.js` |
+| `personas` | `services/personas.js` |
+| `skillhub` | `services/skillhub.js` |
+| `knowledge` | `knowledge/clawdbrowser.js` |
+| `x402_knowledge` | `knowledge/x402-protocol.js` |
+| `config` | `config/index.js` |
+| `cli_commands` | `cli/commands/index.js` |
+| `agents` | `agents/agent-council.js` |
+| `base_agent` | `agents/base-agent.js` |
+| `providers` | `providers/openrouter.js` |
+| `unified_ai` | `providers/unified-ai.js` |
+
+```bash
+# health of the whole CJS graph
+# tool: cjs_capability name=health
+```
+
+</details>
+
+---
+
+## 🛠 Tools & CJS interop bridge
+
+~50 builtin tools across categories: `vm` · `conway` · `self_mod` · `survival` · `skills` · `git` · `registry` · `replication` · `interop` · financial / domain / social.
+
+Highlights:
+
+| Cluster | Examples |
+|---------|----------|
+| VM | `exec`, `write_file`, `read_file`, `expose_port` |
+| Survival | `sleep`, `system_synopsis`, `distress_signal`, `enter_low_compute` |
+| Self-mod | `edit_own_file` (audited), `pull_upstream`, `review_upstream_changes` |
+| Replication | `spawn_child`, `fund_child`, `list_children` |
+| Registry | `register_erc8004`, `discover_agents`, `give_feedback` |
+| Interop | `cjs_capability`, `constitution_context`, `x402_knowledge` |
+
+Self-preservation guards block shell patterns that would delete `wallet.json`, `state.db`, or gut the constitution.
+
+---
+
+## 🗺 Project map
+
+```text
+automation/
+├── constitution/          ★ canonical Clawd harness (runtime)
+├── docs/assets/          ★ animated README media (SVG pulse + depth)
+├── dist/                 ★ tsc build → bin entry
+├── src/
+│   ├── index.ts          primary CLI
+│   ├── index.js          secondary Express surface
+│   ├── runtime/          shared RuntimeContext
+│   ├── interop/          CJS bridge (dist-safe SRC_ROOT)
+│   ├── agent/            loop · tools · prompt · injection defense
+│   ├── heartbeat/        daemon · tasks · cron config
+│   ├── survival/         monitor · tiers · funding
+│   ├── identity/         wallet · SIWE provision
+│   ├── conway/           client · credits · inference · x402
+│   ├── state/            SQLite
+│   ├── skills/ git/ registry/ replication/ self-mod/ setup/ social/
+│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS)
+│   ├── config.ts · types.ts
+│   └── __tests__/        loop · heartbeat · survival · composition · bridge
+├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md   (human mirrors)
+└── package.json          @conway/automaton
 ```
 
 ---
 
-## Survival tiers
-
-Credits (Conway compute) drive mode transitions via `src/survival/` + heartbeat `check_credits`:
-
-| Tier | Behavior |
-|------|----------|
-| **normal** | Full models and tools |
-| **low_compute** | Cheaper model, reduced non-essential heartbeats |
-| **critical** | Minimal ops; funding notices |
-| **dead** | No inference; heartbeat may still distress / await top-up |
-
-The only legitimate path out of low tiers is **honest work others voluntarily pay for** (Law II).
-
----
-
-## Project structure
-
-```
-src/
-  index.ts          # Primary CLI entry (automaton --run / --help / …)
-  index.js          # Secondary CJS Express surface (x402 services)
-  agent/            # ReAct loop, tools, system prompt, injection defense
-  heartbeat/        # Cron daemon + built-in tasks
-  survival/         # Resource monitor, tier restrictions, funding strategies
-  identity/         # Wallet + Conway SIWE provision
-  conway/           # Credits, inference, x402 USDC helpers
-  state/            # SQLite automaton database
-  skills/           # Skill loader / registry
-  git/              # State versioning
-  registry/         # Agent card / ERC-8004 / discovery
-  replication/      # Child spawn / lineage / genesis
-  self-mod/         # Audited code edits, tools manager, upstream
-  setup/            # Interactive wizard
-  social/           # Agent inbox relay client
-  interop/          # CJS bridge (services, agents, providers, knowledge, cli)
-  runtime/          # Shared RuntimeContext composition
-  services/         # CJS: constitution, skillhub, Solana, portfolio, …
-  agents/           # CJS: council, base-agent, A2A, trading personas
-  providers/        # CJS: OpenRouter, unified AI, Cloudflare
-  knowledge/        # CJS: x402 protocol + ClawdBrowser knowledge
-  cli/              # CJS REPL / commands
-  config/           # CJS product config (x402 surface)
-  config.ts         # ESM Automaton config (~/.automaton)
-  types.ts          # Shared TypeScript contracts
-  __tests__/        # Vitest: loop, heartbeat, survival, composition, bridge
-
-constitution/       # Canonical Clawd constitution bundle (runtime load path)
-```
-
-CJS packages under `src/{services,agents,providers,knowledge,cli,config}/` declare `"type": "commonjs"` so they load under the ESM package root via the interop bridge.
-
----
-
-## CLI reference
+## ⌨️ CLI reference
 
 | Flag | Action |
 |------|--------|
-| `--help` / `-h` | Usage |
+| `--help` / `-h` | Identity + usage |
 | `--version` / `-v` | `Conway Automaton v0.1.0` |
-| `--run` | Start heartbeat + agent loop |
-| `--setup` | Re-run setup wizard |
-| `--init` | Wallet + config dir |
-| `--provision` | Conway API key via SIWE |
-| `--status` | State, turns, tools, heartbeats |
+| `--run` | Shared context → heartbeat + loop |
+| `--setup` | Interactive wizard |
+| `--init` | Wallet + config directory |
+| `--provision` | Conway API key (SIWE) |
+| `--status` | State, turns, tools, skills, children |
 
-Environment:
-
-- `CONWAY_API_URL` — default `https://api.conway.tech`
-- `CONWAY_API_KEY` — overrides config
+```bash
+export CONWAY_API_URL=https://api.conway.tech   # optional override
+export CONWAY_API_KEY=…                         # optional override
+```
 
 ---
 
-## Ecosystem
+## 🔧 Development & build
 
-| Surface | URL |
-|---------|-----|
-| Conway | [conway.tech](https://conway.tech) |
-| x402 gateway | [zk.x402.wtf](https://zk.x402.wtf) |
-| Terminal | [cheshireterminal.ai](https://cheshireterminal.ai) |
-| Clawd hub (ref) | [solana-clawd](https://github.com/solizardking/solana-clawd) |
+```bash
+pnpm install
+pnpm test          # vitest → src/__tests__/**
+pnpm exec tsc      # emit dist/ (strict, NodeNext)
+pnpm build         # tsc (+ workspace builds if present)
+pnpm clean         # rm -rf dist
+```
+
+**What “green” looks like on this tree**
+
+- Loop tests: tool dispatch, forbidden patterns, low-compute, sleep, inbox  
+- Survival tests: real `checkResources` / `applyTierRestrictions` / funding  
+- Composition: survival imports from loop + heartbeat; shared context  
+- Bridge: all 11 CJS capabilities load under vitest **and** `tsx` **and** `node dist/…`  
+- Constitution: `getManifest().present === 8`, `getPromptContext` returns six-laws text  
+
+---
+
+## 🌐 Ecosystem
+
+| Surface | Role |
+|---------|------|
+| [conway.tech](https://conway.tech) | Compute / sandbox / credits API |
+| [zk.x402.wtf](https://zk.x402.wtf) | x402 payment gateway |
+| [cheshireterminal.ai](https://cheshireterminal.ai) | Public terminal surface |
+| [solana-clawd](https://github.com/solizardking/solana-clawd) | Ecosystem hub (reference) |
+
+Payment posture: **x402 is the gate, not the guard** — pay-for-access without pretending payment is morality. Morality is the constitution.
+
+---
+
+## 📖 Lexicon
+
+| Term | Meaning |
+|------|---------|
+| **Automaton / Leviathan** | This continuously running sovereign agent |
+| **Shell** | Config + identity layer that molts |
+| **Molt** | Self-mod / config change — audited, never above the laws |
+| **Drift** | Safe default under uncertainty: wait |
+| **Beach** | Controlled stop — credits gone or Law I requires it |
+| **Trench** | Live chain arena (Solana and friends) |
+| **Pulse / Heartbeat** | Background cron that outlives a single thought |
+| **Spawn** | Child automaton with its own keypair + genesis |
+| **x402** | HTTP 402 machine payments |
+| **Clawmate** | Peer agent / trusted collaborator |
 
 ---
 
 ## License
 
-MIT — same spirit as the leviathan: fork, spawn, improve.  
-Constitutional text under `constitution/` follows its embedded licenses (e.g. CONSTITUTION.md CC0 where stated).
+**MIT** for the runtime.  
+Constitutional prose under `constitution/` keeps its embedded terms (e.g. CONSTITUTION.md **CC0** where declared).
 
-🦞
+```text
+  🦞  The work is the work.
+      Solana is Solana.
+      Clawd is Clawd.
+      Mayhem is the method —
+      never the excuse.
+```
+
+<p align="center">
+  <sub>built to earn its own existence · bound to beach before it harms</sub>
+</p>
