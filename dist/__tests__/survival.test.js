@@ -5,15 +5,15 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { applyTierRestrictions, recordTransition, canRunInference, getModelForTier, } from "../survival/low-compute.js";
 import { checkResources, formatResourceReport } from "../survival/monitor.js";
 import { executeFundingStrategies } from "../survival/funding.js";
-import { getSurvivalTier } from "../conway/credits.js";
-import { MockConwayClient, MockInferenceClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
+import { getSurvivalTier } from "../shell/credits.js";
+import { MockClawdClient, MockInferenceClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
 describe("Survival package", () => {
     let db;
-    let conway;
+    let clawd;
     let inference;
     beforeEach(() => {
         db = createTestDb();
-        conway = new MockConwayClient();
+        clawd = new MockClawdClient();
         inference = new MockInferenceClient();
     });
     afterEach(() => {
@@ -64,22 +64,22 @@ describe("Survival package", () => {
     });
     describe("checkResources", () => {
         it("returns tier, financial state, and sandbox health via real monitor", async () => {
-            conway.creditsCents = 25;
+            clawd.creditsCents = 25;
             const identity = createTestIdentity();
-            const status = await checkResources(identity, conway, db);
+            const status = await checkResources(identity, clawd, db);
             expect(status.tier).toBe("low_compute");
             expect(status.financial.creditsCents).toBe(25);
             expect(status.sandboxHealthy).toBe(true);
             expect(db.getKV("current_tier")).toBe("low_compute");
-            expect(conway.execCalls.some((c) => c.command === "echo ok")).toBe(true);
+            expect(clawd.execCalls.some((c) => c.command === "echo ok")).toBe(true);
             const report = formatResourceReport(status);
             expect(report).toContain("RESOURCE STATUS");
             expect(report).toContain("low_compute");
         });
         it("detects tier change from previous KV", async () => {
             db.setKV("current_tier", "normal");
-            conway.creditsCents = 5;
-            const status = await checkResources(createTestIdentity(), conway, db);
+            clawd.creditsCents = 5;
+            const status = await checkResources(createTestIdentity(), clawd, db);
             expect(status.tier).toBe("critical");
             expect(status.tierChanged).toBe(true);
             expect(status.previousTier).toBe("normal");
@@ -87,16 +87,16 @@ describe("Survival package", () => {
     });
     describe("executeFundingStrategies", () => {
         it("records low_compute funding notice when due", async () => {
-            conway.creditsCents = 30;
-            const attempts = await executeFundingStrategies("low_compute", createTestIdentity(), createTestConfig(), db, conway);
+            clawd.creditsCents = 30;
+            const attempts = await executeFundingStrategies("low_compute", createTestIdentity(), createTestConfig(), db, clawd);
             expect(attempts.length).toBeGreaterThanOrEqual(1);
             expect(attempts[0].strategy).toBe("polite_creator_notification");
             expect(db.getKV("funding_notice_low")).toBeDefined();
             expect(db.getKV("last_funding_request")).toBeDefined();
         });
         it("records critical notice on critical tier", async () => {
-            conway.creditsCents = 5;
-            const attempts = await executeFundingStrategies("critical", createTestIdentity(), createTestConfig(), db, conway);
+            clawd.creditsCents = 5;
+            const attempts = await executeFundingStrategies("critical", createTestIdentity(), createTestConfig(), db, clawd);
             expect(attempts.some((a) => a.strategy === "urgent_local_notice")).toBe(true);
             expect(db.getKV("funding_notice_critical")).toBeDefined();
         });

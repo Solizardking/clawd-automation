@@ -5,12 +5,12 @@
  * at the composition root and passed through the agent loop, heartbeat,
  * and tool dispatch so those paths share the same objects.
  */
-import type { AutomatonIdentity, AutomatonConfig, AutomatonDatabase, ConwayClient, InferenceClient, SocialClientInterface, Skill, ToolContext, AutomatonTool } from "../types.js";
+import type { AutomatonIdentity, AutomatonConfig, AutomatonDatabase, ClawdClient, InferenceClient, SocialClientInterface, Skill, ToolContext, AutomatonTool } from "../types.js";
 export interface RuntimeContext {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     inference: InferenceClient;
     social?: SocialClientInterface;
     skills: Skill[];
@@ -20,7 +20,7 @@ export interface RuntimeContextInput {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     inference: InferenceClient;
     social?: SocialClientInterface;
     skills?: Skill[];
@@ -43,7 +43,7 @@ export declare function toHeartbeatOptions(runtime: RuntimeContext): {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     social: SocialClientInterface | undefined;
 };
 //# sourceMappingURL=context.d.ts.map

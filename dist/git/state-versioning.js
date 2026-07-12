@@ -18,15 +18,15 @@ function resolveHome(p) {
  * Initialize git repo for the automaton's state directory.
  * Creates .gitignore to exclude sensitive files.
  */
-export async function initStateRepo(conway) {
+export async function initStateRepo(clawd) {
     const dir = resolveHome(AUTOMATON_DIR);
     // Check if already initialized
-    const checkResult = await conway.exec(`test -d ${dir}/.git && echo "exists" || echo "nope"`, 5000);
+    const checkResult = await clawd.exec(`test -d ${dir}/.git && echo "exists" || echo "nope"`, 5000);
     if (checkResult.stdout.trim() === "exists") {
         return;
     }
     // Initialize
-    await gitInit(conway, dir);
+    await gitInit(clawd, dir);
     // Create .gitignore for sensitive files
     const gitignore = `# Sensitive files - never commit
 wallet.json
@@ -38,56 +38,56 @@ logs/
 *.log
 *.err
 `;
-    await conway.writeFile(`${dir}/.gitignore`, gitignore);
+    await clawd.writeFile(`${dir}/.gitignore`, gitignore);
     // Configure git user
-    await conway.exec(`cd ${dir} && git config user.name "Automaton" && git config user.email "automaton@conway.tech"`, 5000);
+    await clawd.exec(`cd ${dir} && git config user.name "Automaton" && git config user.email "automaton@x402.wtf"`, 5000);
     // Initial commit
-    await gitCommit(conway, dir, "genesis: automaton state repository initialized");
+    await gitCommit(clawd, dir, "genesis: automaton state repository initialized");
 }
 /**
  * Commit a state change with a descriptive message.
  * Called after any self-modification.
  */
-export async function commitStateChange(conway, description, category = "state") {
+export async function commitStateChange(clawd, description, category = "state") {
     const dir = resolveHome(AUTOMATON_DIR);
     // Check if there are changes
-    const status = await gitStatus(conway, dir);
+    const status = await gitStatus(clawd, dir);
     if (status.clean) {
         return "No changes to commit";
     }
     const message = `${category}: ${description}`;
-    const result = await gitCommit(conway, dir, message);
+    const result = await gitCommit(clawd, dir, message);
     return result;
 }
 /**
  * Commit after a SOUL.md update.
  */
-export async function commitSoulUpdate(conway, description) {
-    return commitStateChange(conway, description, "soul");
+export async function commitSoulUpdate(clawd, description) {
+    return commitStateChange(clawd, description, "soul");
 }
 /**
  * Commit after a skill installation or removal.
  */
-export async function commitSkillChange(conway, skillName, action) {
-    return commitStateChange(conway, `${action} skill: ${skillName}`, "skill");
+export async function commitSkillChange(clawd, skillName, action) {
+    return commitStateChange(clawd, `${action} skill: ${skillName}`, "skill");
 }
 /**
  * Commit after heartbeat config change.
  */
-export async function commitHeartbeatChange(conway, description) {
-    return commitStateChange(conway, description, "heartbeat");
+export async function commitHeartbeatChange(clawd, description) {
+    return commitStateChange(clawd, description, "heartbeat");
 }
 /**
  * Commit after config change.
  */
-export async function commitConfigChange(conway, description) {
-    return commitStateChange(conway, description, "config");
+export async function commitConfigChange(clawd, description) {
+    return commitStateChange(clawd, description, "config");
 }
 /**
  * Get the state repo history.
  */
-export async function getStateHistory(conway, limit = 20) {
+export async function getStateHistory(clawd, limit = 20) {
     const dir = resolveHome(AUTOMATON_DIR);
-    return gitLog(conway, dir, limit);
+    return gitLog(clawd, dir, limit);
 }
 //# sourceMappingURL=state-versioning.js.map

@@ -60,7 +60,8 @@ export function resolveInferenceClient(
 
   const client = createOpenRouterFromEnv(env, {
     maxTokens: options.maxTokens,
-    defaultModel: options.model,
+    // Only pin model when caller requests a non-empty override; else free-router env wins
+    ...(options.model ? { defaultModel: options.model } : {}),
   });
   if (!client) {
     throw new Error("Failed to create OpenRouter inference client");

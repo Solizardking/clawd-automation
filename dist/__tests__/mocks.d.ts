@@ -1,7 +1,7 @@
 /**
  * Mock infrastructure for deterministic automaton tests.
  */
-import type { InferenceClient, InferenceResponse, InferenceOptions, ChatMessage, ConwayClient, ExecResult, PortInfo, SandboxInfo, PricingTier, CreditTransferResult, CreateSandboxOptions, DomainSearchResult, DomainRegistration, DnsRecord, ModelInfo, AutomatonDatabase, AutomatonIdentity, AutomatonConfig, SocialClientInterface, InboxMessage } from "../types.js";
+import type { InferenceClient, InferenceResponse, InferenceOptions, ChatMessage, ClawdClient, ExecResult, PortInfo, SandboxInfo, PricingTier, CreditTransferResult, CreateSandboxOptions, DomainSearchResult, DomainRegistration, DnsRecord, ModelInfo, AutomatonDatabase, AutomatonIdentity, AutomatonConfig, SocialClientInterface, InboxMessage } from "../types.js";
 export declare class MockInferenceClient implements InferenceClient {
     private responses;
     private callIndex;
@@ -20,7 +20,7 @@ export declare function toolCallResponse(toolCalls: {
     name: string;
     arguments: Record<string, unknown>;
 }[], text?: string): InferenceResponse;
-export declare class MockConwayClient implements ConwayClient {
+export declare class MockClawdClient implements ClawdClient {
     execCalls: {
         command: string;
         timeout?: number;

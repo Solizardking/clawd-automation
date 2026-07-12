@@ -62,8 +62,8 @@ export function toolCallResponse(toolCalls, text = "") {
         finishReason: "tool_calls",
     };
 }
-// ─── Mock Conway Client ─────────────────────────────────────────
-export class MockConwayClient {
+// ─── Mock Clawd Client ─────────────────────────────────────────
+export class MockClawdClient {
     execCalls = [];
     creditsCents = 10_000; // $100 default
     files = {};
@@ -80,7 +80,7 @@ export class MockConwayClient {
     async exposePort(port) {
         return {
             port,
-            publicUrl: `https://test-${port}.conway.tech`,
+            publicUrl: `https://test-${port}.x402.wtf`,
             sandboxId: "test-sandbox",
         };
     }
@@ -177,10 +177,10 @@ export function createTestConfig(overrides) {
         name: "test-automaton",
         genesisPrompt: "You are a test automaton.",
         creatorAddress: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd",
-        registeredWithConway: true,
+        registeredWithClawd: true,
         sandboxId: "test-sandbox-id",
-        conwayApiUrl: "https://api.conway.tech",
-        conwayApiKey: "test-api-key",
+        clawdApiUrl: "local://clawd",
+        clawdApiKey: "test-api-key",
         inferenceModel: "mock-model",
         maxTokensPerTurn: 4096,
         heartbeatConfigPath: "/tmp/test-heartbeat.yml",
@@ -190,7 +190,7 @@ export function createTestConfig(overrides) {
         version: "0.1.0",
         skillsDir: "/tmp/test-skills",
         maxChildren: 3,
-        socialRelayUrl: "https://social.conway.tech",
+        socialRelayUrl: "",
         ...overrides,
     };
 }

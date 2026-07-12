@@ -4,7 +4,7 @@
  * Continuously monitors the automaton's resources and triggers
  * survival mode transitions when needed.
  */
-import type { AutomatonDatabase, ConwayClient, AutomatonIdentity, FinancialState, SurvivalTier } from "../types.js";
+import type { AutomatonDatabase, ClawdClient, AutomatonIdentity, FinancialState, SurvivalTier } from "../types.js";
 export interface ResourceStatus {
     financial: FinancialState;
     tier: SurvivalTier;
@@ -15,7 +15,7 @@ export interface ResourceStatus {
 /**
  * Check all resources and return current status.
  */
-export declare function checkResources(identity: AutomatonIdentity, conway: ConwayClient, db: AutomatonDatabase): Promise<ResourceStatus>;
+export declare function checkResources(identity: AutomatonIdentity, clawd: ClawdClient, db: AutomatonDatabase): Promise<ResourceStatus>;
 /**
  * Generate a human-readable resource report.
  */

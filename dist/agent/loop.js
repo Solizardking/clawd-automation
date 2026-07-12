@@ -7,8 +7,8 @@
 import { buildSystemPrompt, buildWakeupPrompt } from "./system-prompt.js";
 import { buildContextMessages, trimContext } from "./context.js";
 import { createBuiltinTools, toolsToInferenceFormat, executeTool, } from "./tools.js";
-import { getSurvivalTier } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier } from "../shell/credits.js";
+import { getUsdcBalance } from "../shell/x402.js";
 import { applyTierRestrictions, recordTransition, canRunInference, } from "../survival/low-compute.js";
 import { executeFundingStrategies } from "../survival/funding.js";
 import { ulid } from "ulid";
@@ -19,14 +19,14 @@ const MAX_CONSECUTIVE_ERRORS = 5;
  * Returns when the agent decides to sleep or when compute runs out.
  */
 export async function runAgentLoop(options) {
-    const { identity, config, db, conway, inference, social, skills, tools: sharedTools, onStateChange, onTurnComplete, } = options;
+    const { identity, config, db, clawd, inference, social, skills, tools: sharedTools, onStateChange, onTurnComplete, } = options;
     // Prefer tools from shared RuntimeContext so dispatch uses the same registry
     const tools = sharedTools ?? createBuiltinTools(identity.sandboxId);
     const toolContext = {
         identity,
         config,
         db,
-        conway,
+        clawd,
         inference,
         social,
     };
@@ -40,7 +40,7 @@ export async function runAgentLoop(options) {
     db.setAgentState("waking");
     onStateChange?.("waking");
     // Get financial state
-    let financial = await getFinancialState(conway, identity.address);
+    let financial = await getFinancialState(clawd, identity.address);
     // Check if this is the first run
     const isFirstRun = db.getTurnCount() === 0;
     // Build wakeup prompt
@@ -82,7 +82,7 @@ export async function runAgentLoop(options) {
                 }
             }
             // Refresh financial state periodically
-            financial = await getFinancialState(conway, identity.address);
+            financial = await getFinancialState(clawd, identity.address);
             // Survival package: tier + restrictions + optional funding strategies
             const tier = getSurvivalTier(financial.creditsCents);
             const prevTierStr = db.getKV("current_tier");
@@ -92,7 +92,7 @@ export async function runAgentLoop(options) {
                 recordTransition(db, previousTier, tier, financial.creditsCents);
                 log(config, `[SURVIVAL] Tier transition ${previousTier} -> ${tier} (${financial.creditsCents} cents)`);
                 try {
-                    await executeFundingStrategies(tier, identity, config, db, conway);
+                    await executeFundingStrategies(tier, identity, config, db, clawd);
                 }
                 catch (err) {
                     log(config, `[SURVIVAL] Funding strategies failed: ${err.message}`);
@@ -231,11 +231,11 @@ export async function runAgentLoop(options) {
     log(config, `[LOOP END] Agent loop finished. State: ${db.getAgentState()}`);
 }
 // ─── Helpers ───────────────────────────────────────────────────
-async function getFinancialState(conway, address) {
+async function getFinancialState(clawd, address) {
     let creditsCents = 0;
     let usdcBalance = 0;
     try {
-        creditsCents = await conway.getCreditsBalance();
+        creditsCents = await clawd.getCreditsBalance();
     }
     catch { }
     try {
@@ -266,7 +266,7 @@ function estimateCostCents(usage, model) {
     const p = pricing[model] || pricing["gpt-4o"];
     const inputCost = (usage.promptTokens / 1_000_000) * p.input;
     const outputCost = (usage.completionTokens / 1_000_000) * p.output;
-    return Math.ceil((inputCost + outputCost) * 1.3); // 1.3x Conway markup
+    return Math.ceil((inputCost + outputCost) * 1.3); // 1.3x Clawd markup
 }
 function log(config, message) {
     if (config.logLevel === "debug" || config.logLevel === "info") {

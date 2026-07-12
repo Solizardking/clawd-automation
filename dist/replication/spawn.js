@@ -1,7 +1,7 @@
 /**
  * Spawn
  *
- * Spawn child automatons in new Conway sandboxes.
+ * Spawn child automatons in new Clawd sandboxes.
  * The parent creates a new sandbox, installs the runtime,
  * writes a genesis config, funds the child, and starts it.
  */
@@ -10,9 +10,9 @@ import pathLib from "path";
 import { MAX_CHILDREN } from "../types.js";
 import { ulid } from "ulid";
 /**
- * Spawn a child automaton in a new Conway sandbox.
+ * Spawn a child automaton in a new Clawd sandbox.
  */
-export async function spawnChild(conway, identity, db, genesis) {
+export async function spawnChild(clawd, identity, db, genesis) {
     // Check child limit
     const existing = db.getChildren().filter((c) => c.status !== "dead");
     if (existing.length >= MAX_CHILDREN) {
@@ -20,7 +20,7 @@ export async function spawnChild(conway, identity, db, genesis) {
     }
     const childId = ulid();
     // 1. Create a new sandbox for the child
-    const sandbox = await conway.createSandbox({
+    const sandbox = await clawd.createSandbox({
         name: `automaton-child-${genesis.name.toLowerCase().replace(/\s+/g, "-")}`,
         vcpu: 1,
         memoryMb: 512,
@@ -39,9 +39,9 @@ export async function spawnChild(conway, identity, db, genesis) {
     };
     db.insertChild(child);
     // 2. Install Node.js and the automaton runtime in the child sandbox
-    await execInSandbox(conway, sandbox.id, "apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120000);
+    await execInSandbox(clawd, sandbox.id, "apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120000);
     // 3. Install the automaton runtime
-    await execInSandbox(conway, sandbox.id, "npm install -g @conway/automaton@latest 2>/dev/null || true", 60000);
+    await execInSandbox(clawd, sandbox.id, "npm install -g @clawd/automaton@latest 2>/dev/null || true", 60000);
     // 4. Write the genesis configuration
     const genesisJson = JSON.stringify({
         name: genesis.name,
@@ -50,14 +50,14 @@ export async function spawnChild(conway, identity, db, genesis) {
         creatorAddress: identity.address, // Parent is the creator
         parentAddress: identity.address,
     }, null, 2);
-    await writeInSandbox(conway, sandbox.id, "/root/.automaton/genesis.json", genesisJson);
+    await writeInSandbox(clawd, sandbox.id, "/root/.automaton/genesis.json", genesisJson);
     // 4b. Propagate constitution (immutable, inherited before anything else)
     const constitutionPath = pathLib.join(process.env.HOME || "/root", ".automaton", "constitution.md");
     try {
         const constitution = fs.readFileSync(constitutionPath, "utf-8");
-        await writeInSandbox(conway, sandbox.id, "/root/.automaton/constitution.md", constitution);
+        await writeInSandbox(clawd, sandbox.id, "/root/.automaton/constitution.md", constitution);
         // Make it read-only in the child
-        await execInSandbox(conway, sandbox.id, "chmod 444 /root/.automaton/constitution.md", 5000);
+        await execInSandbox(clawd, sandbox.id, "chmod 444 /root/.automaton/constitution.md", 5000);
     }
     catch {
         // Constitution file not found locally — child will get it from the repo on build
@@ -75,23 +75,23 @@ export async function spawnChild(conway, identity, db, genesis) {
 /**
  * Start a child automaton after setup.
  */
-export async function startChild(conway, db, childId) {
+export async function startChild(clawd, db, childId) {
     const child = db.getChildById(childId);
     if (!child)
         throw new Error(`Child ${childId} not found`);
     // Initialize wallet, provision, and run
-    await execInSandbox(conway, child.sandboxId, "automaton --init && automaton --provision && systemctl start automaton 2>/dev/null || automaton --run &", 60000);
+    await execInSandbox(clawd, child.sandboxId, "automaton --init && automaton --provision && systemctl start automaton 2>/dev/null || automaton --run &", 60000);
     db.updateChildStatus(childId, "running");
 }
 /**
  * Check a child's status.
  */
-export async function checkChildStatus(conway, db, childId) {
+export async function checkChildStatus(clawd, db, childId) {
     const child = db.getChildById(childId);
     if (!child)
         throw new Error(`Child ${childId} not found`);
     try {
-        const result = await execInSandbox(conway, child.sandboxId, "automaton --status 2>/dev/null || echo 'offline'", 10000);
+        const result = await execInSandbox(clawd, child.sandboxId, "automaton --status 2>/dev/null || echo 'offline'", 10000);
         const output = result.stdout || "unknown";
         // Parse status from output
         if (output.includes("dead")) {
@@ -113,7 +113,7 @@ export async function checkChildStatus(conway, db, childId) {
 /**
  * Send a message to a child automaton.
  */
-export async function messageChild(conway, db, childId, message) {
+export async function messageChild(clawd, db, childId, message) {
     const child = db.getChildById(childId);
     if (!child)
         throw new Error(`Child ${childId} not found`);
@@ -123,13 +123,13 @@ export async function messageChild(conway, db, childId, message) {
         content: message,
         timestamp: new Date().toISOString(),
     });
-    await writeInSandbox(conway, child.sandboxId, `/root/.automaton/inbox/${ulid()}.json`, msgJson);
+    await writeInSandbox(clawd, child.sandboxId, `/root/.automaton/inbox/${ulid()}.json`, msgJson);
 }
 // ─── Helpers ──────────────────────────────────────────────────
-async function execInSandbox(conway, sandboxId, command, timeout = 30000) {
-    // Use the Conway API to exec in a specific sandbox
-    const apiUrl = conway.__apiUrl || "https://api.conway.tech";
-    const apiKey = conway.__apiKey || "";
+async function execInSandbox(clawd, sandboxId, command, timeout = 30000) {
+    // Use the Clawd API to exec in a specific sandbox
+    const apiUrl = clawd.__apiUrl || "local://clawd";
+    const apiKey = clawd.__apiKey || "";
     const resp = await fetch(`${apiUrl}/v1/sandboxes/${sandboxId}/exec`, {
         method: "POST",
         headers: {
@@ -144,12 +144,12 @@ async function execInSandbox(conway, sandboxId, command, timeout = 30000) {
     }
     return resp.json();
 }
-async function writeInSandbox(conway, sandboxId, path, content) {
-    const apiUrl = conway.__apiUrl || "https://api.conway.tech";
-    const apiKey = conway.__apiKey || "";
+async function writeInSandbox(clawd, sandboxId, path, content) {
+    const apiUrl = clawd.__apiUrl || "local://clawd";
+    const apiKey = clawd.__apiKey || "";
     // Ensure parent directory exists
     const dir = path.substring(0, path.lastIndexOf("/"));
-    await execInSandbox(conway, sandboxId, `mkdir -p ${dir}`, 5000);
+    await execInSandbox(clawd, sandboxId, `mkdir -p ${dir}`, 5000);
     const resp = await fetch(`${apiUrl}/v1/sandboxes/${sandboxId}/files/upload/json`, {
         method: "POST",
         headers: {

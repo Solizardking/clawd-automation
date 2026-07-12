@@ -8,7 +8,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { createBuiltinTools, executeTool, } from "../agent/tools.js";
 import { createRuntimeContext, toToolContext, toHeartbeatOptions, } from "../runtime/context.js";
-import { MockConwayClient, MockInferenceClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
+import { MockClawdClient, MockInferenceClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
 describe("CJS interop bridge", () => {
     beforeEach(() => {
         clearCjsBridgeCache();
@@ -168,8 +168,8 @@ describe("CJS interop bridge", () => {
         expect(cfg.openRouter).toBeDefined();
         expect(cfg.openRouter?.models).toBeDefined();
         expect(cfg.product?.name).toBeTruthy();
-        // Must not look like AutomatonConfig (no conwayApiUrl on product config root)
-        expect(cfg.conwayApiUrl).toBeUndefined();
+        // Must not look like AutomatonConfig (no clawdApiUrl on product config root)
+        expect(cfg.clawdApiUrl).toBeUndefined();
     });
 });
 describe("Shared runtime context", () => {
@@ -183,26 +183,26 @@ describe("Shared runtime context", () => {
     it("creates one shared bag with tools and same object refs", () => {
         const identity = createTestIdentity();
         const config = createTestConfig();
-        const conway = new MockConwayClient();
+        const clawd = new MockClawdClient();
         const inference = new MockInferenceClient();
         const runtime = createRuntimeContext({
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
             skills: [],
         });
         expect(runtime.identity).toBe(identity);
         expect(runtime.db).toBe(db);
-        expect(runtime.conway).toBe(conway);
+        expect(runtime.clawd).toBe(clawd);
         expect(runtime.inference).toBe(inference);
         expect(runtime.tools.length).toBeGreaterThan(10);
         expect(runtime.tools.some((t) => t.name === "cjs_capability")).toBe(true);
         expect(runtime.tools.some((t) => t.name === "exec")).toBe(true);
         const toolCtx = toToolContext(runtime);
         expect(toolCtx.db).toBe(db);
-        expect(toolCtx.conway).toBe(conway);
+        expect(toolCtx.clawd).toBe(clawd);
         const hb = toHeartbeatOptions(runtime);
         expect(hb.db).toBe(db);
         expect(hb.identity).toBe(identity);
@@ -223,7 +223,7 @@ describe("Cross-package tool dispatch", () => {
             identity,
             config: createTestConfig(),
             db,
-            conway: new MockConwayClient(),
+            clawd: new MockClawdClient(),
             inference: new MockInferenceClient(),
         });
         const ctx = toToolContext(runtime);
@@ -239,7 +239,7 @@ describe("Cross-package tool dispatch", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway: new MockConwayClient(),
+            clawd: new MockClawdClient(),
             inference: new MockInferenceClient(),
         });
         const result = await executeTool("constitution_context", {}, runtime.tools, toToolContext(runtime));
@@ -256,22 +256,22 @@ describe("Cross-package tool dispatch", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway: new MockConwayClient(),
+            clawd: new MockClawdClient(),
             inference: new MockInferenceClient(),
         });
         const result = await executeTool("x402_knowledge", {}, runtime.tools, toToolContext(runtime));
         expect(result.error).toBeUndefined();
         expect(result.result.toLowerCase()).toMatch(/x402|solana|payment/);
     });
-    it("executeTool(check_credits) hits shared conway client", async () => {
-        const conway = new MockConwayClient();
-        conway.creditsCents = 1234;
+    it("executeTool(check_credits) hits shared clawd client", async () => {
+        const clawd = new MockClawdClient();
+        clawd.creditsCents = 1234;
         const tools = createBuiltinTools("test-sandbox-id");
         const ctx = {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway,
+            clawd,
             inference: new MockInferenceClient(),
         };
         const result = await executeTool("check_credits", {}, tools, ctx);
@@ -284,7 +284,7 @@ describe("Cross-package tool dispatch", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway: new MockConwayClient(),
+            clawd: new MockClawdClient(),
             inference: new MockInferenceClient(),
         });
         const result = await executeTool("cjs_capability", { name: "agents", method: "getCouncilStatus" }, runtime.tools, toToolContext(runtime));
@@ -300,7 +300,7 @@ describe("Cross-package tool dispatch", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway: new MockConwayClient(),
+            clawd: new MockClawdClient(),
             inference: new MockInferenceClient(),
         });
         const result = await executeTool("cjs_capability", { name: "providers", method: "models" }, runtime.tools, toToolContext(runtime));

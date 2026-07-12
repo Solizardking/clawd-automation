@@ -5,13 +5,13 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { BUILTIN_TASKS } from "../heartbeat/tasks.js";
-import { MockConwayClient, MockSocialClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
+import { MockClawdClient, MockSocialClient, createTestDb, createTestIdentity, createTestConfig, } from "./mocks.js";
 describe("Heartbeat Tasks", () => {
     let db;
-    let conway;
+    let clawd;
     beforeEach(() => {
         db = createTestDb();
-        conway = new MockConwayClient();
+        clawd = new MockClawdClient();
     });
     afterEach(() => {
         db.close();
@@ -22,7 +22,7 @@ describe("Heartbeat Tasks", () => {
                 identity: createTestIdentity(),
                 config: createTestConfig(),
                 db,
-                conway,
+                clawd,
                 // no social client
             });
             expect(result.shouldWake).toBe(false);
@@ -54,7 +54,7 @@ describe("Heartbeat Tasks", () => {
                 identity: createTestIdentity(),
                 config: createTestConfig(),
                 db,
-                conway,
+                clawd,
                 social,
             });
             expect(result.shouldWake).toBe(true);
@@ -95,7 +95,7 @@ describe("Heartbeat Tasks", () => {
                 identity: createTestIdentity(),
                 config: createTestConfig(),
                 db,
-                conway,
+                clawd,
                 social,
             };
             // First run
@@ -115,7 +115,7 @@ describe("Heartbeat Tasks", () => {
                 identity: createTestIdentity(),
                 config: createTestConfig(),
                 db,
-                conway,
+                clawd,
                 social,
             });
             expect(result.shouldWake).toBe(false);

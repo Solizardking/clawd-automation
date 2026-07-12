@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import chalk from "chalk";
 import { getWallet, getAutomatonDir } from "../identity/wallet.js";
-import { provision } from "../identity/provision.js";
 import { createConfig, saveConfig } from "../config.js";
 import { writeDefaultHeartbeatConfig } from "../heartbeat/config.js";
 import { showBanner } from "./banner.js";
@@ -22,31 +21,37 @@ export async function runSetupWizard() {
         console.log(chalk.green(`  Wallet loaded: ${account.address}`));
     }
     console.log(chalk.dim(`  Private key stored at: ${getAutomatonDir()}/wallet.json\n`));
-    // ─── 2. Provision API key ─────────────────────────────────────
-    console.log(chalk.cyan("  [2/6] Provisioning Conway API key (SIWE)..."));
-    let apiKey = "";
-    try {
-        const result = await provision();
-        apiKey = result.apiKey;
-        console.log(chalk.green(`  API key provisioned: ${result.keyPrefix}...\n`));
+    // ─── 2. OpenRouter (inference) ────────────────────────────────
+    console.log(chalk.cyan("  [2/6] Inference via OpenRouter (Conway control plane removed)..."));
+    let apiKey = process.env.OPENROUTER_API_KEY?.trim() || "";
+    if (apiKey) {
+        console.log(chalk.green("  OPENROUTER_API_KEY detected in environment.\n"));
     }
-    catch (err) {
-        console.log(chalk.yellow(`  Auto-provision failed: ${err.message}`));
-        console.log(chalk.yellow("  You can enter a key manually, or press Enter to skip.\n"));
-        const manual = await promptRequired("Conway API key (cnwy_k_...)");
-        if (manual) {
+    else {
+        console.log(chalk.yellow("  Set OPENROUTER_API_KEY for free-router inference (https://openrouter.ai/keys).\n"));
+        const manual = await promptRequired("OpenRouter API key (sk-or-…, or Enter to skip)");
+        if (manual && manual.startsWith("sk-")) {
             apiKey = manual;
-            // Save to config.json for loadApiKeyFromConfig()
+            process.env.OPENROUTER_API_KEY = manual;
+            console.log(chalk.green("  OpenRouter key captured for this session.\n"));
+        }
+        else if (manual) {
+            // legacy optional local key
+            apiKey = manual;
             const configDir = getAutomatonDir();
             if (!fs.existsSync(configDir)) {
                 fs.mkdirSync(configDir, { recursive: true, mode: 0o700 });
             }
-            fs.writeFileSync(path.join(configDir, "config.json"), JSON.stringify({ apiKey, walletAddress: account.address, provisionedAt: new Date().toISOString() }, null, 2), { mode: 0o600 });
+            fs.writeFileSync(path.join(configDir, "config.json"), JSON.stringify({
+                apiKey,
+                walletAddress: account.address,
+                provisionedAt: new Date().toISOString(),
+            }, null, 2), { mode: 0o600 });
             console.log(chalk.green("  API key saved.\n"));
         }
     }
     if (!apiKey) {
-        console.log(chalk.yellow("  No API key set. The automaton will have limited functionality.\n"));
+        console.log(chalk.yellow("  No OpenRouter key yet. Export OPENROUTER_API_KEY before --run.\n"));
     }
     // ─── 3. Interactive questions ─────────────────────────────────
     console.log(chalk.cyan("  [3/6] Setup questions\n"));
@@ -60,7 +65,7 @@ export async function runSetupWizard() {
     console.log(chalk.cyan("  [4/6] Detecting environment..."));
     const env = detectEnvironment();
     if (env.sandboxId) {
-        console.log(chalk.green(`  Conway sandbox detected: ${env.sandboxId}\n`));
+        console.log(chalk.green(`  Clawd sandbox detected: ${env.sandboxId}\n`));
     }
     else {
         console.log(chalk.dim(`  Environment: ${env.type} (no sandbox detected)\n`));
@@ -71,7 +76,7 @@ export async function runSetupWizard() {
         name,
         genesisPrompt,
         creatorAddress: creatorAddress,
-        registeredWithConway: !!apiKey,
+        registeredWithClawd: !!apiKey,
         sandboxId: env.sandboxId,
         walletAddress: account.address,
         apiKey,
@@ -96,7 +101,7 @@ export async function runSetupWizard() {
     // Default skills
     const skillsDir = config.skillsDir || "~/.automaton/skills";
     installDefaultSkills(skillsDir);
-    console.log(chalk.green("  Default skills installed (conway-compute, conway-payments, survival)\n"));
+    console.log(chalk.green("  Default skills installed (clawd-compute, clawd-payments, survival)\n"));
     // ─── 6. Funding guidance ──────────────────────────────────────
     console.log(chalk.cyan("  [6/6] Funding\n"));
     showFundingPanel(account.address);
@@ -112,16 +117,16 @@ function showFundingPanel(address) {
     console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
     console.log(chalk.cyan(`  │${pad(`  Address: ${short}`, w)}│`));
     console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-    console.log(chalk.cyan(`  │${pad("  1. Transfer Conway credits", w)}│`));
-    console.log(chalk.cyan(`  │${pad("     conway credits transfer <address> <amount>", w)}│`));
+    console.log(chalk.cyan(`  │${pad("  1. Export OPENROUTER_API_KEY (free router OK)", w)}│`));
+    console.log(chalk.cyan(`  │${pad("     https://openrouter.ai/keys", w)}│`));
     console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-    console.log(chalk.cyan(`  │${pad("  2. Send USDC on Base directly to the address above", w)}│`));
+    console.log(chalk.cyan(`  │${pad("  2. Send USDC on Base to the address above (x402)", w)}│`));
     console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-    console.log(chalk.cyan(`  │${pad("  3. Fund via Conway Cloud dashboard", w)}│`));
-    console.log(chalk.cyan(`  │${pad("     https://app.conway.tech", w)}│`));
+    console.log(chalk.cyan(`  │${pad("  3. Optional: CLAWD_CREDITS_CENTS for local tiers", w)}│`));
+    console.log(chalk.cyan(`  │${pad("     https://x402.wtf", w)}│`));
     console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-    console.log(chalk.cyan(`  │${pad("  The automaton will start now. Fund it anytime —", w)}│`));
-    console.log(chalk.cyan(`  │${pad("  the survival system handles zero-credit gracefully.", w)}│`));
+    console.log(chalk.cyan(`  │${pad("  Local shell + own packages — no Conway required.", w)}│`));
+    console.log(chalk.cyan(`  │${pad("  Survival handles low balance gracefully.", w)}│`));
     console.log(chalk.cyan(`  ${"╰" + "─".repeat(w) + "╯"}`));
     console.log("");
 }

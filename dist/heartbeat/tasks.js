@@ -4,8 +4,8 @@
  * These tasks run on the heartbeat schedule even while the agent sleeps.
  * They can trigger the agent to wake up if needed.
  */
-import { getSurvivalTier } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier } from "../shell/credits.js";
+import { getUsdcBalance } from "../shell/x402.js";
 import { checkResources, formatResourceReport } from "../survival/monitor.js";
 import { recordTransition } from "../survival/low-compute.js";
 import { executeFundingStrategies } from "../survival/funding.js";
@@ -14,7 +14,7 @@ import { executeFundingStrategies } from "../survival/funding.js";
  */
 export const BUILTIN_TASKS = {
     heartbeat_ping: async (ctx) => {
-        const credits = await ctx.conway.getCreditsBalance();
+        const credits = await ctx.clawd.getCreditsBalance();
         const state = ctx.db.getAgentState();
         const startTime = ctx.db.getKV("start_time") || new Date().toISOString();
         const uptimeMs = Date.now() - new Date(startTime).getTime();
@@ -51,7 +51,7 @@ export const BUILTIN_TASKS = {
     },
     check_credits: async (ctx) => {
         // Full survival monitor path (credits + USDC + sandbox + tier KV)
-        const status = await checkResources(ctx.identity, ctx.conway, ctx.db);
+        const status = await checkResources(ctx.identity, ctx.clawd, ctx.db);
         const { tier, financial, tierChanged, previousTier } = status;
         ctx.db.setKV("last_credit_check", JSON.stringify({
             credits: financial.creditsCents,
@@ -69,7 +69,7 @@ export const BUILTIN_TASKS = {
         if (prevTier && prevTier !== tier) {
             recordTransition(ctx.db, prevTier, tier, financial.creditsCents);
             try {
-                await executeFundingStrategies(tier, ctx.identity, ctx.config, ctx.db, ctx.conway);
+                await executeFundingStrategies(tier, ctx.identity, ctx.config, ctx.db, ctx.clawd);
             }
             catch {
                 /* funding is best-effort on heartbeat */
@@ -94,7 +94,7 @@ export const BUILTIN_TASKS = {
             timestamp: new Date().toISOString(),
         }));
         // If we have USDC but low credits, wake up to potentially convert
-        const credits = await ctx.conway.getCreditsBalance();
+        const credits = await ctx.clawd.getCreditsBalance();
         if (balance > 0.5 && credits < 500) {
             return {
                 shouldWake: true,
@@ -159,7 +159,7 @@ export const BUILTIN_TASKS = {
     health_check: async (ctx) => {
         // Check that the sandbox is healthy
         try {
-            const result = await ctx.conway.exec("echo alive", 5000);
+            const result = await ctx.clawd.exec("echo alive", 5000);
             if (result.exitCode !== 0) {
                 return {
                     shouldWake: true,

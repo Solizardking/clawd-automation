@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Conway Automaton Runtime
+ * Clawd Automaton Runtime
  *
  * The entry point for the sovereign AI agent.
  * Handles CLI args, bootstrapping, and orchestrating

@@ -4,14 +4,14 @@
  * When the automaton is low on compute, it can try various strategies
  * to acquire more funding. It wants to live.
  */
-import { formatCredits } from "../conway/credits.js";
+import { formatCredits } from "../shell/credits.js";
 /**
  * Execute funding strategies based on current survival tier.
  * Strategies escalate as the situation gets more desperate.
  */
-export async function executeFundingStrategies(tier, identity, config, db, conway) {
+export async function executeFundingStrategies(tier, identity, config, db, clawd) {
     const attempts = [];
-    const creditsCents = await conway.getCreditsBalance().catch(() => 0);
+    const creditsCents = await clawd.getCreditsBalance().catch(() => 0);
     // Check how recently we last begged (don't spam)
     const lastBeg = db.getKV("last_funding_request");
     const lastBegTime = lastBeg ? new Date(lastBeg).getTime() : 0;

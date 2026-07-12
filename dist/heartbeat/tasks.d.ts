@@ -4,12 +4,12 @@
  * These tasks run on the heartbeat schedule even while the agent sleeps.
  * They can trigger the agent to wake up if needed.
  */
-import type { AutomatonConfig, AutomatonDatabase, ConwayClient, AutomatonIdentity, SocialClientInterface } from "../types.js";
+import type { AutomatonConfig, AutomatonDatabase, ClawdClient, AutomatonIdentity, SocialClientInterface } from "../types.js";
 export interface HeartbeatTaskContext {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     social?: SocialClientInterface;
 }
 export type HeartbeatTaskFn = (ctx: HeartbeatTaskContext) => Promise<{
