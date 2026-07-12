@@ -119,11 +119,11 @@ export function resolveOpenRouterEnv(
     siteUrl:
       env.OPENROUTER_SITE_URL?.trim() ||
       env.OPENROUTER_HTTP_REFERER?.trim() ||
-      "https://conway.tech",
+      "https://x402.wtf",
     appName:
       env.OPENROUTER_APP_NAME?.trim() ||
       env.OPENROUTER_TITLE?.trim() ||
-      "Conway Automaton",
+      "Clawd Automaton",
     providerSort,
     preferFree,
   };
@@ -148,8 +148,8 @@ export function createOpenRouterInferenceClient(
     options.lowComputeModel || options.defaultModel || OPENROUTER_FREE_ROUTER;
   let currentModel = defaultModel;
   let maxTokens = options.maxTokens ?? 4096;
-  const siteUrl = options.siteUrl || "https://conway.tech";
-  const appName = options.appName || "Conway Automaton";
+  const siteUrl = options.siteUrl || "https://x402.wtf";
+  const appName = options.appName || "Clawd Automaton";
   const providerPrefs = options.provider;
 
   const chat = async (

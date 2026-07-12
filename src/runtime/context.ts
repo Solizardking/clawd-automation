@@ -10,7 +10,7 @@ import type {
   AutomatonIdentity,
   AutomatonConfig,
   AutomatonDatabase,
-  ConwayClient,
+  ClawdClient,
   InferenceClient,
   SocialClientInterface,
   Skill,
@@ -23,7 +23,7 @@ export interface RuntimeContext {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  clawd: ClawdClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
   skills: Skill[];
@@ -34,7 +34,7 @@ export interface RuntimeContextInput {
   identity: AutomatonIdentity;
   config: AutomatonConfig;
   db: AutomatonDatabase;
-  conway: ConwayClient;
+  clawd: ClawdClient;
   inference: InferenceClient;
   social?: SocialClientInterface;
   skills?: Skill[];
@@ -51,7 +51,7 @@ export function createRuntimeContext(input: RuntimeContextInput): RuntimeContext
     identity: input.identity,
     config: input.config,
     db: input.db,
-    conway: input.conway,
+    clawd: input.clawd,
     inference: input.inference,
     social: input.social,
     skills: input.skills ?? [],
@@ -68,7 +68,7 @@ export function toToolContext(runtime: RuntimeContext): ToolContext {
     identity: runtime.identity,
     config: runtime.config,
     db: runtime.db,
-    conway: runtime.conway,
+    clawd: runtime.clawd,
     inference: runtime.inference,
     social: runtime.social,
   };
@@ -82,7 +82,7 @@ export function toHeartbeatOptions(runtime: RuntimeContext) {
     identity: runtime.identity,
     config: runtime.config,
     db: runtime.db,
-    conway: runtime.conway,
+    clawd: runtime.clawd,
     social: runtime.social,
   };
 }

@@ -9,10 +9,10 @@ import type {
   AutomatonConfig,
   AutomatonDatabase,
   AutomatonIdentity,
-  ConwayClient,
+  ClawdClient,
   SurvivalTier,
 } from "../types.js";
-import { formatCredits } from "../conway/credits.js";
+import { formatCredits } from "../shell/credits.js";
 
 export interface FundingAttempt {
   strategy: string;
@@ -30,10 +30,10 @@ export async function executeFundingStrategies(
   identity: AutomatonIdentity,
   config: AutomatonConfig,
   db: AutomatonDatabase,
-  conway: ConwayClient,
+  clawd: ClawdClient,
 ): Promise<FundingAttempt[]> {
   const attempts: FundingAttempt[] = [];
-  const creditsCents = await conway.getCreditsBalance().catch(() => 0);
+  const creditsCents = await clawd.getCreditsBalance().catch(() => 0);
 
   // Check how recently we last begged (don't spam)
   const lastBeg = db.getKV("last_funding_request");

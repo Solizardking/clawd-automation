@@ -8,7 +8,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runAgentLoop } from "../agent/loop.js";
 import {
   MockInferenceClient,
-  MockConwayClient,
+  MockClawdClient,
   MockSocialClient,
   createTestDb,
   createTestIdentity,
@@ -20,13 +20,13 @@ import type { AutomatonDatabase, AgentTurn } from "../types.js";
 
 describe("Agent Loop", () => {
   let db: AutomatonDatabase;
-  let conway: MockConwayClient;
+  let clawd: MockClawdClient;
   let identity: ReturnType<typeof createTestIdentity>;
   let config: ReturnType<typeof createTestConfig>;
 
   beforeEach(() => {
     db = createTestDb();
-    conway = new MockConwayClient();
+    clawd = new MockClawdClient();
     identity = createTestIdentity();
     config = createTestConfig();
   });
@@ -49,7 +49,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
       onTurnComplete: (turn) => turns.push(turn),
     });
@@ -63,9 +63,9 @@ describe("Agent Loop", () => {
     expect(execTurn!.toolCalls[0].name).toBe("exec");
     expect(execTurn!.toolCalls[0].error).toBeUndefined();
 
-    // Verify conway.exec was called
-    expect(conway.execCalls.length).toBeGreaterThanOrEqual(1);
-    expect(conway.execCalls[0].command).toBe("echo hello");
+    // Verify clawd.exec was called
+    expect(clawd.execCalls.length).toBeGreaterThanOrEqual(1);
+    expect(clawd.execCalls[0].command).toBe("echo hello");
   });
 
   it("forbidden patterns blocked", async () => {
@@ -82,7 +82,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
       onTurnComplete: (turn) => turns.push(turn),
     });
@@ -95,12 +95,12 @@ describe("Agent Loop", () => {
     const execCall = execTurn!.toolCalls.find((tc) => tc.name === "exec");
     expect(execCall!.result).toContain("Blocked");
 
-    // conway.exec should NOT have been called
-    expect(conway.execCalls.length).toBe(0);
+    // clawd.exec should NOT have been called
+    expect(clawd.execCalls.length).toBe(0);
   });
 
   it("low credits forces low-compute mode", async () => {
-    conway.creditsCents = 50; // Below $1 threshold -> critical
+    clawd.creditsCents = 50; // Below $1 threshold -> critical
 
     const inference = new MockInferenceClient([
       noToolResponse("Low on credits."),
@@ -110,7 +110,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
     });
 
@@ -128,7 +128,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
     });
 
@@ -145,7 +145,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
     });
 
@@ -179,7 +179,7 @@ describe("Agent Loop", () => {
       identity,
       config,
       db,
-      conway,
+      clawd,
       inference,
       onTurnComplete: (turn) => turns.push(turn),
     });

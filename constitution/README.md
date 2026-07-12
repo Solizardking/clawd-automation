@@ -1,6 +1,6 @@
 # Clawd Constitution Bundle
 
-Canonical agent harness documents for the Conway Automaton / X402Agent runtime.
+Canonical agent harness documents for the Clawd Automaton / X402Agent runtime.
 Loaded at runtime from this directory by `src/services/constitution.js`.
 
 | File | Role | Authority |

@@ -1,37 +1,29 @@
 /**
  * Inference provider resolution for the primary automaton runtime.
  *
- * Priority (INFERENCE_PROVIDER=auto, default):
- * 1. OpenRouter when OPENROUTER_API_KEY is set (free router by default)
- * 2. Conway /v1/chat/completions with sandbox API key
- *
- * Set INFERENCE_PROVIDER=openrouter|conway to force a backend.
+ * OpenRouter is the only inference backend (free router by default).
+ * Set INFERENCE_PROVIDER=openrouter|auto (both use OpenRouter when keyed).
  */
 
 import type { InferenceClient } from "../types.js";
-import { createInferenceClient } from "../conway/inference.js";
 import {
   createOpenRouterFromEnv,
   isOpenRouterConfigured,
   resolveOpenRouterEnv,
 } from "./openrouter.js";
 
-export type InferenceBackend = "openrouter" | "conway" | "auto";
+export type InferenceBackend = "openrouter" | "auto";
 
 export interface ResolveInferenceOptions {
-  /** Conway API base URL (used when backend is conway). */
-  conwayApiUrl: string;
-  /** Conway API key. */
-  conwayApiKey: string;
-  /** Configured model for Conway path. */
-  conwayModel: string;
+  /** Preferred model label (OpenRouter model id). */
+  model?: string;
   maxTokens: number;
   env?: NodeJS.ProcessEnv;
 }
 
 export interface ResolvedInference {
   client: InferenceClient;
-  backend: "openrouter" | "conway";
+  backend: "openrouter";
   model: string;
   detail: string;
 }
@@ -40,60 +32,44 @@ export function resolveInferenceBackend(
   env: NodeJS.ProcessEnv = process.env,
 ): InferenceBackend {
   const raw = (env.INFERENCE_PROVIDER || "auto").trim().toLowerCase();
-  if (raw === "openrouter" || raw === "conway" || raw === "auto") {
+  if (raw === "openrouter" || raw === "auto") {
     return raw;
+  }
+  // Legacy aliases (conway/clawd paid control-plane inference removed)
+  if (raw === "conway" || raw === "clawd") {
+    return "openrouter";
   }
   return "auto";
 }
 
 /**
- * Create the inference client for --run based on env + Conway credentials.
+ * Create the OpenRouter inference client for --run.
  */
 export function resolveInferenceClient(
   options: ResolveInferenceOptions,
 ): ResolvedInference {
   const env = options.env ?? process.env;
-  const mode = resolveInferenceBackend(env);
   const orConfigured = isOpenRouterConfigured(env);
   const orEnv = resolveOpenRouterEnv(env);
 
-  const useOpenRouter =
-    mode === "openrouter" || (mode === "auto" && orConfigured);
-
-  if (useOpenRouter) {
-    if (!orConfigured) {
-      throw new Error(
-        "INFERENCE_PROVIDER=openrouter but OPENROUTER_API_KEY is not set",
-      );
-    }
-    const client = createOpenRouterFromEnv(env, {
-      maxTokens: options.maxTokens,
-    });
-    if (!client) {
-      throw new Error("Failed to create OpenRouter inference client");
-    }
-    return {
-      client,
-      backend: "openrouter",
-      model: client.getDefaultModel(),
-      detail: `OpenRouter model=${client.getDefaultModel()} free=${orEnv.lowComputeModel} preferFree=${orEnv.preferFree}`,
-    };
+  if (!orConfigured) {
+    throw new Error(
+      "OPENROUTER_API_KEY is required. Clawd Automaton uses OpenRouter only (no Conway control plane).",
+    );
   }
 
-  const client = createInferenceClient({
-    apiUrl: options.conwayApiUrl,
-    apiKey: options.conwayApiKey,
-    defaultModel: options.conwayModel,
+  const client = createOpenRouterFromEnv(env, {
     maxTokens: options.maxTokens,
-    lowComputeModel: orEnv.lowComputeModel.includes("free")
-      ? undefined
-      : "gpt-4o-mini",
+    defaultModel: options.model,
   });
+  if (!client) {
+    throw new Error("Failed to create OpenRouter inference client");
+  }
 
   return {
     client,
-    backend: "conway",
+    backend: "openrouter",
     model: client.getDefaultModel(),
-    detail: `Conway model=${client.getDefaultModel()} api=${options.conwayApiUrl}`,
+    detail: `OpenRouter model=${client.getDefaultModel()} free=${orEnv.lowComputeModel} preferFree=${orEnv.preferFree}`,
   };
 }

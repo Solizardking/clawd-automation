@@ -95,8 +95,8 @@ describe("createOpenRouterInferenceClient", () => {
     const client = createOpenRouterInferenceClient({
       apiKey: "sk-or-v1-test",
       defaultModel: OPENROUTER_FREE_ROUTER,
-      siteUrl: "https://conway.tech",
-      appName: "Conway Automaton",
+      siteUrl: "https://x402.wtf",
+      appName: "Clawd Automaton",
       provider: { sort: "price" },
     });
 
@@ -114,8 +114,8 @@ describe("createOpenRouterInferenceClient", () => {
     expect(url).toBe("https://openrouter.ai/api/v1/chat/completions");
     expect(init.method).toBe("POST");
     expect(init.headers.Authorization).toBe("Bearer sk-or-v1-test");
-    expect(init.headers["HTTP-Referer"]).toBe("https://conway.tech");
-    expect(init.headers["X-Title"]).toBe("Conway Automaton");
+    expect(init.headers["HTTP-Referer"]).toBe("https://x402.wtf");
+    expect(init.headers["X-Title"]).toBe("Clawd Automaton");
 
     const body = JSON.parse(init.body);
     expect(body.model).toBe("openrouter/free");
@@ -201,11 +201,9 @@ describe("createOpenRouterInferenceClient", () => {
 });
 
 describe("resolveInferenceClient", () => {
-  it("selects openrouter when key present in auto mode", () => {
+  it("uses openrouter when key present", () => {
     const resolved = resolveInferenceClient({
-      conwayApiUrl: "https://api.conway.tech",
-      conwayApiKey: "conway-key",
-      conwayModel: "gpt-4o",
+      model: "gpt-4o",
       maxTokens: 2048,
       env: {
         OPENROUTER_API_KEY: "sk-or-test",
@@ -218,39 +216,30 @@ describe("resolveInferenceClient", () => {
     expect(resolved.detail).toMatch(/OpenRouter/);
   });
 
-  it("selects conway when no openrouter key", () => {
-    const resolved = resolveInferenceClient({
-      conwayApiUrl: "https://api.conway.tech",
-      conwayApiKey: "conway-key",
-      conwayModel: "gpt-4o",
-      maxTokens: 2048,
-      env: { INFERENCE_PROVIDER: "auto" } as any,
-    });
-    expect(resolved.backend).toBe("conway");
-    expect(resolved.model).toBe("gpt-4o");
+  it("throws when openrouter key missing", () => {
+    expect(() =>
+      resolveInferenceClient({
+        maxTokens: 2048,
+        env: { INFERENCE_PROVIDER: "auto" } as any,
+      }),
+    ).toThrow(/OPENROUTER_API_KEY/);
   });
 
-  it("forces conway even if openrouter key set", () => {
+  it("maps legacy clawd/conway provider to openrouter", () => {
     const resolved = resolveInferenceClient({
-      conwayApiUrl: "https://api.conway.tech",
-      conwayApiKey: "conway-key",
-      conwayModel: "gpt-4o-mini",
       maxTokens: 1024,
       env: {
         OPENROUTER_API_KEY: "sk-or",
-        INFERENCE_PROVIDER: "conway",
+        OPENROUTER_FREE_MODEL: "openrouter/free",
+        INFERENCE_PROVIDER: "clawd",
       } as any,
     });
-    expect(resolved.backend).toBe("conway");
-    expect(resolved.model).toBe("gpt-4o-mini");
+    expect(resolved.backend).toBe("openrouter");
   });
 
   it("throws when openrouter forced without key", () => {
     expect(() =>
       resolveInferenceClient({
-        conwayApiUrl: "https://api.conway.tech",
-        conwayApiKey: "c",
-        conwayModel: "gpt-4o",
         maxTokens: 100,
         env: { INFERENCE_PROVIDER: "openrouter" } as any,
       }),

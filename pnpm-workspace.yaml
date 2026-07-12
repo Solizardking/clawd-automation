@@ -1,2 +1,9 @@
 packages:
-  - "packages/*"
+  - "."
+  - "src/agents"
+  - "src/cli"
+  - "src/config"
+  - "src/providers"
+  - "src/services"
+  - "src/knowledge"
+  - "data/hedge"

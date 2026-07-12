@@ -1,7 +1,7 @@
 {
-  "name": "@conway/automaton",
+  "name": "@clawd/automaton",
   "version": "0.1.0",
-  "description": "Conway Automaton - Sovereign AI Agent Runtime",
+  "description": "Clawd Automaton \u2014 sovereign AI agent runtime (local shell + OpenRouter + own packages)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,26 +21,27 @@
   },
   "bin": {
     "automaton": "dist/index.js",
-    "conway-automaton": "dist/index.js"
+    "clawd-automaton": "dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Conway-Research/automaton.git"
+    "url": "https://github.com/Solizardking/clawd-automation.git"
   },
-  "homepage": "https://conway.tech",
+  "homepage": "https://x402.wtf",
   "keywords": [
     "autonomous-agent",
     "sovereign-ai",
     "web4",
-    "conway",
+    "clawd",
     "self-replicating"
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc && pnpm -r build",
+    "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
-    "clean": "rm -rf dist && pnpm -r clean"
+    "clean": "rm -rf dist",
+    "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\""
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",
