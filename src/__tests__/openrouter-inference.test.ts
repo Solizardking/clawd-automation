@@ -203,7 +203,6 @@ describe("createOpenRouterInferenceClient", () => {
 describe("resolveInferenceClient", () => {
   it("uses openrouter when key present", () => {
     const resolved = resolveInferenceClient({
-      model: "gpt-4o",
       maxTokens: 2048,
       env: {
         OPENROUTER_API_KEY: "sk-or-test",

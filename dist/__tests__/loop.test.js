@@ -5,15 +5,15 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runAgentLoop } from "../agent/loop.js";
-import { MockInferenceClient, MockConwayClient, createTestDb, createTestIdentity, createTestConfig, toolCallResponse, noToolResponse, } from "./mocks.js";
+import { MockInferenceClient, MockClawdClient, createTestDb, createTestIdentity, createTestConfig, toolCallResponse, noToolResponse, } from "./mocks.js";
 describe("Agent Loop", () => {
     let db;
-    let conway;
+    let clawd;
     let identity;
     let config;
     beforeEach(() => {
         db = createTestDb();
-        conway = new MockConwayClient();
+        clawd = new MockClawdClient();
         identity = createTestIdentity();
         config = createTestConfig();
     });
@@ -32,7 +32,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
             onTurnComplete: (turn) => turns.push(turn),
         });
@@ -42,9 +42,9 @@ describe("Agent Loop", () => {
         expect(execTurn).toBeDefined();
         expect(execTurn.toolCalls[0].name).toBe("exec");
         expect(execTurn.toolCalls[0].error).toBeUndefined();
-        // Verify conway.exec was called
-        expect(conway.execCalls.length).toBeGreaterThanOrEqual(1);
-        expect(conway.execCalls[0].command).toBe("echo hello");
+        // Verify clawd.exec was called
+        expect(clawd.execCalls.length).toBeGreaterThanOrEqual(1);
+        expect(clawd.execCalls[0].command).toBe("echo hello");
     });
     it("forbidden patterns blocked", async () => {
         const inference = new MockInferenceClient([
@@ -58,7 +58,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
             onTurnComplete: (turn) => turns.push(turn),
         });
@@ -67,11 +67,11 @@ describe("Agent Loop", () => {
         expect(execTurn).toBeDefined();
         const execCall = execTurn.toolCalls.find((tc) => tc.name === "exec");
         expect(execCall.result).toContain("Blocked");
-        // conway.exec should NOT have been called
-        expect(conway.execCalls.length).toBe(0);
+        // clawd.exec should NOT have been called
+        expect(clawd.execCalls.length).toBe(0);
     });
     it("low credits forces low-compute mode", async () => {
-        conway.creditsCents = 50; // Below $1 threshold -> critical
+        clawd.creditsCents = 50; // Below $1 threshold -> critical
         const inference = new MockInferenceClient([
             noToolResponse("Low on credits."),
         ]);
@@ -79,7 +79,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
         });
         expect(inference.lowComputeMode).toBe(true);
@@ -94,7 +94,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
         });
         expect(db.getAgentState()).toBe("sleeping");
@@ -108,7 +108,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
         });
         expect(db.getAgentState()).toBe("sleeping");
@@ -137,7 +137,7 @@ describe("Agent Loop", () => {
             identity,
             config,
             db,
-            conway,
+            clawd,
             inference,
             onTurnComplete: (turn) => turns.push(turn),
         });

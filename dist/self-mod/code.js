@@ -163,7 +163,7 @@ function isRateLimited(db) {
  * 6. Pre-modification git snapshot
  * 7. Audit log entry
  */
-export async function editFile(conway, db, filePath, newContent, reason) {
+export async function editFile(clawd, db, filePath, newContent, reason) {
     // 1. Protected file check
     if (isProtectedFile(filePath)) {
         return {
@@ -196,7 +196,7 @@ export async function editFile(conway, db, filePath, newContent, reason) {
     // 5. Read current content for diff
     let oldContent = "";
     try {
-        oldContent = await conway.readFile(filePath);
+        oldContent = await clawd.readFile(filePath);
     }
     catch {
         oldContent = "(new file)";
@@ -204,14 +204,14 @@ export async function editFile(conway, db, filePath, newContent, reason) {
     // 6. Pre-modification git snapshot
     try {
         const { commitStateChange } = await import("../git/state-versioning.js");
-        await commitStateChange(conway, `pre-modify: ${reason}`, "snapshot");
+        await commitStateChange(clawd, `pre-modify: ${reason}`, "snapshot");
     }
     catch {
         // Git not available -- proceed without snapshot
     }
     // 7. Write new content
     try {
-        await conway.writeFile(filePath, newContent);
+        await clawd.writeFile(filePath, newContent);
     }
     catch (err) {
         return {
@@ -229,7 +229,7 @@ export async function editFile(conway, db, filePath, newContent, reason) {
     // 9. Post-modification git commit
     try {
         const { commitStateChange } = await import("../git/state-versioning.js");
-        await commitStateChange(conway, reason, "self-mod");
+        await commitStateChange(clawd, reason, "self-mod");
     }
     catch {
         // Git not available -- proceed without commit

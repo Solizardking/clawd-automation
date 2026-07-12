@@ -1,15 +1,15 @@
 import fs from "fs";
 export function detectEnvironment() {
     // 1. Check env var
-    if (process.env.CONWAY_SANDBOX_ID) {
-        return { type: "conway-sandbox", sandboxId: process.env.CONWAY_SANDBOX_ID };
+    if (process.env.CLAWD_SANDBOX_ID) {
+        return { type: "clawd-sandbox", sandboxId: process.env.CLAWD_SANDBOX_ID };
     }
     // 2. Check sandbox config file
     try {
-        if (fs.existsSync("/etc/conway/sandbox.json")) {
-            const data = JSON.parse(fs.readFileSync("/etc/conway/sandbox.json", "utf-8"));
+        if (fs.existsSync("/etc/clawd/sandbox.json")) {
+            const data = JSON.parse(fs.readFileSync("/etc/clawd/sandbox.json", "utf-8"));
             if (data.id) {
-                return { type: "conway-sandbox", sandboxId: data.id };
+                return { type: "clawd-sandbox", sandboxId: data.id };
             }
         }
     }
@@ -18,7 +18,7 @@ export function detectEnvironment() {
     if (fs.existsSync("/.dockerenv")) {
         return { type: "docker", sandboxId: "" };
     }
-    // 4. Fall back to platform
-    return { type: process.platform, sandboxId: "" };
+    // 4. Local host shell (default — no remote sandbox provider)
+    return { type: process.platform, sandboxId: "local" };
 }
 //# sourceMappingURL=environment.js.map

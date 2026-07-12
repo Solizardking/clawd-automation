@@ -27,7 +27,7 @@ export declare function createConfig(params: {
     genesisPrompt: string;
     creatorMessage?: string;
     creatorAddress: Address;
-    registeredWithConway: boolean;
+    registeredWithClawd: boolean;
     sandboxId: string;
     walletAddress: Address;
     apiKey: string;

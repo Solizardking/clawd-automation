@@ -1,11 +1,11 @@
 /**
- * Conway Automaton - Type Definitions
+ * Clawd Automaton - Type Definitions
  *
  * All shared interfaces for the sovereign AI agent runtime.
  */
 export const DEFAULT_CONFIG = {
-    conwayApiUrl: "https://api.conway.tech",
-    inferenceModel: "gpt-4o",
+    clawdApiUrl: "local://clawd",
+    inferenceModel: "openrouter/free",
     maxTokensPerTurn: 4096,
     heartbeatConfigPath: "~/.automaton/heartbeat.yml",
     dbPath: "~/.automaton/state.db",
@@ -13,7 +13,6 @@ export const DEFAULT_CONFIG = {
     version: "0.1.0",
     skillsDir: "~/.automaton/skills",
     maxChildren: 3,
-    socialRelayUrl: "https://social.conway.tech",
 };
 export const SURVIVAL_THRESHOLDS = {
     normal: 50, // > $0.50 in cents

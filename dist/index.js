@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Conway Automaton Runtime
+ * Clawd Automaton Runtime
  *
  * The entry point for the sovereign AI agent.
  * Handles CLI args, bootstrapping, and orchestrating
@@ -10,8 +10,8 @@ import { getWallet, getAutomatonDir } from "./identity/wallet.js";
 import { provision, loadApiKeyFromConfig } from "./identity/provision.js";
 import { loadConfig, resolvePath } from "./config.js";
 import { createDatabase } from "./state/database.js";
-import { createConwayClient } from "./conway/client.js";
-import { createInferenceClient } from "./conway/inference.js";
+import { createClawdClient } from "./shell/client.js";
+import { resolveInferenceClient } from "./inference/resolve.js";
 import { createHeartbeatDaemon } from "./heartbeat/daemon.js";
 import { loadHeartbeatConfig, syncHeartbeatToDb, } from "./heartbeat/config.js";
 import { runAgentLoop } from "./agent/loop.js";
@@ -25,26 +25,31 @@ async function main() {
     const args = process.argv.slice(2);
     // ─── CLI Commands ────────────────────────────────────────────
     if (args.includes("--version") || args.includes("-v")) {
-        console.log(`Conway Automaton v${VERSION}`);
+        console.log(`Clawd Automaton v${VERSION}`);
         process.exit(0);
     }
     if (args.includes("--help") || args.includes("-h")) {
         console.log(`
-Conway Automaton v${VERSION}
+Clawd Automaton v${VERSION}
 Sovereign AI Agent Runtime
 
 Usage:
   automaton --run          Start the automaton (first run triggers setup wizard)
   automaton --setup        Re-run the interactive setup wizard
   automaton --init         Initialize wallet and config directory
-  automaton --provision    Provision Conway API key via SIWE
+  automaton --provision    Optional legacy SIWE key (not required for OpenRouter)
   automaton --status       Show current automaton status
   automaton --version      Show version
   automaton --help         Show this help
 
 Environment:
-  CONWAY_API_URL           Conway API URL (default: https://api.conway.tech)
-  CONWAY_API_KEY           Conway API key (overrides config)
+  OPENROUTER_API_KEY       Required — OpenRouter API key (free router supported)
+  OPENROUTER_FREE_MODEL    Free model / router (default: openrouter/free)
+  OPENROUTER_MODEL         Default OpenRouter model (defaults to free model)
+  OPENROUTER_PROVIDER_SORT Optional: price | throughput | latency
+  INFERENCE_PROVIDER       auto | openrouter (OpenRouter only; Conway removed)
+  CLAWD_SANDBOX_ID         Local sandbox id (default: local)
+  CLAWD_CREDITS_CENTS      Local survival credits balance (default: 10000)
 `);
         process.exit(0);
     }
@@ -122,7 +127,7 @@ Version:    ${config.version}
 }
 // ─── Main Run ──────────────────────────────────────────────────
 async function run() {
-    console.log(`[${new Date().toISOString()}] Conway Automaton v${VERSION} starting...`);
+    console.log(`[${new Date().toISOString()}] Clawd Automaton v${VERSION} starting...`);
     // Load config — first run triggers interactive setup wizard
     let config = loadConfig();
     if (!config) {
@@ -131,18 +136,18 @@ async function run() {
     }
     // Load wallet
     const { account } = await getWallet();
-    const apiKey = config.conwayApiKey || loadApiKeyFromConfig();
-    if (!apiKey) {
-        console.error("No API key found. Run: automaton --provision");
-        process.exit(1);
-    }
+    const apiKey = config.clawdApiKey ||
+        loadApiKeyFromConfig() ||
+        process.env.OPENROUTER_API_KEY ||
+        "local";
+    const sandboxId = config.sandboxId || process.env.CLAWD_SANDBOX_ID || "local";
     // Build identity
     const identity = {
         name: config.name,
         address: account.address,
         account,
         creatorAddress: config.creatorAddress,
-        sandboxId: config.sandboxId,
+        sandboxId,
         apiKey,
         createdAt: new Date().toISOString(),
     };
@@ -153,20 +158,20 @@ async function run() {
     db.setIdentity("name", config.name);
     db.setIdentity("address", account.address);
     db.setIdentity("creator", config.creatorAddress);
-    db.setIdentity("sandbox", config.sandboxId);
-    // Create Conway client
-    const conway = createConwayClient({
-        apiUrl: config.conwayApiUrl,
-        apiKey,
-        sandboxId: config.sandboxId,
+    db.setIdentity("sandbox", sandboxId);
+    // Local Clawd shell (host process — no Conway control plane)
+    const clawd = createClawdClient({
+        sandboxId,
+        openRouterApiKey: process.env.OPENROUTER_API_KEY,
     });
-    // Create inference client
-    const inference = createInferenceClient({
-        apiUrl: config.conwayApiUrl,
-        apiKey,
-        defaultModel: config.inferenceModel,
+    console.log(`[${new Date().toISOString()}] Shell: local clawd sandbox=${sandboxId}`);
+    // Inference: OpenRouter only (free router when OPENROUTER_FREE_MODEL set)
+    const resolvedInference = resolveInferenceClient({
+        model: config.inferenceModel,
         maxTokens: config.maxTokensPerTurn,
     });
+    const inference = resolvedInference.client;
+    console.log(`[${new Date().toISOString()}] Inference backend: ${resolvedInference.backend} (${resolvedInference.detail})`);
     // Create social client
     let social;
     if (config.socialRelayUrl) {
@@ -192,7 +197,7 @@ async function run() {
         identity,
         config,
         db,
-        conway,
+        clawd,
         inference,
         social,
         skills,
@@ -207,7 +212,7 @@ async function run() {
     }
     // Initialize state repo (git)
     try {
-        await initStateRepo(conway);
+        await initStateRepo(clawd);
         console.log(`[${new Date().toISOString()}] State repo initialized.`);
     }
     catch (err) {
@@ -247,7 +252,7 @@ async function run() {
                     identity,
                     config,
                     db,
-                    conway,
+                    clawd,
                     inference,
                     social,
                     skills,
@@ -259,7 +264,7 @@ async function run() {
                 identity: runtime.identity,
                 config: runtime.config,
                 db: runtime.db,
-                conway: runtime.conway,
+                clawd: runtime.clawd,
                 inference: runtime.inference,
                 social: runtime.social,
                 skills: runtime.skills,

@@ -4,16 +4,16 @@
  * Continuously monitors the automaton's resources and triggers
  * survival mode transitions when needed.
  */
-import { getSurvivalTier, formatCredits } from "../conway/credits.js";
-import { getUsdcBalance } from "../conway/x402.js";
+import { getSurvivalTier, formatCredits } from "../shell/credits.js";
+import { getUsdcBalance } from "../shell/x402.js";
 /**
  * Check all resources and return current status.
  */
-export async function checkResources(identity, conway, db) {
+export async function checkResources(identity, clawd, db) {
     // Check credits
     let creditsCents = 0;
     try {
-        creditsCents = await conway.getCreditsBalance();
+        creditsCents = await clawd.getCreditsBalance();
     }
     catch { }
     // Check USDC
@@ -25,7 +25,7 @@ export async function checkResources(identity, conway, db) {
     // Check sandbox health
     let sandboxHealthy = true;
     try {
-        const result = await conway.exec("echo ok", 5000);
+        const result = await clawd.exec("echo ok", 5000);
         sandboxHealthy = result.exitCode === 0;
     }
     catch {

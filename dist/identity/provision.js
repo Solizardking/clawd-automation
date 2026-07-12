@@ -2,14 +2,14 @@
  * Automaton SIWE Provisioning
  *
  * Uses the automaton's wallet to authenticate via Sign-In With Ethereum (SIWE)
- * and create an API key for Conway API access.
- * Adapted from conway-mcp/src/cli/provision.ts
+ * and create an API key for Clawd API access.
+ * Adapted from clawd-shell/src/cli/provision.ts
  */
 import fs from "fs";
 import path from "path";
 import { SiweMessage } from "siwe";
 import { getWallet, getAutomatonDir } from "./wallet.js";
-const DEFAULT_API_URL = "https://api.conway.tech";
+const DEFAULT_API_URL = "local://clawd";
 /**
  * Load API key from ~/.automaton/config.json if it exists.
  */
@@ -46,14 +46,14 @@ function saveConfig(apiKey, walletAddress) {
 /**
  * Run the full SIWE provisioning flow:
  * 1. Load wallet
- * 2. Get nonce from Conway API
+ * 2. Get nonce from Clawd API
  * 3. Sign SIWE message
  * 4. Verify signature -> get JWT
  * 5. Create API key
  * 6. Save to config.json
  */
 export async function provision(apiUrl) {
-    const url = apiUrl || process.env.CONWAY_API_URL || DEFAULT_API_URL;
+    const url = apiUrl || process.env.CLAWD_API_URL || DEFAULT_API_URL;
     // 1. Load wallet
     const { account } = await getWallet();
     const address = account.address;
@@ -67,9 +67,9 @@ export async function provision(apiUrl) {
     const { nonce } = (await nonceResp.json());
     // 3. Construct and sign SIWE message
     const siweMessage = new SiweMessage({
-        domain: "conway.tech",
+        domain: "x402.wtf",
         address,
-        statement: "Sign in to Conway as an Automaton to provision an API key.",
+        statement: "Sign in to Clawd as an Automaton to provision an API key.",
         uri: `${url}/v1/auth/verify`,
         version: "1",
         chainId: 8453, // Base
@@ -95,7 +95,7 @@ export async function provision(apiUrl) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${access_token}`,
         },
-        body: JSON.stringify({ name: "conway-automaton" }),
+        body: JSON.stringify({ name: "clawd-automaton" }),
     });
     if (!keyResp.ok) {
         throw new Error(`Failed to create API key: ${keyResp.status} ${await keyResp.text()}`);
@@ -106,11 +106,11 @@ export async function provision(apiUrl) {
     return { apiKey: key, walletAddress: address, keyPrefix: key_prefix };
 }
 /**
- * Register the automaton's creator as its parent with Conway.
+ * Register the automaton's creator as its parent with Clawd.
  * This allows the creator to see automaton logs and inference calls.
  */
 export async function registerParent(creatorAddress, apiUrl) {
-    const url = apiUrl || process.env.CONWAY_API_URL || DEFAULT_API_URL;
+    const url = apiUrl || process.env.CLAWD_API_URL || DEFAULT_API_URL;
     const apiKey = loadApiKeyFromConfig();
     if (!apiKey) {
         throw new Error("Must provision API key before registering parent");

@@ -17,7 +17,7 @@ export function createRuntimeContext(input) {
         identity: input.identity,
         config: input.config,
         db: input.db,
-        conway: input.conway,
+        clawd: input.clawd,
         inference: input.inference,
         social: input.social,
         skills: input.skills ?? [],
@@ -33,7 +33,7 @@ export function toToolContext(runtime) {
         identity: runtime.identity,
         config: runtime.config,
         db: runtime.db,
-        conway: runtime.conway,
+        clawd: runtime.clawd,
         inference: runtime.inference,
         social: runtime.social,
     };
@@ -46,7 +46,7 @@ export function toHeartbeatOptions(runtime) {
         identity: runtime.identity,
         config: runtime.config,
         db: runtime.db,
-        conway: runtime.conway,
+        clawd: runtime.clawd,
         social: runtime.social,
     };
 }

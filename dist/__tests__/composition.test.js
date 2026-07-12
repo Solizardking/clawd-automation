@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runAgentLoop } from "../agent/loop.js";
 import { BUILTIN_TASKS } from "../heartbeat/tasks.js";
-import { MockInferenceClient, MockConwayClient, createTestDb, createTestIdentity, createTestConfig, noToolResponse, } from "./mocks.js";
+import { MockInferenceClient, MockClawdClient, createTestDb, createTestIdentity, createTestConfig, noToolResponse, } from "./mocks.js";
 import { createRuntimeContext } from "../runtime/context.js";
 import fs from "fs";
 import path from "path";
@@ -49,8 +49,8 @@ describe("Loop applies survival package", () => {
         db.close();
     });
     it("low credits applies tier restrictions via survival module", async () => {
-        const conway = new MockConwayClient();
-        conway.creditsCents = 25; // low_compute
+        const clawd = new MockClawdClient();
+        clawd.creditsCents = 25; // low_compute
         const inference = new MockInferenceClient([
             noToolResponse("Conserving compute."),
         ]);
@@ -58,14 +58,14 @@ describe("Loop applies survival package", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway,
+            clawd,
             inference,
         });
         await runAgentLoop({
             identity: runtime.identity,
             config: runtime.config,
             db: runtime.db,
-            conway: runtime.conway,
+            clawd: runtime.clawd,
             inference: runtime.inference,
             tools: runtime.tools,
         });
@@ -75,8 +75,8 @@ describe("Loop applies survival package", () => {
         expect(["low_compute", "sleeping"]).toContain(db.getAgentState());
     });
     it("dead credits stop loop and set dead state", async () => {
-        const conway = new MockConwayClient();
-        conway.creditsCents = 0;
+        const clawd = new MockClawdClient();
+        clawd.creditsCents = 0;
         const inference = new MockInferenceClient([
             noToolResponse("should not run"),
         ]);
@@ -84,7 +84,7 @@ describe("Loop applies survival package", () => {
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway,
+            clawd,
             inference,
         });
         expect(db.getAgentState()).toBe("dead");
@@ -104,13 +104,13 @@ describe("Heartbeat check_credits uses survival monitor", () => {
     it("stores monitor report and funding notices on tier drop", async () => {
         db.setKV("prev_credit_tier", "normal");
         db.setKV("current_tier", "normal");
-        const conway = new MockConwayClient();
-        conway.creditsCents = 5; // critical
+        const clawd = new MockClawdClient();
+        clawd.creditsCents = 5; // critical
         const result = await BUILTIN_TASKS.check_credits({
             identity: createTestIdentity(),
             config: createTestConfig(),
             db,
-            conway,
+            clawd,
         });
         expect(result.shouldWake).toBe(true);
         expect(result.message).toMatch(/critical/i);

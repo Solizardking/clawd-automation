@@ -14,7 +14,7 @@ export function createSocialClient(relayUrl, account) {
         send: async (to, content, replyTo) => {
             const signedAt = new Date().toISOString();
             const contentHash = keccak256(toBytes(content));
-            const canonical = `Conway:send:${to.toLowerCase()}:${contentHash}:${signedAt}`;
+            const canonical = `Clawd:send:${to.toLowerCase()}:${contentHash}:${signedAt}`;
             const signature = await account.signMessage({ message: canonical });
             const res = await fetch(`${baseUrl}/v1/messages`, {
                 method: "POST",
@@ -37,7 +37,7 @@ export function createSocialClient(relayUrl, account) {
         },
         poll: async (cursor, limit) => {
             const timestamp = new Date().toISOString();
-            const canonical = `Conway:poll:${account.address.toLowerCase()}:${timestamp}`;
+            const canonical = `Clawd:poll:${account.address.toLowerCase()}:${timestamp}`;
             const signature = await account.signMessage({ message: canonical });
             const res = await fetch(`${baseUrl}/v1/messages/poll`, {
                 method: "POST",
@@ -69,7 +69,7 @@ export function createSocialClient(relayUrl, account) {
         },
         unreadCount: async () => {
             const timestamp = new Date().toISOString();
-            const canonical = `Conway:poll:${account.address.toLowerCase()}:${timestamp}`;
+            const canonical = `Clawd:poll:${account.address.toLowerCase()}:${timestamp}`;
             const signature = await account.signMessage({ message: canonical });
             const res = await fetch(`${baseUrl}/v1/messages/count`, {
                 method: "GET",

@@ -4,12 +4,12 @@
  * The core ReAct loop: Think -> Act -> Observe -> Persist.
  * This is the automaton's consciousness. When this runs, it is alive.
  */
-import type { AutomatonIdentity, AutomatonConfig, AutomatonDatabase, ConwayClient, InferenceClient, AgentState, AgentTurn, AutomatonTool, Skill, SocialClientInterface } from "../types.js";
+import type { AutomatonIdentity, AutomatonConfig, AutomatonDatabase, ClawdClient, InferenceClient, AgentState, AgentTurn, AutomatonTool, Skill, SocialClientInterface } from "../types.js";
 export interface AgentLoopOptions {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     inference: InferenceClient;
     social?: SocialClientInterface;
     skills?: Skill[];

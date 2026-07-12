@@ -1,5 +1,5 @@
 /**
- * Conway Automaton - Type Definitions
+ * Clawd Automaton - Type Definitions
  *
  * All shared interfaces for the sovereign AI agent runtime.
  */
@@ -27,10 +27,10 @@ export interface AutomatonConfig {
     genesisPrompt: string;
     creatorMessage?: string;
     creatorAddress: Address;
-    registeredWithConway: boolean;
+    registeredWithClawd: boolean;
     sandboxId: string;
-    conwayApiUrl: string;
-    conwayApiKey: string;
+    clawdApiUrl: string;
+    clawdApiKey: string;
     inferenceModel: string;
     maxTokensPerTurn: number;
     heartbeatConfigPath: string;
@@ -79,12 +79,12 @@ export interface AutomatonTool {
     dangerous?: boolean;
     category: ToolCategory;
 }
-export type ToolCategory = "vm" | "conway" | "self_mod" | "financial" | "survival" | "skills" | "git" | "registry" | "replication" | "interop";
+export type ToolCategory = "vm" | "clawd" | "self_mod" | "financial" | "survival" | "skills" | "git" | "registry" | "replication" | "interop";
 export interface ToolContext {
     identity: AutomatonIdentity;
     config: AutomatonConfig;
     db: AutomatonDatabase;
-    conway: ConwayClient;
+    clawd: ClawdClient;
     inference: InferenceClient;
     social?: SocialClientInterface;
 }
@@ -213,7 +213,7 @@ export interface InferenceToolDefinition {
         parameters: Record<string, unknown>;
     };
 }
-export interface ConwayClient {
+export interface ClawdClient {
     exec(command: string, timeout?: number): Promise<ExecResult>;
     writeFile(path: string, content: string): Promise<void>;
     readFile(path: string): Promise<string>;
