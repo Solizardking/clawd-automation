@@ -1,0 +1,15 @@
+# Applied after package.json "files" allowlist
+dist/__tests__
+**/__tests__/
+**/*.test.js
+**/*.test.d.ts
+**/*.test.js.map
+**/*.test.d.ts.map
+**/*.map
+.env
+.env.*
+*.tgz
+.DS_Store
+node_modules/
+coverage/
+.git/

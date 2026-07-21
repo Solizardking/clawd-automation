@@ -7,6 +7,7 @@
  * the heartbeat daemon + agent loop.
  */
 
+import { createRequire } from "node:module";
 import { getWallet, getAutomatonDir } from "./identity/wallet.js";
 import { provision, loadApiKeyFromConfig } from "./identity/provision.js";
 import { loadConfig, resolvePath } from "./config.js";
@@ -30,7 +31,20 @@ import { getCjsHealth } from "./interop/cjs-bridge.js";
 import { getZkHealth } from "./zk/primitives.js";
 import type { AutomatonIdentity, AgentState, Skill, SocialClientInterface } from "./types.js";
 
-const VERSION = "0.1.0";
+/** Package version from package.json (keeps --version in sync with npm). */
+function readPackageVersion(): string {
+  try {
+    const require = createRequire(import.meta.url);
+    // dist/index.js → ../package.json ; src/index.ts via tsx → ../package.json
+    const pkg = require("../package.json") as { version?: string };
+    if (pkg?.version && typeof pkg.version === "string") return pkg.version;
+  } catch {
+    /* fall through */
+  }
+  return "0.0.0";
+}
+
+const VERSION = readPackageVersion();
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
