@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="220" viewBox="0 0 920 220" role="img" aria-label="ZK primitives — nullifier proof compressed state">
+  <defs>
+    <linearGradient id="zkbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#04060c"/>
+      <stop offset="50%" stop-color="#0c1020"/>
+      <stop offset="100%" stop-color="#12081c"/>
+    </linearGradient>
+    <linearGradient id="zkline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14F195"/>
+      <stop offset="50%" stop-color="#9945FF"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <filter id="zkglow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="3.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="920" height="220" rx="16" fill="url(#zkbg)"/>
+
+  <!-- title -->
+  <text x="28" y="32" fill="#94a3b8" font-family="ui-monospace,monospace" font-size="12">ZK-PRIMITIVES · prove → stamp once → store rent-free</text>
+  <text x="28" y="52" fill="#e2e8f0" font-family="ui-monospace,monospace" font-size="16" font-weight="700" filter="url(#zkglow)">CLAWDzk · Light Protocol · Groth16</text>
+
+  <!-- three nodes -->
+  <g font-family="ui-monospace,monospace" font-size="11">
+    <!-- PROVE -->
+    <g transform="translate(120,120)">
+      <circle r="48" fill="none" stroke="#14F195" stroke-opacity="0.35" stroke-width="1.5">
+        <animate attributeName="r" values="48;54;48" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.25;0.6;0.25" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="28" fill="#052e1a" stroke="#14F195" stroke-width="2" filter="url(#zkglow)"/>
+      <text text-anchor="middle" y="4" fill="#86efac" font-weight="700">PROVE</text>
+      <text text-anchor="middle" y="72" fill="#64748b" font-size="10">Groth16 SNARK</text>
+    </g>
+
+    <!-- arrow 1 -->
+    <path d="M185 120 H300" stroke="url(#zkline)" stroke-width="2" fill="none" stroke-dasharray="6 6">
+      <animate attributeName="stroke-dashoffset" values="0;-24" dur="1s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- STAMP -->
+    <g transform="translate(380,120)">
+      <circle r="48" fill="none" stroke="#9945FF" stroke-opacity="0.35" stroke-width="1.5">
+        <animate attributeName="r" values="48;54;48" dur="3s" begin="0.4s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="28" fill="#1a0b2e" stroke="#9945FF" stroke-width="2" filter="url(#zkglow)"/>
+      <text text-anchor="middle" y="4" fill="#d8b4fe" font-weight="700">STAMP</text>
+      <text text-anchor="middle" y="72" fill="#64748b" font-size="10">Nullifier once</text>
+      <!-- orbiting nullifier bit -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="5s" repeatCount="indefinite"/>
+        <circle cx="42" cy="0" r="4" fill="#c084fc" filter="url(#zkglow)"/>
+      </g>
+    </g>
+
+    <!-- arrow 2 -->
+    <path d="M445 120 H560" stroke="url(#zkline)" stroke-width="2" fill="none" stroke-dasharray="6 6">
+      <animate attributeName="stroke-dashoffset" values="0;-24" dur="1s" begin="0.3s" repeatCount="indefinite"/>
+    </path>
+
+    <!-- STORE -->
+    <g transform="translate(640,120)">
+      <circle r="48" fill="none" stroke="#f472b6" stroke-opacity="0.35" stroke-width="1.5">
+        <animate attributeName="r" values="48;54;48" dur="3s" begin="0.8s" repeatCount="indefinite"/>
+      </circle>
+      <circle r="28" fill="#2a0a1a" stroke="#f472b6" stroke-width="2" filter="url(#zkglow)"/>
+      <text text-anchor="middle" y="4" fill="#f9a8d4" font-weight="700">STORE</text>
+      <text text-anchor="middle" y="72" fill="#64748b" font-size="10">Compressed PDA</text>
+    </g>
+  </g>
+
+  <!-- right legend -->
+  <g transform="translate(740,70)" font-family="ui-monospace,monospace" font-size="10" fill="#94a3b8">
+    <text x="0" y="0" fill="#cbd5e1" font-weight="700">ops</text>
+    <text x="0" y="22">publish_attestation</text>
+    <text x="0" y="40">consume_attestation</text>
+    <text x="0" y="58">commit_encrypted_state</text>
+    <text x="0" y="86" fill="#64748b">observer → dry-run → delegated</text>
+  </g>
+
+  <!-- pulse bar -->
+  <rect x="28" y="200" width="864" height="3" rx="1.5" fill="#1e293b"/>
+  <rect x="28" y="200" height="3" rx="1.5" fill="url(#zkline)" filter="url(#zkglow)">
+    <animate attributeName="width" values="40;864;40" dur="6s" repeatCount="indefinite"/>
+  </rect>
+</svg>
