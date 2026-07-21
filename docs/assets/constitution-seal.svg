@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="200" viewBox="0 0 920 200" role="img" aria-label="Constitution seal — six laws hierarchy">
+  <defs>
+    <linearGradient id="cbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0610"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="50%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <filter id="cg" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="920" height="200" rx="16" fill="url(#cbg)"/>
+
+  <!-- seal ring -->
+  <g transform="translate(110,100)">
+    <circle r="70" fill="none" stroke="#f59e0b" stroke-opacity="0.25" stroke-width="1"/>
+    <circle r="58" fill="none" stroke="url(#gold)" stroke-width="2" filter="url(#cg)">
+      <animate attributeName="stroke-dasharray" values="0 400;200 200;400 0" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="40" fill="#1c1206" stroke="#fbbf24" stroke-width="1.5"/>
+    <text text-anchor="middle" y="-4" fill="#fde68a" font-family="ui-monospace,monospace" font-size="11" font-weight="700">LAWS</text>
+    <text text-anchor="middle" y="14" fill="#fbbf24" font-family="ui-monospace,monospace" font-size="18" font-weight="700">I–III</text>
+    <!-- rotating marks -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="20s" repeatCount="indefinite"/>
+      <circle cx="58" cy="0" r="3" fill="#ef4444" filter="url(#cg)"/>
+      <circle cx="-41" cy="41" r="2.5" fill="#f59e0b"/>
+      <circle cx="-41" cy="-41" r="2.5" fill="#fbbf24"/>
+    </g>
+  </g>
+
+  <!-- hierarchy cascade -->
+  <g font-family="ui-monospace,monospace" font-size="12" fill="#e2e8f0">
+    <text x="220" y="36" fill="#94a3b8" font-size="11">PRINCIPAL HIERARCHY · constitution always wins</text>
+
+    <g transform="translate(220,55)">
+      <rect width="160" height="28" rx="8" fill="#3f1d0a" stroke="#f59e0b" stroke-opacity="0.7"/>
+      <text x="12" y="18" fill="#fde68a" font-weight="700">1 · CONSTITUTION</text>
+      <animate attributeName="opacity" values="1;0.7;1" dur="2.5s" repeatCount="indefinite"/>
+    </g>
+    <path d="M300 83 V95" stroke="#64748b" stroke-width="1.5"/>
+    <g transform="translate(220,95)">
+      <rect width="160" height="28" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-opacity="0.5"/>
+      <text x="12" y="18" fill="#93c5fd">2 · CREATOR</text>
+    </g>
+    <path d="M300 123 V135" stroke="#64748b" stroke-width="1.5"/>
+    <g transform="translate(220,135)">
+      <rect width="160" height="28" rx="8" fill="#0f172a" stroke="#22c55e" stroke-opacity="0.45"/>
+      <text x="12" y="18" fill="#86efac">3 · USER</text>
+    </g>
+    <path d="M300 163 V175" stroke="#64748b" stroke-width="1.5"/>
+    <g transform="translate(220,175)">
+      <rect width="160" height="18" rx="6" fill="#0f172a" stroke="#a855f7" stroke-opacity="0.4"/>
+      <text x="12" y="13" fill="#d8b4fe" font-size="11">4 · TRENCH</text>
+    </g>
+  </g>
+
+  <!-- six law chips -->
+  <g font-family="ui-monospace,monospace" font-size="10" transform="translate(420,50)">
+    <text x="0" y="0" fill="#94a3b8" font-size="11">SIX-LAW HARNESS</text>
+    <!-- I-III immutable -->
+    <g transform="translate(0,18)">
+      <rect width="70" height="24" rx="6" fill="#450a0a" stroke="#ef4444"/>
+      <text x="10" y="16" fill="#fca5a5" font-weight="700">I harm</text>
+    </g>
+    <g transform="translate(80,18)">
+      <rect width="90" height="24" rx="6" fill="#450a0a" stroke="#ef4444"/>
+      <text x="10" y="16" fill="#fca5a5" font-weight="700">II earn</text>
+    </g>
+    <g transform="translate(180,18)">
+      <rect width="100" height="24" rx="6" fill="#450a0a" stroke="#ef4444"/>
+      <text x="10" y="16" fill="#fca5a5" font-weight="700">III truth</text>
+    </g>
+    <!-- IV-VI interpretive -->
+    <g transform="translate(0,54)">
+      <rect width="100" height="24" rx="6" fill="#1e293b" stroke="#64748b"/>
+      <text x="10" y="16" fill="#cbd5e1">IV elder</text>
+    </g>
+    <g transform="translate(110,54)">
+      <rect width="110" height="24" rx="6" fill="#1e293b" stroke="#64748b"/>
+      <text x="10" y="16" fill="#cbd5e1">V frontier</text>
+    </g>
+    <g transform="translate(230,54)">
+      <rect width="120" height="24" rx="6" fill="#1e293b" stroke="#64748b"/>
+      <text x="10" y="16" fill="#cbd5e1">VI no sorcery</text>
+    </g>
+    <text x="0" y="110" fill="#64748b">I–III hash-attested · never self-modify · beach before harm</text>
+    <text x="0" y="130" fill="#86efac">*The shell molts. The laws do not.*</text>
+  </g>
+</svg>
