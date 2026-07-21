@@ -41,7 +41,7 @@
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
     "clean": "rm -rf dist",
-    "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\""
+    "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/zk/primitives.js').then(m=>console.log(JSON.stringify(m.getZkHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\""
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",

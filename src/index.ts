@@ -27,6 +27,7 @@ import {
   toHeartbeatOptions,
 } from "./runtime/context.js";
 import { getCjsHealth } from "./interop/cjs-bridge.js";
+import { getZkHealth } from "./zk/primitives.js";
 import type { AutomatonIdentity, AgentState, Skill, SocialClientInterface } from "./types.js";
 
 const VERSION = "0.1.0";
@@ -255,6 +256,16 @@ async function run(): Promise<void> {
     );
   } catch (err: any) {
     console.warn(`[${new Date().toISOString()}] CJS bridge probe failed: ${err.message}`);
+  }
+
+  // Probe ZK primitives tree (observer-only; non-fatal)
+  try {
+    const zkHealth = getZkHealth();
+    console.log(
+      `[${new Date().toISOString()}] ZK primitives: ${zkHealth.ok ? "ok" : "partial"} program=${zkHealth.programId || "unset"} ops=${zkHealth.operations.length}`,
+    );
+  } catch (err: any) {
+    console.warn(`[${new Date().toISOString()}] ZK probe failed: ${err.message}`);
   }
 
   // Initialize state repo (git)
