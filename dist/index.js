@@ -20,6 +20,7 @@ import { initStateRepo } from "./git/state-versioning.js";
 import { createSocialClient } from "./social/client.js";
 import { createRuntimeContext, toHeartbeatOptions, } from "./runtime/context.js";
 import { getCjsHealth } from "./interop/cjs-bridge.js";
+import { getZkHealth } from "./zk/primitives.js";
 const VERSION = "0.1.0";
 async function main() {
     const args = process.argv.slice(2);
@@ -209,6 +210,14 @@ async function run() {
     }
     catch (err) {
         console.warn(`[${new Date().toISOString()}] CJS bridge probe failed: ${err.message}`);
+    }
+    // Probe ZK primitives tree (observer-only; non-fatal)
+    try {
+        const zkHealth = getZkHealth();
+        console.log(`[${new Date().toISOString()}] ZK primitives: ${zkHealth.ok ? "ok" : "partial"} program=${zkHealth.programId || "unset"} ops=${zkHealth.operations.length}`);
+    }
+    catch (err) {
+        console.warn(`[${new Date().toISOString()}] ZK probe failed: ${err.message}`);
     }
     // Initialize state repo (git)
     try {

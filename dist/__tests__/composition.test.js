@@ -25,19 +25,23 @@ describe("Composition graph structure", () => {
         expect(tasksSrc).toMatch(/checkResources/);
         expect(tasksSrc).toMatch(/executeFundingStrategies/);
     });
-    it("primary index composes runtime context and CJS bridge", () => {
+    it("primary index composes runtime context, CJS bridge, and ZK", () => {
         const indexSrc = fs.readFileSync(path.join(srcRoot, "index.ts"), "utf-8");
         expect(indexSrc).toMatch(/from ["']\.\/runtime\/context\.js["']/);
         expect(indexSrc).toMatch(/from ["']\.\/interop\/cjs-bridge\.js["']/);
+        expect(indexSrc).toMatch(/from ["']\.\/zk\/primitives\.js["']/);
         expect(indexSrc).toMatch(/createRuntimeContext/);
         expect(indexSrc).toMatch(/getCjsHealth/);
+        expect(indexSrc).toMatch(/getZkHealth/);
         expect(indexSrc).toMatch(/tools: runtime\.tools/);
     });
-    it("tools register interop CJS bridge tools", () => {
+    it("tools register interop CJS bridge and ZK tools", () => {
         const toolsSrc = fs.readFileSync(path.join(srcRoot, "agent", "tools.ts"), "utf-8");
         expect(toolsSrc).toMatch(/cjs_capability/);
         expect(toolsSrc).toMatch(/interop\/cjs-bridge/);
         expect(toolsSrc).toMatch(/constitution_context/);
+        expect(toolsSrc).toMatch(/zk_health/);
+        expect(toolsSrc).toMatch(/zk_catalog/);
     });
 });
 describe("Loop applies survival package", () => {
