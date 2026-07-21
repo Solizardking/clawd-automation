@@ -1385,6 +1385,37 @@ Model: ${ctx.inference.getDefaultModel()}
             },
         },
         {
+            name: "zk_health",
+            description: "Probe the local zk-primitives tree (MANIFEST, client, agent, program id, env). Observer-only — never signs txs.",
+            category: "interop",
+            parameters: { type: "object", properties: {} },
+            execute: async () => {
+                const { getZkHealth } = await import("../zk/primitives.js");
+                return JSON.stringify(getZkHealth(), null, 2);
+            },
+        },
+        {
+            name: "zk_catalog",
+            description: "Return the Clawd ZK primitives catalog (operations, packages, trust gates, docs paths).",
+            category: "interop",
+            parameters: {
+                type: "object",
+                properties: {
+                    as_prompt: {
+                        type: "boolean",
+                        description: "If true, return system-prompt fragment instead of JSON",
+                    },
+                },
+            },
+            execute: async (args) => {
+                const { getZkCatalog, getZkPromptContext } = await import("../zk/primitives.js");
+                if (args.as_prompt) {
+                    return getZkPromptContext();
+                }
+                return JSON.stringify(getZkCatalog(), null, 2);
+            },
+        },
+        {
             name: "x402_knowledge",
             description: "Load X402 protocol knowledge from the CJS knowledge package for agent context.",
             category: "interop",
