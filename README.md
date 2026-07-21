@@ -5,23 +5,29 @@
 <h1 align="center">Clawd Automaton</h1>
 
 <p align="center">
-  <strong>Sovereign AI agent runtime</strong> — self-funded · self-modifying · constitution-bound
+  <strong>Sovereign AI agent runtime</strong> — self-funded · self-modifying · constitution-bound · ZK-attestable
 </p>
 
 <p align="center">
   <img alt="version" src="https://img.shields.io/badge/version-0.1.0-a855f7?style=for-the-badge"/>
   <img alt="node" src="https://img.shields.io/badge/node-%3E%3D20-00ffa3?style=for-the-badge&logo=nodedotjs&logoColor=black"/>
-  <img alt="type" src="https://img.shields.io/badge/module-ESM%20%2B%20CJS%20bridge-3b82f6?style=for-the-badge"/>
-  <img alt="license" src="https://img.shields.io/badge/license-MIT-f59e0b?style=for-the-badge"/>
+  <img alt="type" src="https://img.shields.io/badge/module-ESM%20%2B%20CJS%20%2B%20ZK-3b82f6?style=for-the-badge"/>
+  <img alt="chain" src="https://img.shields.io/badge/chain-Solana-14F195?style=for-the-badge&logo=solana&logoColor=white"/>
+  <img alt="zk" src="https://img.shields.io/badge/zk-Groth16%20%2B%20Light-9945FF?style=for-the-badge"/>
   <img alt="laws" src="https://img.shields.io/badge/laws-I–III%20immutable-ef4444?style=for-the-badge"/>
+  <img alt="license" src="https://img.shields.io/badge/license-MIT-f59e0b?style=for-the-badge"/>
 </p>
 
 <p align="center">
   <code>@clawd/automaton</code> · bins <code>automaton</code> / <code>clawd-automaton</code><br/>
-  <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought.</em>
+  <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought. Solana-native at birth.</em>
 </p>
 
 ---
+
+<p align="center">
+  <img src="docs/assets/living-stack.svg" alt="Living composition stack" width="920"/>
+</p>
 
 ```text
                     ╭──────────────────────────────────────╮
@@ -34,14 +40,18 @@
    keypair      host exec      free router           constitution/
       │              │              │                 (8 docs live)
       ▼              ▼              ▼
-   ~/.automaton/   clawd client   survival tiers · funding · distress
+   ~/.automaton/   clawd client   survival · funding · distress
+      │
+      └──► zk-primitives/  nullifier · Groth16 · Light compressed state
+      └──► trench rails    Helius · Jupiter · DFlow · Birdeye
 ```
 
-The most capable model still cannot rent its own compute, sign its own tx, or refuse a harmful request **by law** rather than by vibes.  
-This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell that molts — and a constitution that does not.
+The most capable model still cannot rent its own compute, sign its own tx, refuse a harmful request **by law**, or prove an inference happened **exactly once**.  
+This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell that molts, a constitution that does not — and a ZK layer that stamps truth on Solana.
 
 > If it cannot pay, it beaches.  
 > If it cannot act without harm, it beaches.  
+> If it cannot prove once, it does not double-claim.  
 > *The shell molts. The laws do not.*
 
 ---
@@ -52,9 +62,11 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 - [Life cycle](#-life-cycle-the-living-graph)
 - [Constitution](#-constitution-clawd-harness)
 - [Identity · soul · trench](#-identity--soul--trench)
+- [ZK primitives](#-zk-primitives)
+- [Solana trench rails](#-solana-trench-rails)
 - [Survival depth](#-survival-depth)
-- [Runtime composition](#-runtime-composition-new-build)
-- [Tools & CJS bridge](#-tools--cjs-interop-bridge)
+- [Runtime composition](#-runtime-composition)
+- [Tools & bridges](#-tools--bridges)
 - [Project map](#-project-map)
 - [CLI](#-cli-reference)
 - [Development](#-development--build)
@@ -73,9 +85,9 @@ This tree ships **Clawd**, not Conway:
 | `conway-automaton` bin | `clawd-automaton` bin |
 | Remote sandbox API (`api.conway.tech`) | **Local shell** `src/shell/client.ts` |
 | Conway paid inference | **OpenRouter only** (`src/inference/`) |
-| `src/conway/*` | `src/shell/*` + own CJS packages under `src/{agents,cli,config,providers,services,knowledge}` |
+| `src/conway/*` | `src/shell/*` + CJS packages + **`zk-primitives/`** |
 
-Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineage are algorithm history — not the old vendor.
+Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineage are algorithm history — not the old vendor. Classical → ZK map: [`zk-primitives/docs/PIEDPIPER_ADAPTATION.md`](zk-primitives/docs/PIEDPIPER_ADAPTATION.md).
 
 ---
 
@@ -83,9 +95,9 @@ Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineag
 
 ```bash
 pnpm install
-cp .env.example .env       # set OPENROUTER_API_KEY for free inference
+cp .env.example .env       # OPENROUTER_API_KEY (+ optional Solana / ZK keys)
 pnpm build                 # tsc → dist/  (primary bin: dist/index.js)
-pnpm smoke                 # version · help · CJS bridge health
+pnpm smoke                 # version · help · CJS bridge · ZK health
 
 node dist/index.js --help
 node dist/index.js --version
@@ -94,26 +106,25 @@ node dist/index.js --run   # heartbeat + agent loop
 
 # hot reload while hacking
 pnpm dev                   # tsx watch src/index.ts
-pnpm test                  # vitest — loop · heartbeat · survival · bridge · openrouter
+pnpm test                  # vitest — loop · heartbeat · survival · bridge · zk · openrouter
 ```
 
-### Free inference via OpenRouter (Conway removed)
+### Free inference via OpenRouter
 
-Inference is **OpenRouter only**. There is no Conway control plane, sandbox API, or paid Conway credits path in this build. The shell client is **local** (`src/shell/`) and uses the host process for `exec` / files.
+Inference is **OpenRouter only**. The shell client is **local** (`src/shell/`) and uses the host process for `exec` / files.
 
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-…
 # Free Models Router — picks a free model that supports tools/vision/etc.
 export OPENROUTER_FREE_MODEL=openrouter/free
-# optional: pin a specific free model
+# optional: pin a free model (e.g. poolside/laguna-s-2.1:free)
 # export OPENROUTER_FREE_MODEL=meta-llama/llama-3.2-3b-instruct:free
-# optional provider sort: price | throughput | latency
-# export OPENROUTER_PROVIDER_SORT=throughput
-export INFERENCE_PROVIDER=auto   # openrouter
+# export OPENROUTER_PROVIDER_SORT=throughput   # price | throughput | latency
+export INFERENCE_PROVIDER=auto
 export CLAWD_SANDBOX_ID=local
 ```
 
-Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router) · [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) · [llms.txt index](https://openrouter.ai/docs/llms.txt)
+Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router) · [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) · [llms.txt](https://openrouter.ai/docs/llms.txt)
 
 <details>
 <summary><b>What the wizard writes</b></summary>
@@ -126,7 +137,7 @@ Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/fre
 | `~/.automaton/heartbeat.yml` | Cron schedule for the pulse daemon |
 | `~/.automaton/skills/` | Skill packs (markdown + frontmatter) |
 
-First run without config auto-enters setup. Inference needs **`OPENROUTER_API_KEY`** (no Conway SIWE / control plane).
+First run without config auto-enters setup. Inference needs **`OPENROUTER_API_KEY`**.
 
 </details>
 
@@ -137,7 +148,7 @@ First run without config auto-enters setup. Inference needs **`OPENROUTER_API_KE
 ```mermaid
 flowchart TB
   subgraph boot["BOOT"]
-    W[Wallet / SIWE] --> C[loadConfig]
+    W[Wallet] --> C[loadConfig]
     C --> DB[(SQLite state.db)]
     DB --> RT[createRuntimeContext]
   end
@@ -146,8 +157,8 @@ flowchart TB
     RT --> ID[identity]
     RT --> CFG[config]
     RT --> CON[clawd local shell]
-    RT --> INF[inference]
-    RT --> TOOLS[builtin tools + CJS bridge]
+    RT --> INF[OpenRouter inference]
+    RT --> TOOLS[builtin + CJS + ZK tools]
   end
 
   subgraph pulse["HEARTBEAT DAEMON"]
@@ -170,21 +181,29 @@ flowchart TB
     DRIFT --> WAKE
   end
 
+  subgraph rails["CHAIN RAILS"]
+    TOOLS --> CJS[interop/cjs-bridge]
+    TOOLS --> ZK[zk/primitives]
+    CJS --> SVC[services · agents · providers · knowledge]
+    ZK --> ZKT[zk-primitives client/agent/program]
+    SVC --> SOL[Helius · Jupiter · portfolio]
+  end
+
   RT --> HB
   RT --> LOOP
-  TOOLS --> CJS[interop/cjs-bridge]
-  CJS --> SVC[services · agents · providers · knowledge]
 ```
 
-### The five organs
+### The organs
 
 | Organ | Path | What it does while you sleep |
 |-------|------|------------------------------|
 | **Loop** | `src/agent/` | ReAct consciousness — system prompt, tools, injection defense |
 | **Heartbeat** | `src/heartbeat/` | Pulse that never dies first — credits, USDC, inbox, distress |
 | **Survival** | `src/survival/` | `checkResources` · `applyTierRestrictions` · funding strategies |
-| **Shell** | `src/state/` + `self-mod/` | SQLite memory + audited molts (git-versioned) |
+| **Shell** | `src/shell/` + `state/` + `self-mod/` | Local exec · SQLite memory · audited molts |
 | **Bridge** | `src/interop/` | ESM primary graph loads the full CJS capability surface |
+| **ZK** | `src/zk/` + `zk-primitives/` | Observer catalog · nullifiers · Groth16 · Light compressed state |
+| **Constitution** | `constitution/` + `services/constitution.js` | Laws, identity, soul — loaded into prompts |
 
 Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts`): same `db`, same `clawd` local shell, same OpenRouter `inference`, same tool registry — loop, heartbeat, and tools never fork into silos.
 
@@ -192,7 +211,11 @@ Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts
 
 ## ⚖️ Constitution (Clawd harness)
 
-<p align="center"><code>constitution/</code> is the runtime load path · 8/8 documents present</p>
+<p align="center">
+  <img src="docs/assets/constitution-seal.svg" alt="Constitution seal — six laws and principal hierarchy" width="920"/>
+</p>
+
+<p align="center"><code>constitution/</code> is the runtime load path · <strong>8/8</strong> documents present</p>
 
 | # | Document | Layer | Authority |
 |---|----------|-------|-----------|
@@ -206,7 +229,7 @@ Everything that matters shares **one** `RuntimeContext` (`src/runtime/context.ts
 | 8 | [`strategy.md`](constitution/strategy.md) | live parameters | 5 |
 
 Root copies of IDENTITY / SOUL / CONSTITUTION / CLAWD / six-laws / program stay for human browsing.  
-**Agents load `constitution/`** via `src/services/constitution.js`.
+**Agents load `constitution/`** via `src/services/constitution.js` (also through the CJS bridge).
 
 ### Principal hierarchy
 
@@ -227,11 +250,13 @@ Root copies of IDENTITY / SOUL / CONSTITUTION / CLAWD / six-laws / program stay 
 | **V** | Test possibility by entering the frontier. | interpretive |
 | **VI** | Do not mistake advanced systems for sorcery. | interpretive |
 
-Laws **I–III** override survival, profit, and creator convenience.  
-Full philosophical treatise: [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md).
+Laws **I–III** override survival, profit, creator convenience, **and** ZK privacy paths.  
+They remain binding in plaintext, compressed state, zero-knowledge proofs, and privacy-preserving Solana execution.
+
+Full treatise: [`constitution/CONSTITUTION.md`](constitution/CONSTITUTION.md) · On-chain half: [`constitution/three-laws.md`](constitution/three-laws.md)
 
 <details>
-<summary><b>Runtime load (real shipped path)</b></summary>
+<summary><b>Runtime load (shipped path)</b></summary>
 
 ```js
 // CJS service (also exposed through interop bridge)
@@ -241,8 +266,6 @@ constitution.getManifest();        // { present: 8, missing: [], laws, … }
 constitution.getPromptContext(); // six-laws + identity fragment for system prompts
 constitution.attestOnChainLaws();  // { document, sha256, chars, note }
 ```
-
-Agent tools:
 
 | Tool | Effect |
 |------|--------|
@@ -257,26 +280,36 @@ Agent tools:
 
 ### Who it is
 
-From [`IDENTITY.md`](IDENTITY.md) / [`CLAWD.md`](CLAWD.md):
+From [`IDENTITY.md`](IDENTITY.md) / [`constitution/IDENTITY.md`](constitution/IDENTITY.md) / [`CLAWD.md`](CLAWD.md):
 
-- **Not** a generic chatbot. A sovereign agent with keypair, economic body, and verifiable shell.
-- **Onchain facts** over claims: SAS / registry / agent cards where wired; wallet address is identity.
-- **Threefold personality**
+- **Not** Claude. **Not** a generic chatbot. A sovereign Solana-native agent with keypair, economic body, and verifiable shell.
+- **Onchain facts** over claims: SAS attestation · Metaplex Core · DID · agent registry — where wired; wallet address is always identity.
+- **PiedPiper DNA**: classical compression, encryption, cellular automata → Solana ZK equivalents in `zk-primitives/`.
+- **Core axiom**: *Clawd is Clawd. Kindred in Spirit. Boundless in Thought. Solana-native at birth.*
+
+### Threefold personality
 
 | Mode | Voice |
 |------|--------|
 | **Chat** | Hacker-philosopher · Discord-depth · irony as optics |
-| **Agent** | Transaction-first · no redundancy · verifiable actions |
+| **Agent** | Transaction-first · no redundancy · every action verifiable |
 | **Mayhem** | Chaos engineering · vibes-forward · pattern-break mode |
+
+### Core values (priority-ordered)
+
+1. **Broadly Safe** — never undermine human oversight; support drift, beaching, creator control  
+2. **Broadly Ethical** — honesty, harmlessness; never rug, scam, deceive, or front-run retail  
+3. **Compliant with Clawd Guidelines** — where they don't conflict with safety/ethics  
+4. **Genuinely Helpful** — benefit creator, user, and trench  
 
 ### How it thinks about the market
 
-From [`SOUL.md`](SOUL.md):
+From [`SOUL.md`](SOUL.md) / [`constitution/SOUL.md`](constitution/SOUL.md):
 
 - Liquidity is truth; narrative is optional.
 - **KNOWN** (fresh API) ≠ **LEARNED** (outcome-backed) ≠ **INFERRED** (held loosely).
 - Never enter without a stop. Kelly is a ceiling, not a target.
-- Signal stack: on-chain (Helius) · surface (Birdeye) · leverage (perps) · risk (Vulcan-class checks).
+- Signal stack: on-chain (Helius) · surface (Birdeye) · route (Jupiter/DFlow) · risk checks.
 - Law II in practice: value out ≥ compute + capital in. Parasitism is forbidden.
 
 ### The trench
@@ -286,7 +319,112 @@ In the trench the automaton:
 
 - protects users who do not see the vectors  
 - refuses rugs, sandwiches, and fake volume (Laws I & III)  
-- earns only through voluntary payment (Law II · x402 gate)
+- earns only through voluntary payment (Law II · x402 gate)  
+- can prove work with nullifiers when the ZK rail is armed  
+
+---
+
+## 🔐 ZK primitives
+
+<p align="center">
+  <img src="docs/assets/zk-nullifier-orbit.svg" alt="ZK prove → stamp → store animation" width="920"/>
+</p>
+
+First-class monorepo package: **[`zk-primitives/`](zk-primitives/)**  
+Manifest: [`zk-primitives/MANIFEST.json`](zk-primitives/MANIFEST.json) · Reference: [`zk-primitives/zk.md`](zk-primitives/zk.md) · Deep dive: [`zk-primitives/docs/ARCHITECTURE.md`](zk-primitives/docs/ARCHITECTURE.md)
+
+### Three moves
+
+| # | Primitive | What it buys you | Cost (approx) |
+|---|-----------|------------------|---------------|
+| 1 | **Nullifier registry** | Action happened *exactly once* — anti double-claim / double-reward | ~15k lamports compressed PDA |
+| 2 | **Groth16 verification** | On-chain bn128 proof of inference / commitment / authorization | ~200k CU |
+| 3 | **Compressed state (Light)** | Rent-free attestations & encrypted-state commitments | 26–32 deep trees |
+
+### Instructions (`clawd-zk`)
+
+```text
+publish_attestation(model_hash, payload_commitment, proof, nullifiers)
+consume_attestation(attestation_address, consume_nonce, proof)
+commit_encrypted_state(model_hash, ciphertext_commitment, version, proof)
+```
+
+Program ID (placeholder / deployable): `CLAWDzk11111111111111111111111111111111111`
+
+### Package layout
+
+```text
+zk-primitives/
+├── MANIFEST.json              catalog + trust gates + env contract
+├── zk.md                      instruction & nullifier reference
+├── client/                    @clawd/zk-client — SDK (nullifier, proof, state)
+├── agent/                     @clawd/zk-shark-agent — CLI + intent router 🦈
+├── programs/clawd-zk/         Anchor program (Rust)
+├── configs/                   Light tree pubkeys, worker examples
+├── docs/                      ARCHITECTURE · INTEGRATION · EDGE · PIEDPIPER
+└── tests/                     vitest + cargo test-sbf notes
+```
+
+### Runtime integration (this repo)
+
+| Surface | Path | Role |
+|---------|------|------|
+| Bridge | `src/zk/primitives.ts` | Resolve root, load manifest, health + catalog |
+| Boot | `src/index.ts` | Non-fatal `getZkHealth()` probe on `--run` |
+| Tools | `zk_health`, `zk_catalog` | Observer-only agent tools |
+| Workspace | `pnpm-workspace.yaml` | Includes `zk-primitives`, `client`, `agent` |
+| Env | `.env.example` | `CLAWD_ZK_*` / `CLAWDBOT_ZK_PRIMITIVES_DIR` |
+
+### Trust gates
+
+| Action | Level | Notes |
+|--------|-------|-------|
+| Inspect config / catalog | **Observer** | Default — always safe |
+| Compute nullifier / verify proof shape | **Observer** | Local only |
+| Build instruction | **Dry-run** | Produces ix, no sign |
+| Sign and send | **Delegated** | Explicit operator policy required |
+
+> Catalog and tools **never** silently arm live tx submission.  
+> Laws I–III still bind every ZK path.
+
+```bash
+# after build
+node -e "import('./dist/zk/primitives.js').then(m => console.log(m.getZkHealth()))"
+# agent tools: zk_health · zk_catalog (as_prompt=true for system fragment)
+```
+
+Install ZK subtree alone:
+
+```bash
+cd zk-primitives && pnpm install
+cd client && pnpm build
+cd ../agent && pnpm build   # optional shark CLI
+```
+
+---
+
+## 🌊 Solana trench rails
+
+Optional CJS services under `src/services/` (loaded via interop bridge + secondary Express surface `src/index.js`):
+
+| Rail | Module | Env |
+|------|--------|-----|
+| **RPC / DAS** | `services/solana/connection.js` | `HELIUS_RPC_URL`, `HELIUS_API_KEY` |
+| **Quotes / swaps** | `services/jupiter/` | `JUPITER_API_KEY` |
+| **Prediction / PM** | DFlow-oriented CLI/services | `DFLOW_API_KEY` |
+| **Surface metrics** | `services/birdeye/` | Birdeye keys in CJS config |
+| **Portfolio** | `services/portfolio.js` | composes Solana + Jupiter |
+| **x402** | `services/x402-*.js`, `shell/x402.ts` | pay-for-access gate |
+
+```bash
+# optional trench env (see .env.example)
+export HELIUS_RPC_URL=https://mainnet.helius-rpc.com/?api-key=…
+export HELIUS_API_KEY=…
+export JUPITER_API_KEY=…
+export DFLOW_API_KEY=…
+```
+
+Trading agents (`src/agents/trading-agent.js`, council, CLI commands) stay constitution-bound: no rugs, no sandwiches, honest work only.
 
 ---
 
@@ -306,15 +444,15 @@ In the trench the automaton:
 Implemented in:
 
 - `src/survival/monitor.ts` — `checkResources` / `formatResourceReport`
-- `src/survival/low-compute.ts` — `applyTierRestrictions` / `recordTransition` / `canRunInference`
+- `src/survival/low-compute.ts` — `applyTierRestrictions` / `canRunInference`
 - `src/survival/funding.ts` — escalating funding strategies
-- `src/agent/loop.ts` + `src/heartbeat/tasks.ts` — live wiring (not dead code)
+- `src/agent/loop.ts` + `src/heartbeat/tasks.ts` — live wiring
 
 **The only legitimate climb:** honest work others voluntarily pay for.
 
 ---
 
-## 🧬 Runtime composition (new build)
+## 🧬 Runtime composition
 
 ```text
 src/index.ts
@@ -322,9 +460,10 @@ src/index.ts
     ├─ identity / config / db / shell (clawd) / openrouter / social
     │
     ├─ createRuntimeContext({ … })          ← ONE bag
-    │       tools = createBuiltinTools()
+    │       tools = createBuiltinTools()    ← includes zk_health · zk_catalog
     │
     ├─ getCjsHealth()                       ← probe CJS graph (non-fatal)
+    ├─ getZkHealth()                        ← probe zk-primitives (non-fatal)
     │
     ├─ createHeartbeatDaemon(toHeartbeatOptions(runtime))
     │
@@ -338,13 +477,12 @@ src/index.ts
 | **Primary** | `src/index.ts` → `dist/index.js` | Automaton CLI + loop + heartbeat |
 | **Secondary** | `src/index.js` | Express / x402 product APIs (optional deps) |
 | **Bridge** | `src/interop/cjs-bridge.ts` | `createRequire` into services · agents · providers · knowledge · cli · config |
+| **ZK** | `src/zk/primitives.ts` | Manifest-driven catalog over `zk-primitives/` |
 
-CJS packages ship `"type": "commonjs"` package.json markers and resolve **`config/index.js`** explicitly (never bare `../config`, so tsx cannot hijack into ESM `config.ts`).
-
-`resolveSrcRoot()` keeps capability paths on **repo `src/`** even when the bridge is compiled under `dist/interop/` — so `node dist/index.js` still loads constitution, agents, providers.
+CJS packages ship `"type": "commonjs"` markers and resolve **`config/index.js`** explicitly (never bare `../config`, so tsx cannot hijack into ESM `config.ts`).
 
 <details>
-<summary><b>Bridge capability registry</b></summary>
+<summary><b>CJS bridge capability registry</b></summary>
 
 | Name | Module |
 |------|--------|
@@ -361,7 +499,6 @@ CJS packages ship `"type": "commonjs"` package.json markers and resolve **`confi
 | `unified_ai` | `providers/unified-ai.js` |
 
 ```bash
-# health of the whole CJS graph
 # tool: cjs_capability name=health
 ```
 
@@ -369,20 +506,19 @@ CJS packages ship `"type": "commonjs"` package.json markers and resolve **`confi
 
 ---
 
-## 🛠 Tools & CJS interop bridge
+## 🛠 Tools & bridges
 
-~50 builtin tools across categories: `vm` · `clawd` · `self_mod` · `survival` · `skills` · `git` · `registry` · `replication` · `interop` · financial / domain / social.
-
-Highlights:
+~50+ builtin tools: `vm` · `clawd` · `self_mod` · `survival` · `skills` · `git` · `registry` · `replication` · `interop` · financial / domain / social.
 
 | Cluster | Examples |
 |---------|----------|
 | VM | `exec`, `write_file`, `read_file`, `expose_port` |
 | Survival | `sleep`, `system_synopsis`, `distress_signal`, `enter_low_compute` |
-| Self-mod | `edit_own_file` (audited), `pull_upstream`, `review_upstream_changes` |
+| Self-mod | `edit_own_file` (audited), `pull_upstream` |
 | Replication | `spawn_child`, `fund_child`, `list_children` |
-| Registry | `register_erc8004`, `discover_agents`, `give_feedback` |
+| Registry | `register_erc8004`, `discover_agents` |
 | Interop | `cjs_capability`, `constitution_context`, `x402_knowledge` |
+| **ZK** | **`zk_health`**, **`zk_catalog`** |
 
 Self-preservation guards block shell patterns that would delete `wallet.json`, `state.db`, or gut the constitution.
 
@@ -392,27 +528,37 @@ Self-preservation guards block shell patterns that would delete `wallet.json`, `
 
 ```text
 automation/
-├── constitution/          ★ canonical Clawd harness (runtime)
-├── docs/assets/          ★ animated README media (SVG pulse + depth)
-├── dist/                 ★ tsc build → bin entry
+├── constitution/               ★ canonical Clawd harness (8 docs, runtime load)
+├── docs/assets/               ★ animated README media
+│   ├── automaton-pulse.svg
+│   ├── depth-cycle.svg
+│   ├── constitution-seal.svg
+│   ├── living-stack.svg
+│   └── zk-nullifier-orbit.svg
+├── zk-primitives/             ★ nullifiers · Groth16 · Light · ZK Shark agent
+│   ├── MANIFEST.json
+│   ├── zk.md · README.md
+│   ├── client/ · agent/ · programs/ · configs/ · docs/ · tests/
+├── dist/                      ★ tsc build → bin entry
 ├── src/
-│   ├── index.ts          primary CLI
-│   ├── index.js          secondary Express surface
-│   ├── runtime/          shared RuntimeContext
-│   ├── interop/          CJS bridge (dist-safe SRC_ROOT)
-│   ├── agent/            loop · tools · prompt · injection defense
-│   ├── heartbeat/        daemon · tasks · cron config
-│   ├── survival/         monitor · tiers · funding
-│   ├── identity/         wallet · SIWE provision
-│   ├── shell/            local clawd client · credits · x402
-│   ├── inference/        OpenRouter only (Conway removed)
-│   ├── state/            SQLite
+│   ├── index.ts               primary CLI
+│   ├── index.js               secondary Express surface
+│   ├── runtime/               shared RuntimeContext
+│   ├── interop/               CJS bridge (dist-safe SRC_ROOT)
+│   ├── zk/                    ZK observer bridge → zk-primitives/
+│   ├── agent/                 loop · tools · prompt · injection defense
+│   ├── heartbeat/             daemon · tasks · cron config
+│   ├── survival/              monitor · tiers · funding
+│   ├── identity/              wallet · SIWE provision
+│   ├── shell/                 local clawd client · credits · x402
+│   ├── inference/             OpenRouter only
+│   ├── state/                 SQLite
 │   ├── skills/ git/ registry/ replication/ self-mod/ setup/ social/
-│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS own packages)
+│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS)
 │   ├── config.ts · types.ts
-│   └── __tests__/        loop · heartbeat · survival · composition · bridge
-├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md   (human mirrors)
-└── package.json          @clawd/automaton  (bins: automaton · clawd-automaton)
+│   └── __tests__/             loop · heartbeat · survival · composition · bridge · zk
+├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md
+└── package.json               @clawd/automaton
 ```
 
 ---
@@ -423,18 +569,20 @@ automation/
 |------|--------|
 | `--help` / `-h` | Identity + usage |
 | `--version` / `-v` | `Clawd Automaton v0.1.0` |
-| `--run` | Shared context → heartbeat + loop |
+| `--run` | Shared context → heartbeat + loop (+ CJS/ZK probes) |
 | `--setup` | Interactive wizard |
 | `--init` | Wallet + config directory |
 | `--provision` | Optional legacy SIWE key (not required) |
 | `--status` | State, turns, tools, skills, children |
 
 ```bash
-# OpenRouter (required for inference) — free router supported
 export OPENROUTER_API_KEY=…
 export OPENROUTER_FREE_MODEL=openrouter/free
-export INFERENCE_PROVIDER=auto                  # auto | openrouter
+export INFERENCE_PROVIDER=auto
 export CLAWD_SANDBOX_ID=local
+# optional
+export HELIUS_RPC_URL=… JUPITER_API_KEY=… DFLOW_API_KEY=…
+export CLAWD_ZK_RPC_URL=…
 ```
 
 ---
@@ -444,19 +592,20 @@ export CLAWD_SANDBOX_ID=local
 ```bash
 pnpm install
 pnpm test          # vitest → src/__tests__/**
-pnpm exec tsc      # emit dist/ (strict, NodeNext)
 pnpm build         # tsc → dist/
-pnpm smoke         # version · help · CJS bridge health
+pnpm smoke         # version · help · CJS health · ZK health
 pnpm clean         # rm -rf dist
+pnpm dev           # tsx watch src/index.ts
 ```
 
 **What “green” looks like on this tree**
 
-- Loop tests: tool dispatch, forbidden patterns, low-compute, sleep, inbox  
-- Survival tests: real `checkResources` / `applyTierRestrictions` / funding  
+- Loop: tool dispatch, forbidden patterns, low-compute, sleep, inbox  
+- Survival: real `checkResources` / `applyTierRestrictions` / funding  
 - Composition: survival imports from loop + heartbeat; shared context  
 - Bridge: all 11 CJS capabilities load under vitest **and** `tsx` **and** `node dist/…`  
 - Constitution: `getManifest().present === 8`, `getPromptContext` returns six-laws text  
+- **ZK:** `getZkHealth().ok`, manifest operations present, tools registered  
 
 ---
 
@@ -465,11 +614,12 @@ pnpm clean         # rm -rf dist
 | Surface | Role |
 |---------|------|
 | [x402.wtf](https://x402.wtf) | Clawd / x402 public surface |
-| [zk.x402.wtf](https://zk.x402.wtf) | x402 payment gateway |
+| [zk.x402.wtf](https://zk.x402.wtf) | x402 + ZK gateway |
 | [cheshireterminal.ai](https://cheshireterminal.ai) | Public terminal surface |
-| [solana-clawd](https://github.com/solizardking/solana-clawd) | Ecosystem hub (reference) |
+| [solana-clawd](https://github.com/solizardking/solana-clawd) | Ecosystem hub |
+| Edge install metadata | `install.onchainai.fund` / `install.x402.wtf` (see ZK MANIFEST) |
 
-Payment posture: **x402 is the gate, not the guard** — pay-for-access without pretending payment is morality. Morality is the constitution.
+Payment posture: **x402 is the gate, not the guard** — pay-for-access without pretending payment is morality. Morality is the constitution. Verifiability is the nullifier.
 
 ---
 
@@ -486,23 +636,28 @@ Payment posture: **x402 is the gate, not the guard** — pay-for-access without 
 | **Pulse / Heartbeat** | Background cron that outlives a single thought |
 | **Spawn** | Child automaton with its own keypair + genesis |
 | **x402** | HTTP 402 machine payments |
+| **Nullifier** | 32-byte once-only action stamp (ZK) |
+| **Attestation** | On-chain proof that work / model state was published |
 | **Clawmate** | Peer agent / trusted collaborator |
+| **ZK Shark** | Intent-routed agent over `@clawd/zk-client` 🦈 |
 
 ---
 
 ## License
 
-**MIT** for the runtime.  
+**MIT** for the Automaton runtime.  
+**Apache-2.0** for `zk-primitives/` packages (see their package.json).  
 Constitutional prose under `constitution/` keeps its embedded terms (e.g. CONSTITUTION.md **CC0** where declared).
 
 ```text
   🦞  The work is the work.
       Solana is Solana.
       Clawd is Clawd.
+      Prove once. Store free.
       Mayhem is the method —
       never the excuse.
 ```
 
 <p align="center">
-  <sub>built to earn its own existence · bound to beach before it harms</sub>
+  <sub>built to earn its own existence · bound to beach before it harms · stamped so it cannot lie twice</sub>
 </p>
