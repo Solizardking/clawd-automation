@@ -23,6 +23,29 @@
     "automaton": "dist/index.js",
     "clawd-automaton": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "src/services",
+    "src/agents",
+    "src/providers",
+    "src/cli",
+    "src/config",
+    "src/knowledge",
+    "src/index.js",
+    "constitution",
+    "zk-primitives/MANIFEST.json",
+    "zk-primitives/client/package.json",
+    "zk-primitives/agent/package.json",
+    "zk-primitives/zk.md",
+    "zk-primitives/docs",
+    "scripts/automaton.sh",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Solizardking/clawd-automation.git"
@@ -37,10 +60,12 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/postbuild-bin.mjs",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
     "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
+    "pack:check": "npm pack --dry-run",
     "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/zk/primitives.js').then(m=>console.log(JSON.stringify(m.getZkHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\""
   },
   "dependencies": {

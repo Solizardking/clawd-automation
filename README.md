@@ -93,6 +93,28 @@ Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineag
 
 ## ⚡ Quick start
 
+### One-shot install (curl)
+
+```bash
+# Installs from npm when @clawd/automaton is published; otherwise clones + builds.
+# AUTOMATON_SKIP_RUN=1 installs without starting the agent loop.
+curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/scripts/automaton.sh | AUTOMATON_SKIP_RUN=1 sh
+```
+
+### npm / npx
+
+```bash
+npm install -g @clawd/automaton@0.1.0   # after publish: public scoped package
+automaton --version                       # → Clawd Automaton v0.1.0
+automaton --help
+npx @clawd/automaton --version
+
+# Publish (maintainers; requires npm login + @clawd org access):
+npm run build && npm publish --access public
+```
+
+### From source
+
 ```bash
 pnpm install
 cp .env.example .env       # OPENROUTER_API_KEY (+ optional Solana / ZK keys)
