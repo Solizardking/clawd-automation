@@ -1,5 +1,5 @@
 {
-  "name": "@clawd/automaton",
+  "name": "@onchainai/automation",
   "version": "0.1.0",
   "description": "Clawd Automaton \u2014 sovereign AI agent runtime (local shell + OpenRouter + own packages)",
   "type": "module",

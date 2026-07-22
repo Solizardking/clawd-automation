@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <code>@clawd/automaton</code> · bins <code>automaton</code> / <code>clawd-automaton</code><br/>
+  <code>@onchainai/automation</code> · bins <code>automaton</code> / <code>clawd-automaton</code><br/>
   <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought. Solana-native at birth.</em>
 </p>
 
@@ -81,7 +81,7 @@ This tree ships **Clawd**, not Conway:
 
 | Was (Conway) | Now (Clawd) |
 |--------------|-------------|
-| `@conway/automaton` | `@clawd/automaton` |
+| `@conway/automaton` | `@onchainai/automation` |
 | `conway-automaton` bin | `clawd-automaton` bin |
 | Remote sandbox API (`api.conway.tech`) | **Local shell** `src/shell/client.ts` |
 | Conway paid inference | **OpenRouter only** (`src/inference/`) |
@@ -96,7 +96,7 @@ Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineag
 ### One-shot install (curl)
 
 ```bash
-# Installs from npm when @clawd/automaton is published; otherwise clones + builds.
+# Installs from npm when @onchainai/automation is published; otherwise clones + builds.
 # AUTOMATON_SKIP_RUN=1 installs without starting the agent loop.
 curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/scripts/automaton.sh | AUTOMATON_SKIP_RUN=1 sh
 ```
@@ -104,12 +104,11 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/
 ### npm / npx
 
 ```bash
-npm install -g @clawd/automaton@0.1.0   # after publish: public scoped package
+npm install -g @onchainai/automation@0.1.0   # public scoped package
 automaton --version                       # → Clawd Automaton v0.1.0
 automaton --help
-npx @clawd/automaton --version
+npx @onchainai/automation --version
 
-# Publish (maintainers; requires npm login + @clawd org access):
 npm run build && npm publish --access public
 ```
 
@@ -580,7 +579,7 @@ automation/
 │   ├── config.ts · types.ts
 │   └── __tests__/             loop · heartbeat · survival · composition · bridge · zk
 ├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md
-└── package.json               @clawd/automaton
+└── package.json               @onchainai/automation
 ```
 
 ---
