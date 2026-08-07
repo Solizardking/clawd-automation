@@ -110,6 +110,15 @@ describe('validate + parseClawdConfig', () => {
     assert.ok(cfg.loss_killswitch_consecutive >= 1);
   });
 
+  it('parseClawdConfig accepts goblin.md paper/devnet frontmatter', () => {
+    const md = readFileSync(join(ROOT, 'goblin.md'), 'utf8');
+    const cfg = parseClawdConfig(md);
+    assert.equal(cfg.mode, 'paper');
+    assert.equal(cfg.network, 'devnet');
+    assert.ok(cfg.max_position_size_lamports >= 1_000_000);
+    assert.ok(cfg.loss_killswitch_consecutive >= 1);
+  });
+
   it('parseClawdConfig rejects non-paper / non-devnet', () => {
     assert.throws(
       () => parseClawdConfig('---\nmode: live\nnetwork: devnet\n---\n'),

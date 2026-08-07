@@ -192,9 +192,9 @@ async function runLoop(): Promise<void> {
   const config: ClawdConfig = parseClawdConfig(configContent);
 
   if (GOBLIN_MODE) {
-    log(`\n👺 GOBLIN MODE ACTIVATED — clawd-operator harness`);
+    log(`\n👺 GOBLIN MODE ACTIVATED — Clawd paper/devnet harness`);
+    log(`   monorepo: https://github.com/Solizardking/clawd-automation`);
     log(`   hub: https://github.com/solizardking/solana-clawd`);
-    log(`   runtime: https://github.com/Solizardking/clawdbot-go`);
     log(`   max_pos=${config.max_position_size_lamports} killswitch=${config.loss_killswitch_consecutive} dark_defi=armed\n`);
   } else {
     log(`[clawd] mode=${config.mode} network=${config.network}`);

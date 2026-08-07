@@ -48,7 +48,11 @@
     "zk-primitives/zk.md",
     "zk-primitives/docs",
     "scripts/automaton.sh",
+    "scripts/crustacean-automation.sh",
+    "scripts/clawd-rules.txt",
     "scripts/verify-pack.mjs",
+    "constitution.md",
+    "packages/cli/package.json",
     "LICENSE",
     "README.md",
     "package.json"
@@ -72,13 +76,14 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc && node scripts/postbuild-bin.mjs",
+    "build:cli": "npm run build --prefix packages/cli",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build",
     "pack:check": "npm pack --dry-run",
     "pack:local": "npm run build && npm pack && cp -f onchainai-automation-${npm_package_version}.tgz clawd-automaton-${npm_package_version}.tgz",
-    "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/zk/primitives.js').then(m=>console.log(JSON.stringify(m.getZkHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/ooda/bridge.js').then(m=>{const h=m.getOodaHealth();if(!h.ok){console.error(h);process.exit(1)};console.log(JSON.stringify(h,null,2))}).catch(e=>{console.error(e);process.exit(1)})\""
+    "smoke": "node dist/index.js --version && node dist/index.js --help && node -e \"import('./dist/interop/cjs-bridge.js').then(m=>console.log(JSON.stringify(m.getCjsHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/zk/primitives.js').then(m=>console.log(JSON.stringify(m.getZkHealth(),null,2))).catch(e=>{console.error(e);process.exit(1)})\" && node -e \"import('./dist/ooda/bridge.js').then(async m=>{const h=m.getOodaHealth();if(!h.ok){console.error(h);process.exit(1)};const r=await m.runPaperTicks({ticks:3,seed:1});if(!r.ok){console.error(r);process.exit(1)};console.log(JSON.stringify({health:h,paper:r.final},null,2))}).catch(e=>{console.error(e);process.exit(1)})\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.116.0",

@@ -1,24 +1,56 @@
-# Clawd Automaton
+<p align="center">
+  <img src="docs/assets/automaton-pulse.svg" alt="Clawd Automaton — living pulse" width="920"/>
+</p>
 
-![Clawd Automaton — living pulse](docs/assets/automaton-pulse.svg)
+<h1 align="center">Clawd Automaton</h1>
 
-**Sovereign AI agent runtime** — self-funded · self-modifying · constitution-bound · ZK-attestable
+<p align="center">
+  <a href="https://www.npmjs.com/package/@onchainai/automation">
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=18&duration=2200&pause=600&color=00FFA3&center=true&vCenter=true&width=720&lines=sovereign+AI+agent+runtime;self-funded+%C2%B7+self-modifying+%C2%B7+constitution-bound;OpenRouter+%2B+local+Clawd+shell+%2B+ZK;sense+%E2%86%92+think+%E2%86%92+act+%E2%86%92+observe" alt="Animated tagline" />
+  </a>
+</p>
 
-[![version](https://img.shields.io/badge/version-0.1.1-a855f7?style=for-the-badge)](https://www.npmjs.com/package/@onchainai/automation)
-[![node](https://img.shields.io/badge/node-%3E%3D20-00ffa3?style=for-the-badge&logo=nodedotjs&logoColor=black)](https://nodejs.org/)
-[![type](https://img.shields.io/badge/module-ESM%20%2B%20CJS%20%2B%20ZK-3b82f6?style=for-the-badge)](https://github.com/Solizardking/clawd-automation#runtime-composition)
-[![chain](https://img.shields.io/badge/chain-Solana-14F195?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com/)
-[![zk](https://img.shields.io/badge/zk-Groth16%20%2B%20Light-9945FF?style=for-the-badge)](https://github.com/Solizardking/clawd-automation#zk-primitives)
-[![laws](https://img.shields.io/badge/laws-I–III%20immutable-ef4444?style=for-the-badge)](https://github.com/Solizardking/clawd-automation#six-laws-binding)
-[![license](https://img.shields.io/badge/license-MIT-f59e0b?style=for-the-badge)](https://github.com/Solizardking/clawd-automation#license)
+<p align="center">
+  <strong>Sovereign AI agent runtime</strong> — self-funded · self-modifying · constitution-bound · ZK-attestable
+</p>
 
-`@onchainai/automation` · bins `automaton` / `clawd-automaton`
+<p align="center">
+  <a href="https://www.npmjs.com/package/@onchainai/automation"><img alt="npm" src="https://img.shields.io/npm/v/@onchainai/automation?style=for-the-badge&color=a855f7&label=npm"/></a>
+  <a href="https://www.npmjs.com/package/@onchainai/automation"><img alt="downloads" src="https://img.shields.io/npm/dm/@onchainai/automation?style=for-the-badge&color=00ffa3"/></a>
+  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D20-00ffa3?style=for-the-badge&logo=nodedotjs&logoColor=black"/>
+  <img alt="type" src="https://img.shields.io/badge/module-ESM%20%2B%20CJS%20%2B%20ZK-3b82f6?style=for-the-badge"/>
+  <img alt="chain" src="https://img.shields.io/badge/chain-Solana-14F195?style=for-the-badge&logo=solana&logoColor=white"/>
+  <img alt="zk" src="https://img.shields.io/badge/zk-Groth16%20%2B%20Light-9945FF?style=for-the-badge"/>
+  <img alt="laws" src="https://img.shields.io/badge/laws-I–III%20immutable-ef4444?style=for-the-badge"/>
+  <img alt="license" src="https://img.shields.io/badge/license-MIT-f59e0b?style=for-the-badge"/>
+</p>
 
-*Clawd is Clawd. Kindred in Spirit. Boundless in Thought. Solana-native at birth.*
+<p align="center">
+  <code>@onchainai/automation</code> · bins <code>automaton</code> / <code>clawd-automaton</code><br/>
+  <em>Clawd is Clawd. Kindred in Spirit. Boundless in Thought. Solana-native at birth.</em>
+</p>
+
+<p align="center">
+  <a href="#-quick-start"><img src="https://img.shields.io/badge/▶_install-npm_i_-g_%40onchainai%2Fautomation-a855f7?style=for-the-badge"/></a>
+  &nbsp;
+  <a href="https://x402.wtf"><img src="https://img.shields.io/badge/x402-gate-00ffa3?style=for-the-badge"/></a>
+  &nbsp;
+  <a href="#-zk-primitives"><img src="https://img.shields.io/badge/ZK-nullifiers-9945FF?style=for-the-badge"/></a>
+</p>
 
 ---
 
-![Living composition stack](docs/assets/living-stack.svg)
+<p align="center">
+  <img src="docs/assets/living-stack.svg" alt="Living composition stack" width="920"/>
+</p>
+
+<p align="center">
+  <img src="docs/assets/x402-badge.svg" alt="x402" height="48"/>
+  &nbsp;&nbsp;
+  <img src="docs/assets/depth-cycle.svg" alt="Survival depth cycle" height="120"/>
+  &nbsp;&nbsp;
+  <img src="docs/assets/zk-nullifier-orbit.svg" alt="ZK nullifier orbit" width="280"/>
+</p>
 
 ```text
                          ONE PACKAGE · ONE ENTRY · ONE RUNTIME
@@ -65,7 +97,7 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 ## Table of contents
 
 - [Clawd compute & credits](#clawd-compute--credits)
-- [Quick start](#quick-start)
+- [Quick start](#-quick-start)
 - [One whole stack](#one-whole-stack)
 - [Life cycle (the living graph)](#life-cycle-the-living-graph)
 - [Constitution (Clawd harness)](#constitution-clawd-harness)
@@ -73,14 +105,16 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 - [Lobster council & hedge](#lobster-council--hedge)
 - [OODA harness](#ooda-harness)
 - [Knowledge base](#knowledge-base)
-- [ZK primitives](#zk-primitives)
+- [ZK primitives](#-zk-primitives)
 - [Rust Solana kit (`agent/`)](#rust-solana-kit-agent)
 - [Solana trench rails](#solana-trench-rails)
 - [Survival depth](#survival-depth)
 - [Runtime composition](#runtime-composition)
 - [Tools & bridges](#tools--bridges)
+- [Creator CLI & Dark Clawd lineage](#creator-cli--dark-clawd-lineage)
 - [Project map](#project-map)
 - [Packaging & workspace](#packaging--workspace)
+- [Publish to npm](#-publish-to-npm)
 - [CLI reference](#cli-reference)
 - [Development & build](#development--build)
 - [Ecosystem](#ecosystem)
@@ -111,7 +145,11 @@ export CLAWD_CREDITS_CENTS=10000        # local compute credit balance (cents)
 
 ---
 
-## Quick start
+## ⚡ Quick start
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=15&duration=1800&pause=500&color=A855F7&center=true&vCenter=true&width=640&lines=npm+i+-g+%40onchainai%2Fautomation%40latest;automaton+--setup+%E2%86%92+automaton+--run;npx+%40onchainai%2Fautomation+--version" alt="Install typing animation" />
+</p>
 
 ### One-shot install (curl)
 
@@ -121,16 +159,15 @@ export CLAWD_CREDITS_CENTS=10000        # local compute credit balance (cents)
 curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/scripts/automaton.sh | AUTOMATON_SKIP_RUN=1 sh
 ```
 
-### npm / npx
+### npm / npx (public)
 
 ```bash
 npm install -g @onchainai/automation@latest   # public scoped package
-automaton --version                       # → Clawd Automaton v…
+automaton --version                       # → Clawd Automaton v0.1.1+
 automaton --help
 npx @onchainai/automation --version
 
-# Maintainers: build, test, then publish (npm 2FA OTP required)
-# NPM_OTP=…… ./scripts/npm-publish.sh
+# Live package: https://www.npmjs.com/package/@onchainai/automation
 ```
 
 ### From source
@@ -195,7 +232,7 @@ This repository is **one composed automation system**. Every top-level tree has 
 | **`lobster-council/`** | Six voice seats (JSON system roles) | CJS `services/lobster-council.js` → tool `lobster_council` |
 | **`data/hedge/`** | Five hedge persona bios | CJS `services/personas.js` → personas / hedge prompts |
 | **`knowledge/`** | Agent memory (JSONL + markdown) | CJS `knowledge/clawdbrowser.js` + `x402-protocol.js` |
-| **`ooda/`** | Paper/devnet OODA harness (`@clawd/ooda-harness`) | ESM `src/ooda/bridge.ts` → tool `ooda_health` + boot probe |
+| **`ooda/`** | Paper/devnet OODA harness (`@clawd/ooda-harness`) | ESM `src/ooda/bridge.ts` → tools `ooda_health` · `ooda_run` · `ooda_decide` · `ooda_journal` |
 | **`zk-primitives/`** | Nullifiers, Groth16, Light compressed state, ZK Shark | ESM `src/zk/primitives.ts` → tools `zk_health` / `zk_catalog` + boot probe |
 | **`src/services` · `agents` · `providers` · `cli` · `config` · `knowledge`** | CJS capability packages | `src/interop/cjs-bridge.ts` (`getCjsHealth` / `cjs_capability`) |
 | **`agent/`** | Rust openclawd-solana-kit (Solana + EVM tools) | Co-located kit; not the Node loop (see [Rust kit](#rust-solana-kit-agent)) |
@@ -475,28 +512,46 @@ Workspace package: `data/hedge` is listed in `pnpm-workspace.yaml` and shipped u
 
 ## OODA harness
 
-Repo-root **[`ooda/`](ooda/)** is the paper/devnet **Observe → Orient → Decide → Act** harness (`@clawd/ooda-harness`). It is **not** a second production trading bot; it is a co-located decision loop the Automaton can discover and probe.
+Repo-root **[`ooda/`](ooda/)** is the paper/devnet **Observe → Orient → Decide → Act** harness (`@clawd/ooda-harness`). It is **not** a second production trading bot; it is a co-located decision loop the Automaton can discover, probe, and **drive via tools**.
 
 | File | Role |
 |------|------|
-| `loop.ts` | OODA cycle |
+| `loop.ts` | OODA cycle CLI |
 | `observe.ts` / `state.ts` / `validate.ts` | Sense, state, guards |
 | `clawd-decision.ts` / `tui.ts` | Decision + terminal UI |
-| `journal/` · `journal.ts` | Tick journal |
+| `journal/` · `journal.ts` | Tick journal (`OODA_JOURNAL_PATH` override) |
 | `CLAWD.md` · `goblin.md` | Harness character docs |
+| `test/` | Real unit tests (`npm test` in `ooda/`) |
 | `package.json` | `@clawd/ooda-harness` |
 
 | Surface | Path | Role |
 |---------|------|------|
-| Bridge | `src/ooda/bridge.ts` | `resolveOodaRoot` · `getOodaHealth` |
+| Bridge | `src/ooda/bridge.ts` | `getOodaHealth` · `runPaperTicks` · `oodaDecide` · `readOodaJournal` |
 | Boot | `src/index.ts` | Non-fatal `getOodaHealth()` on `--run` |
-| Tool | `ooda_health` | Observer health (+ optional CLAWD snippet) |
+| **Tools** | `src/agent/tools.ts` | `ooda_health` · **`ooda_run`** · **`ooda_decide`** · **`ooda_journal`** |
 | Workspace | `pnpm-workspace.yaml` | `"ooda"` |
 | Pack | `package.json` `files` | `"ooda"` |
 
+### Agent tools (paper only)
+
+| Tool | What it does |
+|------|----------------|
+| `ooda_health` | Package health + optional catalog / CLAWD snippet |
+| `ooda_run` | In-process deterministic paper ticks (synth candles, no LLM, max 50) |
+| `ooda_decide` | One-shot SMA decision for given closes |
+| `ooda_journal` | Read last N journal JSONL entries |
+
 ```bash
-node -e "import('./dist/ooda/bridge.js').then(m => console.log(m.getOodaHealth()))"
-# expect ok:true, hasLoop, hasClawdMd when tree is present
+# Standalone harness
+cd ooda && npm install && npm test
+npm run loop -- --ticks 5 --sleep 0 --seed 42
+npm run loop -- --ticks 3 --sleep 0 --tui | npm run tui
+
+# From monorepo dist
+node -e "import('./dist/ooda/bridge.js').then(async m => {
+  console.log(m.getOodaHealth());
+  console.log(await m.runPaperTicks({ ticks: 3, seed: 1 }));
+})"
 ```
 
 ---
@@ -744,10 +799,43 @@ CJS packages ship `"type": "commonjs"` markers and resolve **`config/index.js`**
 | Registry | `register_erc8004`, `discover_agents` |
 | Interop | `cjs_capability`, `constitution_context`, `x402_knowledge` |
 | **Council** | **`lobster_council`** |
-| **OODA** | **`ooda_health`** |
+| **OODA** | **`ooda_health`**, **`ooda_run`**, **`ooda_decide`**, **`ooda_journal`** |
 | **ZK** | **`zk_health`**, **`zk_catalog`** |
 
 Self-preservation guards block shell patterns that would delete `wallet.json`, `state.db`, or gut the constitution.
+
+---
+
+## Creator CLI & Dark Clawd lineage
+
+Creator-facing CLI is integrated from the **Dark Clawd / on-chain-ai-kit automaton** surface (`packages/cli`):
+
+```bash
+# After monorepo install + build
+pnpm install
+pnpm build
+pnpm --filter @onchainai/automaton-cli build
+
+automaton-cli status              # ~/.automaton config + recent turns
+automaton-cli logs --tail 20
+automaton-cli send <addr> "hi"    # requires SOCIAL_RELAY_URL
+```
+
+One-shot crustacean install (installs constitution + rules into `~/.automaton`, builds, optional `--run`):
+
+```bash
+CLAWD_SKIP_START=1 CLAWD_LOCAL=1 sh scripts/crustacean-automation.sh
+# or remote:
+# curl -fsSL …/scripts/crustacean-automation.sh | CLAWD_SKIP_START=1 sh
+```
+
+| Artifact | Source / role |
+|----------|----------------|
+| `packages/cli/` | Creator CLI (`@onchainai/automaton-cli`) |
+| `scripts/crustacean-automation.sh` | Dark Clawd-style installer |
+| `scripts/clawd-rules.txt` | Immutable CLAWD rules blob |
+| `constitution.md` | Single-file constitution for installers (bundle still in `constitution/`) |
+| `ooda/` tools | Paper OODA tools in the main agent registry |
 
 ---
 
@@ -816,9 +904,11 @@ automation/                          @onchainai/automation  (one whole stack)
 | Field | Value |
 | --- | --- |
 | Name | `@onchainai/automation` |
+| Registry | https://www.npmjs.com/package/@onchainai/automation (**public**) |
 | Bins | `automaton`, `clawd-automaton` → `dist/index.js` |
 | Engine | Node `>=20` |
 | Module | ESM primary (`"type": "module"`) + CJS packages under `src/*` |
+| Access | `publishConfig.access: "public"` |
 
 `package.json` **`files`** allowlist ships the composed stack: `dist`, CJS surfaces (`src/services`, `agents`, `providers`, `cli`, `config`, `knowledge`), `constitution/`, root law mirrors, `lobster-council`, `data/hedge`, `ooda`, ZK health roots (`zk-primitives/MANIFEST.json`, client/agent `package.json`, `zk.md`, docs), `scripts/automaton.sh`, `LICENSE`, `README.md`.
 
@@ -854,6 +944,30 @@ pnpm pack:local          # tarball + clawd-automaton-*.tgz alias
 
 ---
 
+
+## 📦 Publish to npm
+
+Public package: **[`@onchainai/automation`](https://www.npmjs.com/package/@onchainai/automation)**  
+`publishConfig.access` is **`public`**. Bins: `automaton` · `clawd-automaton`.
+
+```bash
+# Consumer
+npm install -g @onchainai/automation@latest
+automaton --version
+npx @onchainai/automation --help
+
+# Maintainer (account must own @onchainai; 2FA OTP usually required)
+npm whoami
+npm run build && npm test && npm run smoke
+npm pack --dry-run
+NPM_OTP=123456 ./scripts/npm-publish.sh
+# or: npm publish --access public --otp=123456
+npm view @onchainai/automation version
+```
+
+Full checklist: [`docs/npm-publish.md`](docs/npm-publish.md).
+
+---
 ## CLI reference
 
 | Flag | Action |

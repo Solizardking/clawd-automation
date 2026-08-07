@@ -68,6 +68,9 @@ describe("Composition graph structure", () => {
     expect(toolsSrc).toMatch(/constitution_context/);
     expect(toolsSrc).toMatch(/lobster_council/);
     expect(toolsSrc).toMatch(/ooda_health/);
+    expect(toolsSrc).toMatch(/ooda_run/);
+    expect(toolsSrc).toMatch(/ooda_decide/);
+    expect(toolsSrc).toMatch(/ooda_journal/);
     expect(toolsSrc).toMatch(/zk_health/);
     expect(toolsSrc).toMatch(/zk_catalog/);
   });
@@ -139,21 +142,49 @@ describe("Lobster council + OODA communication", () => {
   });
 
   it("ooda bridge resolves harness and CLAWD.md", async () => {
-    const { getOodaHealth, getOodaCatalog, getOodaClawdSnippet } = await import(
-      "../ooda/bridge.js"
-    );
+    const {
+      getOodaHealth,
+      getOodaCatalog,
+      getOodaClawdSnippet,
+      runPaperTicks,
+      oodaDecide,
+    } = await import("../ooda/bridge.js");
     const health = getOodaHealth();
     expect(health.ok, health.error).toBe(true);
     expect(health.hasLoop).toBe(true);
     expect(health.hasValidate).toBe(true);
     expect(health.hasClawdMd).toBe(true);
     expect(health.packageName).toBe("@clawd/ooda-harness");
-    const cat = getOodaCatalog() as { health: { ok: boolean }; scripts: object };
+    const cat = getOodaCatalog() as {
+      health: { ok: boolean };
+      scripts: object;
+      tools: string[];
+    };
     expect(cat.health.ok).toBe(true);
     expect(cat.scripts).toBeTruthy();
+    expect(cat.tools).toContain("ooda_run");
     const snippet = getOodaClawdSnippet(500);
     expect(snippet.length).toBeGreaterThan(20);
     expect(snippet).not.toMatch(/unavailable/);
+
+    // Real paper run through shipped bridge (deterministic, no LLM)
+    const paper = await runPaperTicks({ ticks: 3, seed: 7 });
+    expect(paper.ok, paper.error).toBe(true);
+    expect(paper.results.length).toBe(3);
+    expect(paper.mode).toBe("paper");
+    expect(paper.network).toBe("devnet");
+    for (const r of paper.results) {
+      expect(["applied", "rejected"]).toContain(r.outcome);
+      expect(Number.isFinite(r.price)).toBe(true);
+    }
+
+    const decide = await oodaDecide({
+      closes: [1000, 1000, 1000, 1000, 900],
+    });
+    expect(decide.ok, decide.error).toBe(true);
+    expect(decide.decision).toBeTruthy();
+    const d = decide.decision as { action: string };
+    expect(["hold", "open", "close"]).toContain(d.action);
   });
 
   it("constitution loader sees laws + root mirror paths", async () => {

@@ -5,7 +5,7 @@
 | Check | Status |
 |-------|--------|
 | Name | `@onchainai/automation` |
-| Current target | `0.1.1` (registry may lag until publish) |
+| Current target | `0.1.1` (**live** on npm as `latest`) |
 | Bins | `automaton`, `clawd-automaton` → `dist/index.js` (shebang + mode 0755) |
 | `files` allowlist | `dist/`, CJS under `src/{services,agents,…}`, `constitution/`, root law mirrors, `lobster-council/`, `data/hedge/`, `ooda/`, ZK health roots |
 | `prepublishOnly` | runs `npm run build` |

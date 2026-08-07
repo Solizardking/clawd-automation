@@ -4,11 +4,16 @@
   <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=800&size=18&duration=1700&pause=350&color=FFD166&center=true&vCenter=true&width=900&lines=observe+%E2%86%92+orient+%E2%86%92+decide+%E2%86%92+act;market+loop+state+and+TUI+for+agent+control" alt="OODA animated header" />
 </p>
 
-`ooda/` is the local observe-orient-decide-act loop that powers agent pulse checks, journals, and optional TUI output. **Paper-trading and devnet only** — no real funds, no mainnet connections.
+`ooda/` is the local observe-orient-decide-act harness inside the **`@onchainai/automation`** monorepo (`@clawd/ooda-harness`). It powers paper pulse checks, journals, and optional TUI output.
+
+**Paper-trading and devnet only** — no real funds, no mainnet connections, no key handling.
+
+Bridged into the Automaton runtime via `src/ooda/bridge.ts` (`getOodaHealth`, `ooda_health` tool).
 
 ## Quickstart
 
 ```bash
+# From monorepo root or this directory
 cd ooda
 npm install
 npm run lint                                     # tsc --noEmit
@@ -18,14 +23,12 @@ npm run loop -- --ticks 50 --sleep 0.25          # deterministic, no TUI
 npm run loop -- --ticks 200 --sleep 0.4 --tui | npm run tui
 npm run loop -- --goblin --ticks 100 --llm       # aggressive paper/devnet mode
 
-# Isolated journal path for CI / concurrent runs
-OODA_JOURNAL_PATH=/tmp/ooda-ticks.jsonl npm run loop -- --ticks 5 --sleep 0 --seed 42
+# Isolated journal path for CI / concurrent runs (do not clobber journal/ticks.jsonl)
+OODA_JOURNAL_PATH=./journal/ci-ticks.jsonl npm run loop -- --ticks 5 --sleep 0 --seed 42
 
-# Manual flags
-npx tsx ooda/loop.ts --ticks 100 --sleep 0.25 --llm
+# From monorepo root
+npx tsx ooda/loop.ts --ticks 100 --sleep 0.25
 npx tsx ooda/loop.ts --ticks 200 --sleep 0.4 --tui | npx tsx ooda/tui.ts
-
-# Goblin mode (aggressive, 0ms sleep, always uses LLM)
 npx tsx ooda/loop.ts --goblin --ticks 100 --llm
 ```
 
@@ -42,9 +45,25 @@ ooda/
 ├── tui.ts           ← ANSI TUI dashboard (reads JSONL from loop.ts --tui)
 ├── CLAWD.md         ← per-tick system prompt + config frontmatter
 ├── goblin.md        ← GOBLIN MODE variant config
+├── test/            ← real unit tests (npm test)
 └── journal/
     └── ticks.jsonl  ← append-only operational state
 ```
+
+## Automaton agent tools
+
+The monorepo runtime (`@onchainai/automation`) bridges this package via
+`src/ooda/bridge.ts` and exposes **first-class tools** to the agent loop:
+
+| Tool | Purpose |
+|------|---------|
+| `ooda_health` | Health + catalog of this package |
+| `ooda_run` | Run N deterministic paper ticks in-process (no LLM) |
+| `ooda_decide` | One-shot SMA decision from candle closes |
+| `ooda_journal` | Read trailing `journal/ticks.jsonl` entries |
+
+All tools are **paper / devnet only** — same safety contract as this harness.
+Integrated with Dark Clawd automaton lineage (creator CLI + crustacean installer at monorepo root).
 
 ## File Reference
 
@@ -245,6 +264,7 @@ All enforced in code — not just prompt guidance:
 
 | Variable | Used by | Description |
 | --- | --- | --- |
+| `OODA_JOURNAL_PATH` | journal | Override JSONL path (tests/CI isolation) |
 | `XAI_API_KEY` | clawd-decision | Grok API key (priority 1) |
 | `XAI_MODEL` | clawd-decision | Override Grok model |
 | `DEEPSEEK_API_KEY` | clawd-decision | DeepSeek key (priority 2) |
@@ -256,4 +276,18 @@ All enforced in code — not just prompt guidance:
 | `ANTHROPIC_API_KEY` | clawd-decision | Claude key (priority 4) |
 | `ANTHROPIC_MODEL` | clawd-decision | Override Claude model |
 | `SOLANA_RPC_URL` | loop | RPC URL (mainnet URLs rejected) |
-| `MAINNET_OK` | observe | Set to `1` to bypass mainnet guard |
+| `MAINNET_OK` | observe | Set to `1` to bypass mainnet guard (still no signing path) |
+
+## Monorepo integration
+
+| Surface | Role |
+| --- | --- |
+| `pnpm-workspace.yaml` | Lists `"ooda"` workspace package |
+| Root `package.json` `files` | Ships `ooda` with the Automaton pack |
+| `src/ooda/bridge.ts` | `getOodaHealth()` / catalog for boot + tools |
+| Tool | `ooda_health` on the Automaton primary tools surface |
+
+```bash
+# From monorepo root (after npm run build)
+node -e "import('./dist/ooda/bridge.js').then(m=>console.log(m.getOodaHealth()))"
+```

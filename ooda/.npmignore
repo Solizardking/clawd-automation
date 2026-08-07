@@ -4,5 +4,8 @@ package-lock.json
 *.log
 .env
 .env.*
+# Keep tests in monorepo; exclude from any future pack of this private package
 test/
 *.test.ts
+journal/ci-*.jsonl
+*.jsonl.bak

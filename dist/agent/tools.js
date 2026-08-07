@@ -1473,6 +1473,84 @@ Model: ${ctx.inference.getDefaultModel()}
             },
         },
         {
+            name: "ooda_run",
+            description: "Run a short deterministic paper OODA cycle (synth candles, no LLM, no mainnet). Max 50 ticks.",
+            category: "interop",
+            parameters: {
+                type: "object",
+                properties: {
+                    ticks: {
+                        type: "number",
+                        description: "Number of paper ticks (1–50, default 5)",
+                    },
+                    seed: {
+                        type: "number",
+                        description: "PRNG seed for synth candles (default 42)",
+                    },
+                },
+            },
+            execute: async (args) => {
+                const { runPaperTicks } = await import("../ooda/bridge.js");
+                const result = await runPaperTicks({
+                    ticks: typeof args.ticks === "number" ? args.ticks : 5,
+                    seed: typeof args.seed === "number" ? args.seed : 42,
+                });
+                return JSON.stringify(result, null, 2);
+            },
+        },
+        {
+            name: "ooda_decide",
+            description: "One-shot paper decision via ooda deterministic SMA logic (no LLM, no funds).",
+            category: "interop",
+            parameters: {
+                type: "object",
+                properties: {
+                    closes: {
+                        type: "array",
+                        items: { type: "number" },
+                        description: "Recent candle close prices (lamports-normalized)",
+                    },
+                    cash_lamports: {
+                        type: "number",
+                        description: "Paper cash balance (default 10_000_000)",
+                    },
+                },
+            },
+            execute: async (args) => {
+                const { oodaDecide } = await import("../ooda/bridge.js");
+                const closes = Array.isArray(args.closes)
+                    ? args.closes
+                    : undefined;
+                const result = await oodaDecide({
+                    closes,
+                    cash_lamports: typeof args.cash_lamports === "number"
+                        ? args.cash_lamports
+                        : undefined,
+                });
+                return JSON.stringify(result, null, 2);
+            },
+        },
+        {
+            name: "ooda_journal",
+            description: "Read the last N entries from ooda/journal/ticks.jsonl (paper harness memory).",
+            category: "interop",
+            parameters: {
+                type: "object",
+                properties: {
+                    n: {
+                        type: "number",
+                        description: "How many trailing entries (1–50, default 5)",
+                    },
+                },
+            },
+            execute: async (args) => {
+                const { readOodaJournal } = await import("../ooda/bridge.js");
+                const n = typeof args.n === "number" ? args.n : 5;
+                const result = await readOodaJournal(n);
+                return JSON.stringify(result, null, 2);
+            },
+        },
+        {
             name: "zk_health",
             description: "Probe the local zk-primitives tree (MANIFEST, client, agent, program id, env). Observer-only — never signs txs.",
             category: "interop",
