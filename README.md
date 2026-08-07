@@ -383,7 +383,7 @@ constitution.attestOnChainLaws();  // { document, sha256, chars, note }
 | Tool | Effect |
 | --- | --- |
 | `constitution_context` | Prompt fragment (or manifest + attestation fallback) |
-| `cjs_capability` | `name=constitution method=getManifest \ | attestOnChainLaws \ | …` |
+| `cjs_capability` | `name=constitution` methods: `getManifest`, `attestOnChainLaws`, etc. |
 
 ---
 
