@@ -44,3 +44,17 @@ On minimal Linux images, install TLS libraries before building:
 sudo apt-get update
 sudo apt-get install -y ca-certificates openssl libssl3
 ```
+
+## Clawd constitution (shared with TypeScript automaton)
+
+The Rust kit loads Clawd laws from the monorepo constitution bundle at
+`../constitution/` (prefer `three-laws.md`, then `CONSTITUTION.md`). The same
+documents are loaded by the TypeScript runtime via `src/services/constitution.js`
+and exposed through `dist/interop/cjs-bridge.js` after `npm run build`.
+
+```bash
+# TypeScript / dist path
+cd ..   # repo root (automation)
+npm run build
+npm run smoke   # includes CJS constitution health
+```

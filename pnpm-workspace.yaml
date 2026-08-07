@@ -7,6 +7,7 @@ packages:
   - "src/services"
   - "src/knowledge"
   - "data/hedge"
+  - "ooda"
   - "zk-primitives"
   - "zk-primitives/client"
   - "zk-primitives/agent"

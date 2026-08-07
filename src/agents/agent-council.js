@@ -4,6 +4,15 @@ const DeveloperAgent = require('./developer-agent');
 const ShoppingAgent = require('./shopping-agent');
 const aiProvider = require('../providers/unified-ai');
 
+/** Optional lobster-council voice roster (repo-root lobster-council/). */
+function loadLobsterCouncil() {
+  try {
+    return require('../services/lobster-council');
+  } catch {
+    return null;
+  }
+}
+
 class AgentCouncil {
   constructor() {
     this.agents = {
@@ -15,6 +24,47 @@ class AgentCouncil {
 
     this.sessions = new Map();
     this.votingHistory = [];
+    this.lobsterCouncil = loadLobsterCouncil();
+  }
+
+  /**
+   * Lobster Council status (voice seats) — composes with operational agents.
+   */
+  getLobsterCouncilStatus() {
+    if (!this.lobsterCouncil || typeof this.lobsterCouncil.getManifest !== 'function') {
+      return { ok: false, error: 'lobster-council service unavailable' };
+    }
+    try {
+      return { ok: true, ...this.lobsterCouncil.getManifest() };
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
+  }
+
+  /**
+   * Route a narrative task to a lobster seat + operational agent type.
+   */
+  briefWithLobster(task) {
+    const agentType = this.classifyTask(task);
+    let lobster = null;
+    if (this.lobsterCouncil && typeof this.lobsterCouncil.selectMember === 'function') {
+      try {
+        lobster = this.lobsterCouncil.selectMember(task);
+      } catch {
+        lobster = null;
+      }
+    }
+    return {
+      operationalAgent: agentType,
+      lobster: lobster
+        ? {
+            id: lobster.id,
+            title: lobster.title,
+            seat: lobster.seat,
+            systemRolePreview: String(lobster.systemRole || '').slice(0, 280),
+          }
+        : null,
+    };
   }
 
   /**

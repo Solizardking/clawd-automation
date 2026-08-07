@@ -1514,7 +1514,7 @@ Model: ${ctx.inference.getDefaultModel()}
           name: {
             type: "string",
             description:
-              "Capability: constitution | personas | skillhub | knowledge | x402_knowledge | config | cli_commands | agents | base_agent | providers | unified_ai",
+              "Capability: constitution | personas | lobster_council | skillhub | knowledge | x402_knowledge | config | cli_commands | agents | base_agent | providers | unified_ai",
           },
           method: {
             type: "string",
@@ -1623,6 +1623,110 @@ Model: ${ctx.inference.getDefaultModel()}
           null,
           2,
         );
+      },
+    },
+    {
+      name: "lobster_council",
+      description:
+        "Lobster Council voice roster (lobster-council/*.json): list seats, load systemRole, or full council prompt. Complements hedge personas.",
+      category: "interop",
+      parameters: {
+        type: "object",
+        properties: {
+          action: {
+            type: "string",
+            description: "manifest | list | member | prompt | council | select | compose",
+          },
+          id: {
+            type: "string",
+            description: "Member id (soltoshi, valueclaw, latticeclaw, moatmaw, activistpinch, disruptiveshell)",
+          },
+          task: {
+            type: "string",
+            description: "Task text for select routing",
+          },
+          max_chars: {
+            type: "number",
+            description: "Max characters for prompts",
+          },
+        },
+        required: ["action"],
+      },
+      execute: async (args) => {
+        const { invokeCjsCapability } = await import("../interop/cjs-bridge.js");
+        const action = String(args.action || "manifest");
+        const maxChars = (args.max_chars as number) || 6000;
+        const map: Record<string, { method: string; args: unknown[] }> = {
+          manifest: { method: "getManifest", args: [] },
+          list: { method: "listMembers", args: [] },
+          member: { method: "loadMember", args: [args.id] },
+          prompt: {
+            method: "getMemberPrompt",
+            args: [args.id, { maxChars }],
+          },
+          council: { method: "getCouncilPrompt", args: [{ maxChars }] },
+          select: { method: "selectMember", args: [args.task || ""] },
+          compose: { method: "composeWithHedge", args: [args.id] },
+        };
+        const call = map[action];
+        if (!call) {
+          return `Unknown action '${action}'. Use: ${Object.keys(map).join(", ")}`;
+        }
+        if (
+          (action === "member" || action === "prompt" || action === "compose") &&
+          !args.id
+        ) {
+          return "id required for this action";
+        }
+        const result = invokeCjsCapability(
+          "lobster_council",
+          call.method,
+          call.args,
+        );
+        if (!result.ok) return `lobster_council failed: ${result.error}`;
+        const out =
+          typeof result.result === "string"
+            ? result.result
+            : JSON.stringify(result.result, null, 2);
+        return out.length > 10000 ? out.slice(0, 10000) + "\n...[truncated]" : out;
+      },
+    },
+    {
+      name: "ooda_health",
+      description:
+        "Probe the local ooda/ harness (paper/devnet OODA loop, CLAWD.md, journal). Observer-only.",
+      category: "interop",
+      parameters: {
+        type: "object",
+        properties: {
+          catalog: {
+            type: "boolean",
+            description: "If true, return full catalog with file sizes",
+          },
+          clawd_snippet: {
+            type: "boolean",
+            description: "If true, include ooda/CLAWD.md snippet",
+          },
+        },
+      },
+      execute: async (args) => {
+        const {
+          getOodaHealth,
+          getOodaCatalog,
+          getOodaClawdSnippet,
+        } = await import("../ooda/bridge.js");
+        if (args.catalog) {
+          return JSON.stringify(getOodaCatalog(), null, 2);
+        }
+        const health = getOodaHealth();
+        if (args.clawd_snippet) {
+          return JSON.stringify(
+            { health, clawd: getOodaClawdSnippet(2500) },
+            null,
+            2,
+          );
+        }
+        return JSON.stringify(health, null, 2);
       },
     },
     {

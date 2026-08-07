@@ -15,6 +15,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '../../data/hedge');
+/** Voice-council overlays (same ids + disruptiveshell) live next to hedge bios. */
+const COUNCIL_ROOT = path.resolve(__dirname, '../../lobster-council');
 
 const PERSONAS = [
   { id: 'activistpinch', file: 'activistpinch.json', name: 'ActivistPinch', role: 'Activist Claw Lobster' },
@@ -170,9 +172,17 @@ function getAllPersonaPrompts({ maxChars = 12000 } = {}) {
 function getManifest() {
   const personas = listPersonas();
   const present = personas.filter((p) => p.exists);
+  let council = null;
+  try {
+    const lc = require('./lobster-council');
+    council = typeof lc.getManifest === 'function' ? lc.getManifest() : null;
+  } catch (err) {
+    council = { error: err.message };
+  }
   return {
     name: 'Hedge Persona Bundle',
     root: ROOT,
+    councilRoot: COUNCIL_ROOT,
     personaCount: personas.length,
     present: present.length,
     missing: personas.filter((p) => !p.exists).map((p) => p.id),
@@ -184,6 +194,7 @@ function getManifest() {
       bytes: p.bytes,
     })),
     index: getIndex(),
+    lobsterCouncil: council,
   };
 }
 
@@ -218,6 +229,7 @@ function clearCache() {
 
 module.exports = {
   ROOT,
+  COUNCIL_ROOT,
   PERSONAS,
   ensureBundle,
   loadPersona,

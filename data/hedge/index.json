@@ -1,13 +1,17 @@
 {
   "name": "@openclawd/hedge",
   "version": "1.0.0",
-  "description": "Hedge persona set for OpenClawd agents.",
+  "description": "Hedge persona set for OpenClawd agents. Voice overlays live in ../../lobster-council (includes disruptiveshell).",
+  "lobster_council": "../../lobster-council",
   "local_personas": [
     "activistpinch.json",
     "latticeclaw.json",
     "moatmaw.json",
     "soltoshi.json",
     "valueclaw.json"
+  ],
+  "council_only_voices": [
+    "disruptiveshell.json"
   ],
   "canonical_characters": [
     "../agents/characters/alice-character-json.json",

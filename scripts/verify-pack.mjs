@@ -102,7 +102,11 @@ const contents = r.combined;
 const mustInclude = [
   "package/dist/index.js",
   "package/src/services/constitution.js",
+  "package/src/services/lobster-council.js",
   "package/constitution/",
+  "package/lobster-council/",
+  "package/data/hedge/",
+  "package/ooda/loop.ts",
   "package/zk-primitives/MANIFEST.json",
 ];
 const mustExclude = ["package/src/__tests__", "package/node_modules"];

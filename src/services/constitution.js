@@ -10,6 +10,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '../../constitution');
+/** Root-level mirrors of the same docs (CONSTITUTION.md, SOUL.md, …) — keep in sync. */
+const ROOT_MIRROR = path.resolve(__dirname, '../..');
 
 const DOCUMENTS = [
   {
@@ -81,11 +83,16 @@ const DOCUMENTS = [
 const cache = new Map();
 
 function docPath(meta) {
-  return path.join(ROOT, meta.file);
+  const primary = path.join(ROOT, meta.file);
+  if (fs.existsSync(primary)) return primary;
+  // Fallback: repo-root copy (package root ships both for discoverability)
+  const mirror = path.join(ROOT_MIRROR, meta.file);
+  if (fs.existsSync(mirror)) return mirror;
+  return primary;
 }
 
 function ensureBundle() {
-  if (!fs.existsSync(ROOT)) {
+  if (!fs.existsSync(ROOT) && !fs.existsSync(path.join(ROOT_MIRROR, 'CONSTITUTION.md'))) {
     throw new Error('constitution/ bundle missing — inject go-bot docs first');
   }
   return ROOT;
@@ -141,6 +148,7 @@ function getManifest() {
   return {
     name: 'Clawd Constitution Bundle',
     root: ROOT,
+    rootMirror: ROOT_MIRROR,
     documentCount: docs.length,
     present: docs.filter((d) => d.exists).length,
     missing,
