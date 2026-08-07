@@ -1,0 +1,10 @@
+/Users/8bit/automation/agent/target/debug/deps/futures_channel-7dc733ab8b650046.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lock.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/queue.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/sink_impl.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/oneshot.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libfutures_channel-7dc733ab8b650046.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lock.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/queue.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/sink_impl.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/oneshot.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/lock.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/mod.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/queue.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/mpsc/sink_impl.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-channel-0.3.33/src/oneshot.rs:

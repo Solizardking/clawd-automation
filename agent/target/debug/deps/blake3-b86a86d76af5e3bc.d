@@ -1,0 +1,13 @@
+/Users/8bit/automation/agent/target/debug/deps/blake3-b86a86d76af5e3bc.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/guts.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/hazmat.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/platform.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/ffi_neon.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/portable.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/traits.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/io.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/join.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libblake3-b86a86d76af5e3bc.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/guts.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/hazmat.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/platform.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/ffi_neon.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/portable.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/traits.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/io.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/join.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/guts.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/hazmat.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/platform.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/ffi_neon.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/portable.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/traits.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/io.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.6/src/join.rs:

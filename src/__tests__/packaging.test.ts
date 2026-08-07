@@ -76,6 +76,39 @@ describe("package metadata for npm publish", () => {
       expect(existsSync(abs), `missing on disk: ${f}`).toBe(true);
     }
   });
+
+  it(".npmignore excludes maps, tests, env, and tarballs", () => {
+    const ignorePath = path.join(ROOT, ".npmignore");
+    expect(existsSync(ignorePath)).toBe(true);
+    const body = readFileSync(ignorePath, "utf8");
+    expect(body).toMatch(/\.map/);
+    expect(body).toMatch(/__tests__/);
+    expect(body).toMatch(/\.env/);
+    expect(body).toMatch(/\*\.tgz/);
+  });
+
+  it("npm pack dry-run omits source maps and tests; includes CLI entry", () => {
+    // postbuild must have written dist/.npmignore for nested map exclusion
+    expect(existsSync(path.join(ROOT, "dist", ".npmignore"))).toBe(true);
+
+    const r = spawnSync("npm", ["pack", "--dry-run"], {
+      encoding: "utf8",
+      cwd: ROOT,
+      env: process.env,
+      maxBuffer: 20 * 1024 * 1024,
+    });
+    expect(r.status, r.stderr || r.stdout).toBe(0);
+    const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+    // npm prints "npm notice path" lines for each packed file
+    expect(out).toMatch(/dist\/index\.js/);
+    expect(out).toMatch(/src\/services\/constitution\.js/);
+    expect(out).toMatch(/constitution\//);
+    // Exclusions driven by .npmignore / dist/.npmignore
+    expect(out).not.toMatch(/\.js\.map\b/);
+    expect(out).not.toMatch(/\.d\.ts\.map\b/);
+    expect(out).not.toMatch(/__tests__/);
+    expect(out).not.toMatch(/(^|\s)\.env(\s|$)/);
+  });
 });
 
 describe("shipped CLI entry", () => {

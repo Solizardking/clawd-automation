@@ -123,6 +123,17 @@ if (!r.stdout.startsWith("#!/usr/bin/env node")) {
   process.exit(1);
 }
 
+// .npmignore must strip maps / tests from the published tarball
+const packedMaps = contents.split("\n").filter((l) => l.endsWith(".map"));
+if (packedMaps.length > 0) {
+  console.error("tarball still contains source maps (npmignore failed):", packedMaps.slice(0, 5));
+  process.exit(1);
+}
+if (contents.split("\n").some((l) => l.includes("__tests__"))) {
+  console.error("tarball contains __tests__ (should be excluded by .npmignore)");
+  process.exit(1);
+}
+
 // 4. clean install from tarball
 const clean = path.join(evidenceDir, "clean-install");
 rmSync(clean, { recursive: true, force: true });

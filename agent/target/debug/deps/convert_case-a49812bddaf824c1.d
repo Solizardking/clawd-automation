@@ -1,0 +1,11 @@
+/Users/8bit/automation/agent/target/debug/deps/convert_case-a49812bddaf824c1.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/boundary.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/case.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/converter.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/pattern.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libconvert_case-a49812bddaf824c1.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/boundary.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/case.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/converter.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/pattern.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libconvert_case-a49812bddaf824c1.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/boundary.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/case.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/converter.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/pattern.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/boundary.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/case.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/converter.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/convert_case-0.10.0/src/pattern.rs:

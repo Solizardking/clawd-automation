@@ -1,5 +1,6 @@
 pub mod agent;
 pub mod balance;
+pub mod blockhash;
 pub mod constants;
 pub mod data;
 pub mod deploy_token;

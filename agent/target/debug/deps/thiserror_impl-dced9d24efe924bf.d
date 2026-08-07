@@ -1,0 +1,17 @@
+/Users/8bit/automation/agent/target/debug/deps/thiserror_impl-dced9d24efe924bf.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/ast.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/attr.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/expand.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fallback.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fmt.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/generics.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/prop.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/scan_expr.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/unraw.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/valid.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libthiserror_impl-dced9d24efe924bf.dylib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/ast.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/attr.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/expand.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fallback.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fmt.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/generics.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/prop.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/scan_expr.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/unraw.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/valid.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/ast.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/attr.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/expand.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fallback.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/fmt.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/generics.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/prop.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/scan_expr.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/unraw.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.19/src/valid.rs:
+
+# env-dep:CARGO_PKG_VERSION_PATCH=19

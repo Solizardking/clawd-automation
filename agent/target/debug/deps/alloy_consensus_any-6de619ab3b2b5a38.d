@@ -1,0 +1,10 @@
+/Users/8bit/automation/agent/target/debug/deps/alloy_consensus_any-6de619ab3b2b5a38.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/header.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/envelope.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/../README.md
+
+/Users/8bit/automation/agent/target/debug/deps/liballoy_consensus_any-6de619ab3b2b5a38.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/header.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/envelope.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/../README.md
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/mod.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/block/header.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/mod.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/receipt/envelope.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-consensus-any-0.9.2/src/../README.md:

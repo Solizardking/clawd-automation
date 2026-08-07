@@ -32,11 +32,14 @@ pub fn transaction_to_base64(
 #[async_trait]
 impl TransactionSigner for PrivySigner {
     fn address(&self) -> String {
-        self.session.wallet_address.clone()
+        self.session
+            .wallet_address
+            .clone()
+            .unwrap_or_default()
     }
 
     fn pubkey(&self) -> String {
-        self.session.pubkey.clone()
+        self.session.pubkey.clone().unwrap_or_default()
     }
 
     #[cfg(feature = "solana")]

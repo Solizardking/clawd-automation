@@ -1,0 +1,10 @@
+/Users/8bit/automation/agent/target/debug/deps/tokio_tungstenite-6ad3513ef8ce27c5.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/compat.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/connect.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/handshake.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/stream.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/tls.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libtokio_tungstenite-6ad3513ef8ce27c5.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/compat.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/connect.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/handshake.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/stream.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/tls.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/compat.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/connect.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/handshake.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/stream.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-tungstenite-0.20.1/src/tls.rs:

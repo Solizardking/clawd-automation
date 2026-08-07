@@ -3,7 +3,7 @@
 From this repository:
 
 ```bash
-cd Kit
+cd agent
 cargo check
 ```
 
@@ -29,7 +29,7 @@ If you are embedding the crate from a sibling project, depend on it by path:
 
 ```toml
 [dependencies]
-openclawd-solana-kit = { path = "../Kit", features = ["solana"] }
+openclawd-solana-kit = { path = "../agent", features = ["solana"] }
 ```
 
 Custom tools use the same macro system as the built-in tools:

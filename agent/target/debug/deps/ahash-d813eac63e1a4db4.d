@@ -1,0 +1,12 @@
+/Users/8bit/automation/agent/target/debug/deps/ahash-d813eac63e1a4db4.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/convert.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/fallback_hash.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/operations.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/random_state.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/specialize.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_map.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_set.rs
+
+/Users/8bit/automation/agent/target/debug/deps/libahash-d813eac63e1a4db4.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/convert.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/fallback_hash.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/operations.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/random_state.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/specialize.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_map.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_set.rs
+
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/lib.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/convert.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/fallback_hash.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/operations.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/random_state.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/specialize.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_map.rs:
+/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12/src/hash_set.rs:

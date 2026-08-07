@@ -3,9 +3,8 @@ use blockhash_cache::{inject_blockhash_into_encoded_tx, BLOCKHASH_CACHE};
 use rig_tool_macro::tool;
 
 use crate::common::wrap_unsafe;
+use crate::cross_chain::lifi::LiFi;
 use crate::signer::SignerContext;
-
-use lifi::LiFi;
 
 // TODO support sponsored transactions here
 // it would save a lot of gas if we could drip on any chain,

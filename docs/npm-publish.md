@@ -65,8 +65,15 @@ npx @onchainai/automation --version
 ## Local pack without registry
 
 ```bash
+npm run build
 npm pack
+# Primary tarball name from package name (@onchainai/automation):
 npm install -g ./onchainai-automation-0.1.0.tgz
+# Legacy alias path still works if you copy the same tarball:
+# cp onchainai-automation-0.1.0.tgz clawd-automaton-0.1.0.tgz
+# npm install -g ./clawd-automaton-0.1.0.tgz
 # or: node scripts/verify-pack.mjs ./pack-evidence
 ```
+
+`.npmignore` (plus `dist/.npmignore` written at postbuild) strips `*.map`, `__tests__`, `.env`, and `*.tgz` from the published payload.
 
