@@ -20,6 +20,7 @@ pub mod evm;
 pub mod cross_chain;
 
 pub mod common;
+pub mod constitution;
 pub mod data;
 pub mod dexscreener;
 pub mod reasoning_loop;
@@ -36,7 +37,12 @@ mod module_graph_tests {
     fn core_modules_are_linked() {
         let _ = std::any::type_name::<crate::reasoning_loop::ReasoningLoop>();
         let _ = std::any::type_name::<crate::signer::SignerContext>();
-        let _ = crate::common::PREAMBLE_COMMON;
+        let preamble = crate::common::preamble_common();
+        assert!(
+            preamble.contains("CONSTITUTION") || preamble.to_lowercase().contains("never harm"),
+            "preamble must embed Clawd constitution"
+        );
+        let _ = crate::constitution::load_constitution();
         // story is always in the graph (criterion: orphan modules wired)
         let _ = std::any::type_name::<crate::story::license::GetLicenseTokenResponse>();
         // data + dexscreener are always compiled
