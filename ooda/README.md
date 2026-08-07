@@ -11,10 +11,15 @@
 ```bash
 cd ooda
 npm install
+npm run lint                                     # tsc --noEmit
+npm test                                         # real unit tests (state/validate/observe/decision/TUI)
 
 npm run loop -- --ticks 50 --sleep 0.25          # deterministic, no TUI
 npm run loop -- --ticks 200 --sleep 0.4 --tui | npm run tui
 npm run loop -- --goblin --ticks 100 --llm       # aggressive paper/devnet mode
+
+# Isolated journal path for CI / concurrent runs
+OODA_JOURNAL_PATH=/tmp/ooda-ticks.jsonl npm run loop -- --ticks 5 --sleep 0 --seed 42
 
 # Manual flags
 npx tsx ooda/loop.ts --ticks 100 --sleep 0.25 --llm
