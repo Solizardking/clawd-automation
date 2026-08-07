@@ -1,0 +1,9 @@
+[book]
+authors = ["On-Chain AI Kit contributors"]
+language = "en"
+multilingual = false
+src = "."
+title = "On-Chain AI Kit"
+
+[output.html]
+site-url = "/"

@@ -44,8 +44,8 @@ function runBin(args: string[]): { status: number | null; stdout: string; stderr
 }
 
 describe("package metadata for npm publish", () => {
-  it("is scoped @clawd/automaton with public publishConfig", () => {
-    expect(pkg.name).toBe("@clawd/automaton");
+  it("is scoped @onchainai/automation with public publishConfig", () => {
+    expect(pkg.name).toBe("@onchainai/automation");
     expect(pkg.version).toMatch(/^\d+\.\d+\.\d+/);
     expect(pkg.publishConfig?.access).toBe("public");
   });

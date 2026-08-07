@@ -41,7 +41,7 @@ export async function spawnChild(clawd, identity, db, genesis) {
     // 2. Install Node.js and the automaton runtime in the child sandbox
     await execInSandbox(clawd, sandbox.id, "apt-get update -qq && apt-get install -y -qq nodejs npm git curl", 120000);
     // 3. Install the automaton runtime
-    await execInSandbox(clawd, sandbox.id, "npm install -g @clawd/automaton@latest 2>/dev/null || true", 60000);
+    await execInSandbox(clawd, sandbox.id, "npm install -g @onchainai/automation@latest 2>/dev/null || true", 60000);
     // 4. Write the genesis configuration
     const genesisJson = JSON.stringify({
         name: genesis.name,
