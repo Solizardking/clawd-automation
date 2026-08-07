@@ -21,7 +21,7 @@ const SHOW_CURSOR = '\x1b[?25h';
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-interface TickEvent {
+export interface TickEvent {
   event: 'tick' | 'start' | 'done' | 'killswitch';
   tick?: number;
   now?: string;
@@ -36,7 +36,7 @@ interface TickEvent {
   ticks?: number;
 }
 
-interface DisplayState {
+export interface DisplayState {
   lastTick: number;
   totalTicks: number;
   price: number;
@@ -95,132 +95,199 @@ function pnlColor(n: number): string {
   return n >= 0 ? chalk.green(s) : chalk.red(s);
 }
 
-function render(): void {
+// ─── Pure event apply (importable for tests) ──────────────────────────────────
+
+/** Apply a structured loop event to display state. Returns true if state changed. */
+export function applyTickEvent(state: DisplayState, ev: TickEvent): boolean {
+  if (ev.event === 'start') {
+    state.totalTicks = ev.ticks ?? 50;
+    return true;
+  }
+  if (ev.event === 'tick') {
+    state.lastTick = ev.tick ?? state.lastTick;
+    state.price = ev.price ?? state.price;
+    state.priceHistory.push(state.price);
+    if (state.priceHistory.length > 60) state.priceHistory.shift();
+    state.lastDecision = ev.decision ?? state.lastDecision;
+    state.lastOutcome = ev.outcome ?? '';
+    state.totalPnl = ev.total_pnl_lamports ?? state.totalPnl;
+    state.cash = ev.cash_lamports ?? state.cash;
+    state.openPositions = ev.positions ?? state.openPositions;
+    state.consecutiveLosses = ev.consecutive_losses ?? state.consecutiveLosses;
+
+    const action = ev.decision?.action ?? 'hold';
+    const actionColor =
+      action === 'open' ? chalk.green : action === 'close' ? chalk.red : chalk.gray;
+    state.log.push(
+      `  ${chalk.gray(new Date(ev.now ?? '').toTimeString().slice(0, 8))} ` +
+        `[${chalk.yellow('T' + ev.tick)}] ` +
+        `${actionColor(action.toUpperCase().padEnd(5))} ` +
+        chalk.white((ev.decision?.reason ?? '').slice(0, 55)),
+    );
+    return true;
+  }
+  if (ev.event === 'killswitch') {
+    state.killswitch = true;
+    state.done = true;
+    return true;
+  }
+  if (ev.event === 'done') {
+    state.done = true;
+    return true;
+  }
+  return false;
+}
+
+/** Render display state to a single multi-line string (no ANSI clear). */
+export function renderDisplay(state: DisplayState, columns = 100): string {
   const lines: string[] = [];
-  const w = process.stdout.columns ?? 100;
+  const w = columns;
   const border = chalk.magenta('═'.repeat(w));
 
-  // Header
   lines.push(chalk.magenta('╔') + border + chalk.magenta('╗'));
   const title = '  🦞 CLAWD OODA — Paper Loop  ·  devnet  ·  paper  ';
   const titlePad = Math.max(0, w - title.length);
-  lines.push(chalk.magenta('║') + chalk.bold.magenta(title) + ' '.repeat(titlePad) + chalk.magenta('║'));
+  lines.push(
+    chalk.magenta('║') +
+      chalk.bold.magenta(title) +
+      ' '.repeat(titlePad) +
+      chalk.magenta('║'),
+  );
   lines.push(chalk.magenta('╠') + border + chalk.magenta('╣'));
 
-  // Progress bar
-  const pct = ds.totalTicks > 0 ? ds.lastTick / ds.totalTicks : 0;
+  const pct = state.totalTicks > 0 ? state.lastTick / state.totalTicks : 0;
   const barW = Math.max(10, w - 20);
   const filled = Math.round(pct * barW);
-  const bar = chalk.cyan('█'.repeat(filled)) + chalk.gray('░'.repeat(barW - filled));
-  const pctStr = `  Tick ${ds.lastTick}/${ds.totalTicks} [${bar}] ${Math.round(pct * 100)}%`;
-  const pctPad = Math.max(0, w - pctStr.replace(/\x1b\[[0-9;]*m/g, '').length);
+  const bar =
+    chalk.cyan('█'.repeat(filled)) + chalk.gray('░'.repeat(barW - filled));
+  const pctStr = `  Tick ${state.lastTick}/${state.totalTicks} [${bar}] ${Math.round(pct * 100)}%`;
+  const pctPad = Math.max(
+    0,
+    w - pctStr.replace(/\x1b\[[0-9;]*m/g, '').length,
+  );
   lines.push(chalk.magenta('║') + pctStr + ' '.repeat(pctPad) + chalk.magenta('║'));
 
-  // Price + sparkline
-  const priceStr = ds.price > 0 ? `$${(ds.price / 1000).toFixed(3)}` : '---';
-  const spark = sparkline(ds.priceHistory, Math.min(40, w - 30));
+  const priceStr = state.price > 0 ? `$${(state.price / 1000).toFixed(3)}` : '---';
+  const spark = sparkline(state.priceHistory, Math.min(40, w - 30));
   const priceRow = `  SOL ~${chalk.yellow.bold(priceStr)}  ${spark}`;
-  const priceRowPlain = `  SOL ~${priceStr}  ` + '·'.repeat(Math.min(40, w - 30));
+  const priceRowPlain =
+    `  SOL ~${priceStr}  ` + '·'.repeat(Math.min(40, w - 30));
   const pricePad = Math.max(0, w - priceRowPlain.length);
-  lines.push(chalk.magenta('║') + priceRow + ' '.repeat(pricePad) + chalk.magenta('║'));
+  lines.push(
+    chalk.magenta('║') + priceRow + ' '.repeat(pricePad) + chalk.magenta('║'),
+  );
 
-  // Decision
-  const dec = ds.lastDecision;
+  const dec = state.lastDecision;
   let decStr = '  [--] waiting…';
   if (dec) {
-    const actionColor = dec.action === 'open' ? chalk.green :
-      dec.action === 'close' ? chalk.red : chalk.gray;
-    const outcomeColor = ds.lastOutcome === 'rejected' ? chalk.red :
-      ds.lastOutcome === 'killswitch' ? chalk.bgRed.white : chalk.cyan;
-    decStr = `  [${actionColor(dec.action.toUpperCase())}] ${chalk.white(dec.reason?.slice(0, 70) ?? '')}  ${outcomeColor(ds.lastOutcome)}`;
+    const actionColor =
+      dec.action === 'open'
+        ? chalk.green
+        : dec.action === 'close'
+          ? chalk.red
+          : chalk.gray;
+    const outcomeColor =
+      state.lastOutcome === 'rejected'
+        ? chalk.red
+        : state.lastOutcome === 'killswitch'
+          ? chalk.bgRed.white
+          : chalk.cyan;
+    decStr = `  [${actionColor(dec.action.toUpperCase())}] ${chalk.white(dec.reason?.slice(0, 70) ?? '')}  ${outcomeColor(state.lastOutcome)}`;
   }
-  const decPlain = `  [${dec?.action?.toUpperCase() ?? '--'}] ${dec?.reason?.slice(0, 70) ?? ''}  ${ds.lastOutcome}`;
+  const decPlain = `  [${dec?.action?.toUpperCase() ?? '--'}] ${dec?.reason?.slice(0, 70) ?? ''}  ${state.lastOutcome}`;
   const decPad = Math.max(0, w - decPlain.length);
   lines.push(chalk.magenta('║') + decStr + ' '.repeat(decPad) + chalk.magenta('║'));
 
   lines.push(chalk.magenta('╠') + border + chalk.magenta('╣'));
 
-  // Stats row
   const statsRow = [
-    `  PnL: ${pnlColor(ds.totalPnl)}`,
-    `Cash: ${chalk.cyan(ds.cash.toLocaleString())} lam`,
-    `Pos: ${chalk.yellow(ds.openPositions)}`,
-    `Losses: ${ds.consecutiveLosses > 0 ? chalk.red(ds.consecutiveLosses) : chalk.gray('0')}`,
+    `  PnL: ${pnlColor(state.totalPnl)}`,
+    `Cash: ${chalk.cyan(state.cash.toLocaleString())} lam`,
+    `Pos: ${chalk.yellow(state.openPositions)}`,
+    `Losses: ${state.consecutiveLosses > 0 ? chalk.red(state.consecutiveLosses) : chalk.gray('0')}`,
   ].join('  ·  ');
-  const statsPlain = `  PnL: ${ds.totalPnl >= 0 ? '+' : ''}${ds.totalPnl} lamports  ·  Cash: ${ds.cash} lam  ·  Pos: ${ds.openPositions}  ·  Losses: ${ds.consecutiveLosses}`;
+  const statsPlain = `  PnL: ${state.totalPnl >= 0 ? '+' : ''}${state.totalPnl} lamports  ·  Cash: ${state.cash} lam  ·  Pos: ${state.openPositions}  ·  Losses: ${state.consecutiveLosses}`;
   const statsPad = Math.max(0, w - statsPlain.length);
-  lines.push(chalk.magenta('║') + statsRow + ' '.repeat(statsPad) + chalk.magenta('║'));
+  lines.push(
+    chalk.magenta('║') + statsRow + ' '.repeat(statsPad) + chalk.magenta('║'),
+  );
 
-  // Log
   lines.push(chalk.magenta('╠') + border + chalk.magenta('╣'));
-  const logLines = ds.log.slice(-6);
-  for (const entry of logLines) {
+  for (const entry of state.log.slice(-6)) {
     const pad = Math.max(0, w - entry.replace(/\x1b\[[0-9;]*m/g, '').length);
     lines.push(chalk.magenta('║') + entry + ' '.repeat(pad) + chalk.magenta('║'));
   }
 
-  // Footer
-  if (ds.done) {
+  if (state.done) {
     lines.push(chalk.magenta('╠') + border + chalk.magenta('╣'));
-    const doneMsg = ds.killswitch
+    const doneMsg = state.killswitch
       ? '  ⛔ KILLSWITCH TRIGGERED — consecutive losses limit reached'
       : '  ✅ Loop complete — see ooda/journal/ticks.jsonl for full log';
     const donePad = Math.max(0, w - doneMsg.length);
-    lines.push(chalk.magenta('║') + chalk.bold(ds.killswitch ? chalk.red(doneMsg) : chalk.green(doneMsg)) + ' '.repeat(donePad) + chalk.magenta('║'));
+    lines.push(
+      chalk.magenta('║') +
+        chalk.bold(
+          state.killswitch ? chalk.red(doneMsg) : chalk.green(doneMsg),
+        ) +
+        ' '.repeat(donePad) +
+        chalk.magenta('║'),
+    );
   }
   lines.push(chalk.magenta('╚') + border + chalk.magenta('╝'));
-
-  process.stdout.write(CLEAR + lines.join('\n') + '\n');
+  return lines.join('\n');
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+export function createDisplayState(): DisplayState {
+  return {
+    lastTick: 0,
+    totalTicks: 0,
+    price: 0,
+    priceHistory: [],
+    lastDecision: null,
+    lastOutcome: '',
+    totalPnl: 0,
+    cash: 0,
+    openPositions: 0,
+    consecutiveLosses: 0,
+    log: [],
+    done: false,
+    killswitch: false,
+  };
+}
 
-process.stdout.write(HIDE_CURSOR);
-process.on('exit', () => process.stdout.write(SHOW_CURSOR));
-process.on('SIGINT', () => { process.stdout.write(SHOW_CURSOR); process.exit(0); });
+// ─── Main (only when executed as entry) ───────────────────────────────────────
 
-const rl = createInterface({ input: process.stdin });
+const isMain =
+  process.argv[1] !== undefined &&
+  (process.argv[1].endsWith('/tui.ts') ||
+    process.argv[1].endsWith('\\tui.ts') ||
+    process.argv[1].endsWith('/tui.js') ||
+    process.argv[1].endsWith('\\tui.js'));
 
-rl.on('line', (line: string) => {
-  if (!line.trim()) return;
-  try {
-    const ev = JSON.parse(line) as TickEvent;
+if (isMain) {
+  process.stdout.write(HIDE_CURSOR);
+  process.on('exit', () => process.stdout.write(SHOW_CURSOR));
+  process.on('SIGINT', () => {
+    process.stdout.write(SHOW_CURSOR);
+    process.exit(0);
+  });
 
-    if (ev.event === 'start') {
-      ds.totalTicks = ev.ticks ?? 50;
-    } else if (ev.event === 'tick') {
-      ds.lastTick = ev.tick ?? ds.lastTick;
-      ds.price = ev.price ?? ds.price;
-      ds.priceHistory.push(ds.price);
-      if (ds.priceHistory.length > 60) ds.priceHistory.shift();
-      ds.lastDecision = ev.decision ?? ds.lastDecision;
-      ds.lastOutcome = ev.outcome ?? '';
-      ds.totalPnl = ev.total_pnl_lamports ?? ds.totalPnl;
-      ds.cash = ev.cash_lamports ?? ds.cash;
-      ds.openPositions = ev.positions ?? ds.openPositions;
-      ds.consecutiveLosses = ev.consecutive_losses ?? ds.consecutiveLosses;
+  const rl = createInterface({ input: process.stdin });
 
-      const action = ev.decision?.action ?? 'hold';
-      const actionColor = action === 'open' ? chalk.green : action === 'close' ? chalk.red : chalk.gray;
-      ds.log.push(
-        `  ${chalk.gray(new Date(ev.now ?? '').toTimeString().slice(0, 8))} ` +
-        `[${chalk.yellow('T' + ev.tick)}] ` +
-        `${actionColor(action.toUpperCase().padEnd(5))} ` +
-        chalk.white((ev.decision?.reason ?? '').slice(0, 55)),
-      );
-    } else if (ev.event === 'killswitch') {
-      ds.killswitch = true;
-      ds.done = true;
-    } else if (ev.event === 'done') {
-      ds.done = true;
+  rl.on('line', (line: string) => {
+    if (!line.trim()) return;
+    try {
+      const ev = JSON.parse(line) as TickEvent;
+      applyTickEvent(ds, ev);
+      process.stdout.write(CLEAR + renderDisplay(ds) + '\n');
+    } catch {
+      /* skip non-JSON */
     }
+  });
 
-    render();
-  } catch { /* skip non-JSON */ }
-});
-
-rl.on('close', () => {
-  ds.done = true;
-  render();
-  process.stdout.write(SHOW_CURSOR);
-});
+  rl.on('close', () => {
+    ds.done = true;
+    process.stdout.write(CLEAR + renderDisplay(ds) + '\n');
+    process.stdout.write(SHOW_CURSOR);
+  });
+}

@@ -87,7 +87,13 @@
     "autosuggest",
     "cheshireterminal",
     "Solizardking",
-    "solizardking"
+    "solizardking",
+    "llms",
+    "clawdbrowser",
+    "postbuild",
+    "Postbuild",
+    "clawdrouter",
+    "ciphertext"
   ],
   "ignorePaths": [
     "node_modules/**",

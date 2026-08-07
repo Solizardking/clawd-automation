@@ -69,8 +69,8 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 - [One whole stack](#one-whole-stack)
 - [Life cycle (the living graph)](#life-cycle-the-living-graph)
 - [Constitution (Clawd harness)](#constitution-clawd-harness)
-- [Identity / soul / trench](#identity-soul-trench)
-- [Lobster council & hedge](#lobster-council-hedge)
+- [Identity / soul / trench](#identity--soul--trench)
+- [Lobster council & hedge](#lobster-council--hedge)
 - [OODA harness](#ooda-harness)
 - [Knowledge base](#knowledge-base)
 - [ZK primitives](#zk-primitives)
@@ -78,28 +78,14 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 - [Solana trench rails](#solana-trench-rails)
 - [Survival depth](#survival-depth)
 - [Runtime composition](#runtime-composition)
-- [Tools & bridges](#tools-bridges)
+- [Tools & bridges](#tools--bridges)
 - [Project map](#project-map)
+- [Packaging & workspace](#packaging--workspace)
 - [CLI reference](#cli-reference)
-- [Development & build](#development-build)
+- [Development & build](#development--build)
 - [Ecosystem](#ecosystem)
 - [Lexicon](#lexicon)
 - [License](#license)
-
-- [ZK primitives](https://github.com/Solizardking/clawd-automation#zk-primitives)
-- [Rust Solana kit (`agent/`)](#rust-solana-kit-agent)
-- [Solana trench rails](#solana-trench-rails)
-- [Survival depth](#survival-depth)
-- [Runtime composition](https://github.com/Solizardking/clawd-automation#runtime-composition)
-- [Tools & bridges](#tools-bridges)
-- [Project map](#project-map)
-- [⌨ CLI reference](#cli-reference)
-- [Development & build](#development-build)
-- [Ecosystem](#ecosystem)
-- [Lexicon](#lexicon)
-- [License](https://github.com/Solizardking/clawd-automation#license)
-
----
 
 ## Clawd build (Conway removed)
 
@@ -174,7 +160,7 @@ export CLAWD_SANDBOX_ID=local
 
 Docs: [Free Models Router](https://openrouter.ai/docs/guides/routing/routers/free-router) · [Provider routing](https://openrouter.ai/docs/guides/routing/provider-selection) · [llms.txt](https://openrouter.ai/docs/llms.txt)
 
-### What the wizard writes**
+### What the wizard writes
 
 | Path | Purpose |
 | --- | --- |
@@ -204,7 +190,7 @@ This repository is **one composed automation system**. Every top-level tree has 
 | **`ooda/`** | Paper/devnet OODA harness (`@clawd/ooda-harness`) | ESM `src/ooda/bridge.ts` → tool `ooda_health` + boot probe |
 | **`zk-primitives/`** | Nullifiers, Groth16, Light compressed state, ZK Shark | ESM `src/zk/primitives.ts` → tools `zk_health` / `zk_catalog` + boot probe |
 | **`src/services` · `agents` · `providers` · `cli` · `config` · `knowledge`** | CJS capability packages | `src/interop/cjs-bridge.ts` (`getCjsHealth` / `cjs_capability`) |
-| **`agent/`** | Rust openclawd-solana-kit (Solana + EVM tools) | Co-located kit; not the Node loop (see [Rust kit](#-rust-solana-kit-agent)) |
+| **`agent/`** | Rust openclawd-solana-kit (Solana + EVM tools) | Co-located kit; not the Node loop (see [Rust kit](#rust-solana-kit-agent)) |
 | **`lib/`** | Legacy / helper JS surface | Optional; primary life is `dist/index.js` |
 | **`docs/`** | README media + publish notes | `docs/assets/*`, `docs/npm-publish.md` |
 | **`scripts/`** | Install, postbuild, pack verify, npm publish | `automaton.sh`, `postbuild-bin.mjs`, `verify-pack.mjs`, `npm-publish.sh` |
@@ -537,7 +523,7 @@ Includes `openclawd.md`, `clawd-character.md`, `clawd-code-cli.md`, `clawd-tui.m
 
 ## ZK primitives
 
-![\1](docs/assets/zk-nullifier-orbit.svg)
+![zk-nullifier-orbit.svg](docs/assets/zk-nullifier-orbit.svg)
 
 First-class monorepo package: **[`zk-primitives/`](zk-primitives/)**  
 Manifest: [`zk-primitives/MANIFEST.json`](zk-primitives/MANIFEST.json) · Reference: [`zk-primitives/zk.md`](zk-primitives/zk.md) · Deep dive: [`zk-primitives/docs/ARCHITECTURE.md`](zk-primitives/docs/ARCHITECTURE.md)
@@ -660,7 +646,7 @@ Trading agents (`src/agents/trading-agent.js`, council, CLI commands) stay const
 
 ## Survival depth
 
-![\1](docs/assets/depth-cycle.svg)
+![Survival depth cycle](docs/assets/depth-cycle.svg)
 
 | Tier | Credits (approx) | Behavior |
 | --- | --- | --- |
@@ -683,15 +669,16 @@ Implemented in:
 ## Runtime composition
 
 ```text
-src/index.ts
+src/index.ts  →  dist/index.js   (automaton / clawd-automaton)
     │
-    ├─ identity / config / db / shell (clawd) / openrouter / social
+    ├─ identity / config / db / shell (clawd) / openrouter / social / skills
     │
     ├─ createRuntimeContext({ … })          ← ONE bag
-    │       tools = createBuiltinTools()    ← includes zk_health · zk_catalog
+    │       tools = createBuiltinTools()    ← zk · ooda · constitution · council · cjs · …
     │
     ├─ getCjsHealth()                       ← probe CJS graph (non-fatal)
     ├─ getZkHealth()                        ← probe zk-primitives (non-fatal)
+    ├─ getOodaHealth()                      ← probe ooda/ harness (non-fatal)
     │
     ├─ createHeartbeatDaemon(toHeartbeatOptions(runtime))
     │
@@ -704,29 +691,34 @@ src/index.ts
 | --- | --- | --- |
 | **Primary** | `src/index.ts` → `dist/index.js` | Automaton CLI + loop + heartbeat |
 | **Secondary** | `src/index.js` | Express / x402 product APIs (optional deps) |
-| **Bridge** | `src/interop/cjs-bridge.ts` | `createRequire` into services · agents · providers · knowledge · cli · config |
-| **ZK** | `src/zk/primitives.ts` | Manifest-driven catalog over `zk-primitives/` |
+| **CJS bridge** | `src/interop/cjs-bridge.ts` | `createRequire` into services · agents · providers · knowledge · cli · config |
+| **OODA bridge** | `src/ooda/bridge.ts` | Discovers repo-root `ooda/` |
+| **ZK bridge** | `src/zk/primitives.ts` | Manifest-driven catalog over `zk-primitives/` |
+| **Rust kit** | `agent/` (Cargo) | Optional native Solana/EVM kit — separate process graph |
 
 CJS packages ship `"type": "commonjs"` markers and resolve **`config/index.js`** explicitly (never bare `../config`, so tsx cannot hijack into ESM `config.ts`).
 
-### CJS bridge capability registry**
+### CJS bridge capability registry (12)
 
-| Name | Module |
-| --- | --- |
-| `constitution` | `services/constitution.js` |
-| `personas` | `services/personas.js` |
-| `skillhub` | `services/skillhub.js` |
-| `knowledge` | `knowledge/clawdbrowser.js` |
-| `x402_knowledge` | `knowledge/x402-protocol.js` |
-| `config` | `config/index.js` |
-| `cli_commands` | `cli/commands/index.js` |
-| `agents` | `agents/agent-council.js` |
-| `base_agent` | `agents/base-agent.js` |
-| `providers` | `providers/openrouter.js` |
-| `unified_ai` | `providers/unified-ai.js` |
+| Name | Module | Backing tree |
+| --- | --- | --- |
+| `constitution` | `services/constitution.js` | `constitution/` |
+| `personas` | `services/personas.js` | `data/hedge/` |
+| `lobster_council` | `services/lobster-council.js` | `lobster-council/` |
+| `skillhub` | `services/skillhub.js` | skill catalog root |
+| `knowledge` | `knowledge/clawdbrowser.js` | `knowledge/` |
+| `x402_knowledge` | `knowledge/x402-protocol.js` | x402 protocol context |
+| `config` | `config/index.js` | CJS config package |
+| `cli_commands` | `cli/commands/index.js` | CJS CLI command map |
+| `agents` | `agents/agent-council.js` | agent council |
+| `base_agent` | `agents/base-agent.js` | base agent class |
+| `providers` | `providers/openrouter.js` | OpenRouter CJS helpers |
+| `unified_ai` | `providers/unified-ai.js` | unified AI + x402 knowledge |
 
 ```bash
 # tool: cjs_capability name=health
+# tool: cjs_capability name=lobster_council method=getManifest
+# tool: cjs_capability name=constitution method=getPromptContext
 ```
 
 ---
@@ -743,6 +735,8 @@ CJS packages ship `"type": "commonjs"` markers and resolve **`config/index.js`**
 | Replication | `spawn_child`, `fund_child`, `list_children` |
 | Registry | `register_erc8004`, `discover_agents` |
 | Interop | `cjs_capability`, `constitution_context`, `x402_knowledge` |
+| **Council** | **`lobster_council`** |
+| **OODA** | **`ooda_health`** |
 | **ZK** | **`zk_health`**, **`zk_catalog`** |
 
 Self-preservation guards block shell patterns that would delete `wallet.json`, `state.db`, or gut the constitution.
@@ -752,44 +746,102 @@ Self-preservation guards block shell patterns that would delete `wallet.json`, `
 ## Project map
 
 ```text
-automation/
-├── constitution/               ★ canonical Clawd harness (8 docs, runtime load)
-├── CONSTITUTION.md · CLAWD.md · IDENTITY.md · SOUL.md · six-laws.md  (root mirrors)
-├── lobster-council/            ★ voice seats (soltoshi…disruptiveshell) → CJS service
-├── data/hedge/                 ★ hedge persona bios (compose with council)
-├── ooda/                       ★ paper/devnet OODA harness (@clawd/ooda-harness)
-├── agent/                      ★ openclawd-solana-kit (Rust Solana/EVM agent kit)
-├── docs/assets/               ★ animated README media
-│   ├── automaton-pulse.svg
-│   ├── depth-cycle.svg
-│   ├── constitution-seal.svg
-│   ├── living-stack.svg
-│   └── zk-nullifier-orbit.svg
-├── zk-primitives/             ★ nullifiers · Groth16 · Light · ZK Shark agent
-│   ├── MANIFEST.json
-│   ├── zk.md · README.md
-│   ├── client/ · agent/ · programs/ · configs/ · docs/ · tests/
-├── dist/                      ★ tsc build → bin entry
-├── scripts/                   ★ automaton.sh · verify-pack · postbuild-bin
+automation/                          @onchainai/automation  (one whole stack)
+│
+├── constitution/                    ★ canonical Clawd harness (8 docs, runtime load)
+│   ├── three-laws.md · six-laws.md · CONSTITUTION.md · CLAWD.md
+│   ├── IDENTITY.md · SOUL.md · program.md · strategy.md · README.md
+├── CONSTITUTION.md · CLAWD.md · IDENTITY.md · SOUL.md · six-laws.md · program.md
+│                                    (root mirrors for browse + npm pack)
+│
+├── lobster-council/                 ★ 6 voice seats → CJS lobster_council
+├── data/hedge/                      ★ 5 hedge personas → CJS personas
+├── knowledge/                       ★ JSONL memory + markdown docs
+├── ooda/                            ★ @clawd/ooda-harness (paper OODA)
+├── zk-primitives/                   ★ nullifiers · Groth16 · Light · ZK Shark
+│   ├── MANIFEST.json · zk.md · README.md
+│   ├── client/                      @clawd/zk-client
+│   ├── agent/                       @clawd/zk-shark-agent
+│   ├── programs/clawd-zk/           Anchor (Rust)
+│   ├── configs/ · docs/ · tests/
+│
+├── agent/                           ★ openclawd-solana-kit (Rust; not src/agent)
+│   ├── Cargo.toml · src/ · docs/ · examples/
+├── lib/                             optional legacy JS helpers
+│
+├── docs/
+│   ├── assets/                      README media (pulse, stack, ZK, seal, depth)
+│   ├── npm-publish.md · SUMMARY.md
+├── scripts/
+│   ├── automaton.sh                 one-shot install
+│   ├── postbuild-bin.mjs            shebang + dist/.npmignore
+│   ├── verify-pack.mjs · npm-publish.sh · clawd-rules.txt
+│
+├── dist/                            ★ tsc output · bins point here
 ├── src/
-│   ├── index.ts               primary CLI
-│   ├── index.js               secondary Express surface
-│   ├── runtime/               shared RuntimeContext
-│   ├── interop/               CJS bridge (dist-safe SRC_ROOT)
-│   ├── ooda/                  bridge → repo ooda/ harness
-│   ├── zk/                    ZK observer bridge → zk-primitives/
-│   ├── agent/                 loop · tools · prompt · injection defense
-│   ├── heartbeat/             daemon · tasks · cron config
-│   ├── survival/              monitor · tiers · funding
-│   ├── identity/              wallet · SIWE provision
-│   ├── shell/                 local clawd client · credits · x402
-│   ├── inference/             OpenRouter only
-│   ├── state/                 SQLite
-│   ├── skills/ git/ registry/ replication/ self-mod/ setup/ social/
-│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS)
+│   ├── index.ts                     primary CLI (ESM)
+│   ├── index.js                     secondary Express surface (CJS-era)
+│   ├── runtime/                     shared RuntimeContext
+│   ├── interop/                     CJS bridge (dist-safe SRC_ROOT)
+│   ├── ooda/                        bridge → repo ooda/
+│   ├── zk/                          bridge → zk-primitives/
+│   ├── agent/                       loop · tools · prompt · injection defense
+│   ├── heartbeat/ · survival/ · identity/ · shell/ · inference/
+│   ├── state/ · skills/ · git/ · registry/ · replication/
+│   ├── self-mod/ · setup/ · social/
+│   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS packages)
 │   ├── config.ts · types.ts
-│   └── __tests__/             loop · heartbeat · survival · composition · bridge · zk
-└── package.json               @onchainai/automation
+│   └── __tests__/                   loop · heartbeat · survival · composition
+│                                    bridge · zk · packaging · ooda · openrouter
+│
+├── package.json · package-lock.json · pnpm-lock.yaml · pnpm-workspace.yaml
+├── tsconfig.json · vitest.config.ts · .npmignore · .gitignore · .env
+└── LICENSE · README.md
+```
+
+---
+
+## Packaging & workspace
+
+### Published package
+
+| Field | Value |
+| --- | --- |
+| Name | `@onchainai/automation` |
+| Bins | `automaton`, `clawd-automaton` → `dist/index.js` |
+| Engine | Node `>=20` |
+| Module | ESM primary (`"type": "module"`) + CJS packages under `src/*` |
+
+`package.json` **`files`** allowlist ships the composed stack: `dist`, CJS surfaces (`src/services`, `agents`, `providers`, `cli`, `config`, `knowledge`), `constitution/`, root law mirrors, `lobster-council`, `data/hedge`, `ooda`, ZK health roots (`zk-primitives/MANIFEST.json`, client/agent `package.json`, `zk.md`, docs), `scripts/automaton.sh`, `LICENSE`, `README.md`.
+
+`.npmignore` drops maps, tests, `.env`, tarballs, `node_modules`, and heavy build junk. Postbuild writes `dist/.npmignore` so nested source maps never pack.
+
+### pnpm workspace packages
+
+```yaml
+# pnpm-workspace.yaml
+packages:
+  - "."
+  - "src/agents"
+  - "src/cli"
+  - "src/config"
+  - "src/providers"
+  - "src/services"
+  - "src/knowledge"
+  - "data/hedge"
+  - "ooda"
+  - "zk-primitives"
+  - "zk-primitives/client"
+  - "zk-primitives/agent"
+```
+
+### Maintainer pack / publish
+
+```bash
+pnpm build
+pnpm pack:check          # npm pack --dry-run
+pnpm pack:local          # tarball + clawd-automaton-*.tgz alias
+# NPM_OTP=…… ./scripts/npm-publish.sh   # see docs/npm-publish.md
 ```
 
 ---
@@ -800,7 +852,7 @@ automation/
 | --- | --- |
 | `--help` / `-h` | Identity + usage |
 | `--version` / `-v` | `Clawd Automaton v0.1.1` |
-| `--run` | Shared context → heartbeat + loop (+ CJS/ZK probes) |
+| `--run` | Shared context → heartbeat + loop (+ CJS / ZK / OODA probes) |
 | `--setup` | Interactive wizard |
 | `--init` | Wallet + config directory |
 | `--provision` | Optional legacy SIWE key (not required) |
@@ -811,9 +863,10 @@ export OPENROUTER_API_KEY=…
 export OPENROUTER_FREE_MODEL=openrouter/free
 export INFERENCE_PROVIDER=auto
 export CLAWD_SANDBOX_ID=local
-# optional
+# optional trench / ZK
 export HELIUS_RPC_URL=… JUPITER_API_KEY=… DFLOW_API_KEY=…
 export CLAWD_ZK_RPC_URL=…
+export CLAWDBOT_ZK_PRIMITIVES_DIR=…   # optional override of zk-primitives root
 ```
 
 ---
@@ -823,7 +876,7 @@ export CLAWD_ZK_RPC_URL=…
 ```bash
 pnpm install
 pnpm test          # vitest → src/__tests__/**
-pnpm build         # tsc → dist/
+pnpm build         # tsc → dist/ + postbuild-bin
 pnpm smoke         # version · help · CJS health · ZK health · OODA health
 pnpm clean         # rm -rf dist
 pnpm dev           # tsx watch src/index.ts
@@ -834,10 +887,12 @@ pnpm dev           # tsx watch src/index.ts
 - Loop: tool dispatch, forbidden patterns, low-compute, sleep, inbox  
 - Survival: real `checkResources` / `applyTierRestrictions` / funding  
 - Composition: survival imports from loop + heartbeat; shared context  
-- Bridge: all 12 CJS capabilities (incl. `lobster_council`) load under vitest **and** `tsx` **and** `node dist/…`  
-- Council + OODA: six voice seats in `lobster-council/`, hedge bios in `data/hedge/`, paper loop in `ooda/`
+- Bridge: all **12** CJS capabilities (incl. `lobster_council`) load under vitest **and** `tsx` **and** `node dist/…`  
+- Council + hedge: six seats in `lobster-council/`, five bios in `data/hedge/`  
+- OODA: `getOodaHealth().ok`, `hasLoop`, `hasClawdMd`  
 - Constitution: `getManifest().present === 8`, `getPromptContext` returns six-laws text  
-- **ZK:** `getZkHealth().ok`, manifest operations present, tools registered  
+- **ZK:** `getZkHealth().ok`, `present.client/agent`, ops include `publish_attestation`, tools execute real helpers  
+- Packaging: `files` allowlist + workspace entries for ooda / zk / hedge / CJS packages  
 
 ---
 
@@ -872,6 +927,10 @@ Payment posture: **x402 is the gate, not the guard** — pay-for-access without 
 | **Attestation** | On-chain proof that work / model state was published |
 | **Clawmate** | Peer agent / trusted collaborator |
 | **ZK Shark** | Intent-routed agent over `@clawd/zk-client` 🦈 |
+| **OODA** | Observe–Orient–Decide–Act paper harness in `ooda/` |
+| **Lobster council** | Six-seat multi-voice system roles in `lobster-council/` |
+| **Hedge personas** | Investor-lobster bios in `data/hedge/` |
+| **RuntimeContext** | Single shared bag for loop, heartbeat, and tools |
 
 ---
 
@@ -890,4 +949,6 @@ Constitutional prose under `constitution/` keeps its embedded terms (e.g. CONSTI
       never the excuse.
 ```
 
-*\1*
+---
+
+*built to earn its own existence · bound to beach before it harms · stamped so it cannot lie twice · one monorepo, one automation stack*

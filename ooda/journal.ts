@@ -6,16 +6,32 @@
  * State on restart is reconstructed by replaying this file.
  *
  * Clawd rule: "State lives in git."
+ *
+ * Override path with OODA_JOURNAL_PATH for isolated tests/CI so operator
+ * journals under journal/ticks.jsonl are not corrupted.
  */
 
-import { appendFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
+import {
+  appendFileSync,
+  mkdirSync,
+  readFileSync,
+  existsSync,
+  writeFileSync,
+} from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Decision } from './validate.js';
 import type { Candle } from './state.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const JOURNAL_PATH = join(__dirname, 'journal', 'ticks.jsonl');
+const DEFAULT_JOURNAL_PATH = join(__dirname, 'journal', 'ticks.jsonl');
+
+/** Format / resolve the journal path for display and I/O */
+export function journalPath(): string {
+  const override = process.env['OODA_JOURNAL_PATH']?.trim();
+  if (override) return override;
+  return DEFAULT_JOURNAL_PATH;
+}
 
 export interface TickEntry {
   tick: number;
@@ -32,28 +48,25 @@ export interface TickEntry {
 }
 
 export function appendTick(entry: TickEntry): void {
-  mkdirSync(dirname(JOURNAL_PATH), { recursive: true });
-  appendFileSync(JOURNAL_PATH, JSON.stringify(entry) + '\n', 'utf8');
+  const path = journalPath();
+  mkdirSync(dirname(path), { recursive: true });
+  appendFileSync(path, JSON.stringify(entry) + '\n', 'utf8');
 }
 
 /** Read the last N entries from the journal (for observations injection) */
 export function readLastEntries(n = 3): TickEntry[] {
-  if (!existsSync(JOURNAL_PATH)) return [];
-  const lines = readFileSync(JOURNAL_PATH, 'utf8')
+  const path = journalPath();
+  if (!existsSync(path)) return [];
+  const lines = readFileSync(path, 'utf8')
     .split('\n')
     .filter(Boolean)
     .slice(-n);
-  return lines.map(l => JSON.parse(l) as TickEntry);
+  return lines.map((l) => JSON.parse(l) as TickEntry);
 }
 
-/** Truncate journal (for fresh run) */
+/** Truncate journal to empty (for fresh run / tests) */
 export function clearJournal(): void {
-  if (existsSync(JOURNAL_PATH)) {
-    appendFileSync(JOURNAL_PATH, '', 'utf8'); // keep file, mark empty-ish
-  }
-}
-
-/** Format the journal path for display */
-export function journalPath(): string {
-  return JOURNAL_PATH;
+  const path = journalPath();
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, '', 'utf8');
 }
