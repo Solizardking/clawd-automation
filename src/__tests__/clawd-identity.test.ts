@@ -22,8 +22,11 @@ const repoRoot = path.resolve(
   "..",
 );
 
-/** Split so this file itself never embeds the banned product substring. */
-const BANNED = ["c", "onw", "ay"].concat();
+/**
+ * Banned third-party control-plane product token.
+ * Built via join so this source file never contains the contiguous substring.
+ */
+const BANNED = ["c", "onw", "ay"].join("");
 
 const SKIP_DIR = new Set([
   "node_modules",
@@ -31,6 +34,18 @@ const SKIP_DIR = new Set([
   ".git",
   "dist",
   ".pack-evidence",
+]);
+
+/** Dotfiles / env surfaces that must still be scanned (OBJECTIVE includes .env). */
+const SCAN_DOT_FILES = new Set([
+  ".env",
+  ".env.example",
+  ".env.template",
+  ".env.sample",
+  ".npmignore",
+  ".gitignore",
+  ".markdownlint.json",
+  ".markdownlint-cli2.jsonc",
 ]);
 
 const TEXT_EXT = new Set([
@@ -47,6 +62,7 @@ const TEXT_EXT = new Set([
   ".yaml",
   ".txt",
   ".sh",
+  ".env",
 ]);
 
 function walkFiles(dir: string, out: string[] = []): string[] {
@@ -57,26 +73,24 @@ function walkFiles(dir: string, out: string[] = []): string[] {
     return out;
   }
   for (const ent of entries) {
-    if (ent.name.startsWith(".") && ent.name !== ".env.example") {
-      // still scan .npmignore / env example if present
-      if (
-        ![".npmignore", ".gitignore", ".env.example", ".markdownlint.json", ".markdownlint-cli2.jsonc"].includes(
-          ent.name,
-        )
-      ) {
-        if (ent.isDirectory()) continue;
-      }
-    }
     const full = path.join(dir, ent.name);
     if (ent.isDirectory()) {
       if (SKIP_DIR.has(ent.name)) continue;
+      // do not descend into other hidden dirs except we already skip .git
+      if (ent.name.startsWith(".") && ent.name !== ".vscode") continue;
       walkFiles(full, out);
       continue;
     }
     if (ent.name.endsWith(".tgz")) continue;
     if (ent.name === "package-lock.json" || ent.name === "pnpm-lock.yaml") continue;
-    const ext = path.extname(ent.name).toLowerCase();
-    if (!TEXT_EXT.has(ext) && ![".npmignore", "LICENSE"].includes(ent.name)) continue;
+    if (ent.name.startsWith(".")) {
+      if (!SCAN_DOT_FILES.has(ent.name) && !ent.name.startsWith(".env")) {
+        continue;
+      }
+    } else {
+      const ext = path.extname(ent.name).toLowerCase();
+      if (!TEXT_EXT.has(ext) && ent.name !== "LICENSE") continue;
+    }
     out.push(full);
   }
   return out;
@@ -108,17 +122,31 @@ describe("repo identity: no banned control-plane product token", () => {
       "program.md",
       "vitest.config.ts",
       "tsconfig.json",
+      ".env",
+      ".env.example",
+      ".env.template",
+      ".npmignore",
+      ".gitignore",
     ].map((f) => path.join(repoRoot, f));
+
+    // BANNED must be the real contiguous token (regression: .concat() left an array)
+    expect(typeof BANNED).toBe("string");
+    expect(BANNED.length).toBe(6);
+    expect(BANNED).toBe(["c", "onw", "ay"].join(""));
 
     const files: string[] = [...singles.filter((f) => fs.existsSync(f))];
     for (const r of roots) {
       if (fs.existsSync(r)) walkFiles(r, files);
     }
+    // Always include repo-root .env* if present (gitignored still on disk for OBJECTIVE)
+    for (const envName of [".env", ".env.example", ".env.template", ".env.sample"]) {
+      const p = path.join(repoRoot, envName);
+      if (fs.existsSync(p) && !files.includes(p)) files.push(p);
+    }
 
     const hits: Array<{ file: string; line: number; text: string }> = [];
     const re = new RegExp(BANNED, "i");
     for (const file of files) {
-      // Skip this test file's string construction is already split; still scan others
       let body: string;
       try {
         body = fs.readFileSync(file, "utf8");

@@ -225,8 +225,8 @@ mod tests {
             "expected Clawd three-laws constitution, got: {}",
             &text[..text.len().min(400)]
         );
-        // Banned third-party control-plane product token (split so source greps stay clean)
-        let banned = ["c", "onw", "ay"].concat();
+        // Banned third-party control-plane product token (join so source greps stay clean)
+        let banned: String = ["c", "onw", "ay"].concat();
         assert!(
             !text.to_lowercase().contains(&banned),
             "constitution must not present retired control-plane product identity"
@@ -254,7 +254,7 @@ mod tests {
             "rules should be CLAWD-branded: {}",
             &rules[..rules.len().min(200)]
         );
-        let banned = ["c", "onw", "ay"].concat();
+        let banned: String = ["c", "onw", "ay"].concat();
         assert!(!rules.to_lowercase().contains(&banned));
     }
 
