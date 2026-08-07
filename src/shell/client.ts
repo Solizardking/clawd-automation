@@ -1,9 +1,9 @@
 /**
- * Clawd Shell Client — local runtime (no Conway control plane).
+ * Clawd Shell Client — local host runtime.
  *
  * exec / filesystem run on the host process. Credits, sandboxes, and
  * domains are local stubs so the agent loop stays offline-capable with
- * OpenRouter + our own packages.
+ * OpenRouter + Clawd packages. Credit balance: CLAWD_CREDITS_CENTS / getCreditsBalance.
  */
 
 import { exec as cpExec, type ExecOptions } from "node:child_process";

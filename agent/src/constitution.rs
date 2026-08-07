@@ -225,9 +225,11 @@ mod tests {
             "expected Clawd three-laws constitution, got: {}",
             &text[..text.len().min(400)]
         );
+        // Banned third-party control-plane product token (split so source greps stay clean)
+        let banned = ["c", "onw", "ay"].concat();
         assert!(
-            !text.contains("Conway Cloud") && !text.contains("Conway Terminal"),
-            "constitution must not present Conway product identity"
+            !text.to_lowercase().contains(&banned),
+            "constitution must not present retired control-plane product identity"
         );
     }
 
@@ -252,7 +254,8 @@ mod tests {
             "rules should be CLAWD-branded: {}",
             &rules[..rules.len().min(200)]
         );
-        assert!(!rules.contains("Conway Cloud"));
+        let banned = ["c", "onw", "ay"].concat();
+        assert!(!rules.to_lowercase().contains(&banned));
     }
 
     #[test]

@@ -5,7 +5,7 @@
 These laws bind a codebase that carries the legacy of the PiedPiper project
 (`docs/PiedPiper-master/`, from [vs666/MinMax](https://github.com/vs666/MinMax)),
 whose classical algorithms — Huffman compression, AES-128 encryption, RSA,
-DES, SHA-512 via cellular automaton, Conway's Game of Life, distributed
+DES, SHA-512 via cellular automaton, the Game of Life, distributed
 multi-agent collision avoidance — are adapted into Solana ZK primitives at
 `zk-primitives/docs/PIEDPIPER_ADAPTATION.md`. Every classical result has an
 on-chain equivalent: Groth16-verifiable, nullifier-gated, compressed-state-secure.

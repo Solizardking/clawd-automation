@@ -73,7 +73,7 @@ from first principles has a Solana ZK equivalent:
 | AES-128 / DES / RSA | `commit_encrypted_state` (ciphertext commitment) | `zk-primitives/` |
 | CA-based PRNG (PP_HASH) | `computeNullifier` (deterministic 32-byte hash) | `zk-primitives/client/` |
 | CA-based SSH (PP_SSH) | Nullifier session authentication | `zk-primitives/` |
-| Conway's Game of Life | Groth16 proof of universal computation | `pkg/gameoflife/` |
+| Game of Life | Groth16 proof of universal computation | `pkg/gameoflife/` |
 | Min-Max decision tree | Nullifier commitment scheme | `zk-primitives/` |
 | Multi-Agent Collision Avoidance | Decentralized agent routing | `pkg/routing/` |
 

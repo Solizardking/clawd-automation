@@ -116,7 +116,7 @@ This codebase carries the algorithmic DNA of the **PiedPiper project**
 (`docs/PiedPiper-master/`, from [vs666/MinMax](https://github.com/vs666/MinMax)) —
 a landmark academic implementation of classical compression (Huffman,
 Arithmetic, BWT+RLE), encryption (AES-128, DES, RSA, cellular-automaton-based
-PRNG), Conway's Game of Life, distributed multi-agent collision avoidance, and
+PRNG), the Game of Life, distributed multi-agent collision avoidance, and
 cryptographic hash optimization, built from first principles by five engineers
 at IIIT Hyderabad.
 
@@ -129,7 +129,7 @@ in `zk-primitives/`, documented in `zk-primitives/docs/PIEDPIPER_ADAPTATION.md`:
 | AES-128 / DES / RSA encryption | `commit_encrypted_state` (ciphertext commitment) | `commit_encrypted_state` |
 | CA-based PRNG (PP_HASH) | `computeNullifier` (deterministic 32-byte hash) | Client-side derivation |
 | CA-based SSH protocol | Nullifier-based session authentication | `publish_attestation` |
-| Conway's Game of Life | Groth16 proof of universal computation | `publish_attestation` |
+| Game of Life | Groth16 proof of universal computation | `publish_attestation` |
 | Min-Max decision tree | Nullifier commitment scheme | Client-side |
 
 This is not metaphor — it is architecture. The same mathematics that Huffman

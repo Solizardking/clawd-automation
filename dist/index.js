@@ -64,9 +64,9 @@ Environment:
   OPENROUTER_FREE_MODEL    Free model / router (default: openrouter/free)
   OPENROUTER_MODEL         Default OpenRouter model (defaults to free model)
   OPENROUTER_PROVIDER_SORT Optional: price | throughput | latency
-  INFERENCE_PROVIDER       auto | openrouter (OpenRouter only; Conway removed)
+  INFERENCE_PROVIDER       auto | openrouter (OpenRouter only)
   CLAWD_SANDBOX_ID         Local sandbox id (default: local)
-  CLAWD_CREDITS_CENTS      Local survival credits balance (default: 10000)
+  CLAWD_CREDITS_CENTS      Local Clawd compute credits in cents (default: 10000)
 `);
         process.exit(0);
     }
@@ -176,7 +176,7 @@ async function run() {
     db.setIdentity("address", account.address);
     db.setIdentity("creator", config.creatorAddress);
     db.setIdentity("sandbox", sandboxId);
-    // Local Clawd shell (host process — no Conway control plane)
+    // Local Clawd shell (host process + CLAWD_CREDITS_CENTS)
     const clawd = createClawdClient({
         sandboxId,
         openRouterApiKey: process.env.OPENROUTER_API_KEY,

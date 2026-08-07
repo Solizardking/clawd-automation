@@ -35,10 +35,7 @@ export function resolveInferenceBackend(
   if (raw === "openrouter" || raw === "auto") {
     return raw;
   }
-  // Legacy aliases (conway/clawd paid control-plane inference removed)
-  if (raw === "conway" || raw === "clawd") {
-    return "openrouter";
-  }
+  // Unknown / retired third-party provider names → auto (OpenRouter when keyed)
   return "auto";
 }
 
@@ -54,7 +51,7 @@ export function resolveInferenceClient(
 
   if (!orConfigured) {
     throw new Error(
-      "OPENROUTER_API_KEY is required. Clawd Automaton uses OpenRouter only (no Conway control plane).",
+      "OPENROUTER_API_KEY is required. Clawd Automaton uses OpenRouter only (local Clawd shell + CLAWD_CREDITS_CENTS).",
     );
   }
 

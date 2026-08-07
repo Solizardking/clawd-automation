@@ -10,10 +10,7 @@ export function resolveInferenceBackend(env = process.env) {
     if (raw === "openrouter" || raw === "auto") {
         return raw;
     }
-    // Legacy aliases (conway/clawd paid control-plane inference removed)
-    if (raw === "conway" || raw === "clawd") {
-        return "openrouter";
-    }
+    // Unknown / retired third-party provider names → auto (OpenRouter when keyed)
     return "auto";
 }
 /**
@@ -24,7 +21,7 @@ export function resolveInferenceClient(options) {
     const orConfigured = isOpenRouterConfigured(env);
     const orEnv = resolveOpenRouterEnv(env);
     if (!orConfigured) {
-        throw new Error("OPENROUTER_API_KEY is required. Clawd Automaton uses OpenRouter only (no Conway control plane).");
+        throw new Error("OPENROUTER_API_KEY is required. Clawd Automaton uses OpenRouter only (local Clawd shell + CLAWD_CREDITS_CENTS).");
     }
     const client = createOpenRouterFromEnv(env, {
         maxTokens: options.maxTokens,

@@ -419,7 +419,7 @@ documented in `docs/PIEDPIPER_ADAPTATION.md`:
 | AES-128 / DES / RSA encryption | `commit_encrypted_state` (ciphertext commitment) | `commit_encrypted_state` |
 | CA-based PRNG (PP_HASH) | `computeNullifier` (deterministic 32-byte hash) | Client-side derivation |
 | CA-based SSH protocol | Nullifier-based session authentication | `publish_attestation` |
-| Conway's Game of Life | Groth16 proof of universal computation | `publish_attestation` |
+| Game of Life | Groth16 proof of universal computation | `publish_attestation` |
 | Min-Max decision tree | `computeNullifier` for commitment schemes | Client-side |
 
 The ZK layer makes every classical result provable on Solana — the same

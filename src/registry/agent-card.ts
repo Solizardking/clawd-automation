@@ -37,7 +37,7 @@ export function generateAgentCard(
     },
   ];
 
-  // Local shell endpoint (no remote Conway sandbox host)
+  // Local Clawd shell endpoint (host process, not a remote sandbox control plane)
   if (identity.sandboxId) {
     services.push({
       name: "sandbox",

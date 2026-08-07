@@ -27,7 +27,7 @@ export async function runSetupWizard(): Promise<AutomatonConfig> {
   console.log(chalk.dim(`  Private key stored at: ${getAutomatonDir()}/wallet.json\n`));
 
   // ─── 2. OpenRouter (inference) ────────────────────────────────
-  console.log(chalk.cyan("  [2/6] Inference via OpenRouter (Conway control plane removed)..."));
+  console.log(chalk.cyan("  [2/6] Inference via OpenRouter (Clawd local shell + credits)..."));
   let apiKey = process.env.OPENROUTER_API_KEY?.trim() || "";
   if (apiKey) {
     console.log(chalk.green("  OPENROUTER_API_KEY detected in environment.\n"));
@@ -163,7 +163,7 @@ function showFundingPanel(address: string): void {
   console.log(chalk.cyan(`  │${pad("  3. Optional: CLAWD_CREDITS_CENTS for local tiers", w)}│`));
   console.log(chalk.cyan(`  │${pad("     https://x402.wtf", w)}│`));
   console.log(chalk.cyan(`  │${" ".repeat(w)}│`));
-  console.log(chalk.cyan(`  │${pad("  Local shell + own packages — no Conway required.", w)}│`));
+  console.log(chalk.cyan(`  │${pad("  Local Clawd shell + OpenRouter + CLAWD_CREDITS_CENTS.", w)}│`));
   console.log(chalk.cyan(`  │${pad("  Survival handles low balance gracefully.", w)}│`));
   console.log(chalk.cyan(`  ${"╰" + "─".repeat(w) + "╯"}`));
   console.log("");

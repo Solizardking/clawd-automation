@@ -224,16 +224,19 @@ describe("resolveInferenceClient", () => {
     ).toThrow(/OPENROUTER_API_KEY/);
   });
 
-  it("maps legacy clawd/conway provider to openrouter", () => {
+  it("treats unknown INFERENCE_PROVIDER values as auto → openrouter", () => {
     const resolved = resolveInferenceClient({
       maxTokens: 1024,
       env: {
         OPENROUTER_API_KEY: "sk-or",
         OPENROUTER_FREE_MODEL: "openrouter/free",
-        INFERENCE_PROVIDER: "clawd",
+        INFERENCE_PROVIDER: "not-a-real-provider",
       } as any,
     });
     expect(resolved.backend).toBe("openrouter");
+    expect(resolveInferenceBackend({ INFERENCE_PROVIDER: "not-a-real-provider" } as any)).toBe(
+      "auto",
+    );
   });
 
   it("throws when openrouter forced without key", () => {

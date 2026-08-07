@@ -26,7 +26,7 @@
    - CA-based PRNG → Nullifier Derivation
    - CA-based SSH → Nullifier Session Auth
 5. [Cellular Automata → ZK](#cellular-automata--zk)
-   - Conway's Game of Life → Groth16 Universal Computation
+   - Game of Life → Groth16 Universal Computation
    - Forest Fire Simulation → Groth16
 6. [Decision Theory → ZK](#decision-theory--zk)
    - Min-Max Algorithm → Nullifier Commitment
@@ -77,7 +77,7 @@ The same mathematics. The same algorithms. Just provable on Solana.
 | `Encryption/CA_Password_Protect/` | CA-based PRNG | `computeNullifier` | Client-side | 0 (off-chain) |
 | `PP_SSH/` | CA-based SSH | `computeNullifier` | `publish_attestation` | ~618k CU |
 | `PP_HASH/sha512-cellularAutomaton_paper.pdf` | SHA-512 via CA | `computeNullifier` | Client-side | 0 (off-chain) |
-| `GameOfLife/` | Conway's Game of Life | `verifyGroth16` | `publish_attestation` | ~618k CU |
+| `GameOfLife/` | Game of Life | `verifyGroth16` | `publish_attestation` | ~618k CU |
 | `ForestFire_Simulation/` | Forest fire CA | `verifyGroth16` | `publish_attestation` | ~618k CU |
 | `mmc/maincode.cpp` | Min-Max decision tree | `computeNullifier` | Client-side | 0 (off-chain) |
 | `tic-tac-toe/min-max-tree.cpp` | Tic-Tac-Toe solver | `computeNullifier` | Client-side | 0 (off-chain) |
@@ -225,9 +225,9 @@ const ix = await client.publishAttestation({
 
 ## Cellular Automata → ZK
 
-### Conway's Game of Life (MinMax `GameOfLife/`)
+### Game of Life (MinMax `GameOfLife/`)
 
-Conway's Game of Life is a universal computer — it can simulate any
+Game of Life is a universal computer — it can simulate any
 Turing machine. A Groth16 proof can attest that a given initial
 configuration evolves to a given final configuration after N
 generations without revealing the intermediate states.
@@ -253,7 +253,7 @@ const ix = await client.publishAttestation({
 });
 ```
 
-This is the direct ZK analogue of Conway's universal computer proof:
+This is the direct ZK analogue of the Game of Life universal computer proof:
 the computation is private (you don't reveal intermediate frames),
 but the final state is verifiable on-chain.
 

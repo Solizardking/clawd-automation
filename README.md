@@ -64,7 +64,7 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 
 ## Table of contents
 
-- [Clawd build (Conway removed)](#clawd-build-conway-removed)
+- [Clawd compute & credits](#clawd-compute--credits)
 - [Quick start](#quick-start)
 - [One whole stack](#one-whole-stack)
 - [Life cycle (the living graph)](#life-cycle-the-living-graph)
@@ -87,19 +87,27 @@ This runtime closes that gap: a **leviathan** with a wallet, a pulse, a shell th
 - [Lexicon](#lexicon)
 - [License](#license)
 
-## Clawd build (Conway removed)
+## Clawd compute & credits
 
-This tree ships **Clawd**, not Conway:
+This package is **Clawd-native only**:
 
-| Was (Conway) | Now (Clawd) |
+| Surface | Implementation |
 | --- | --- |
-| `@conway/automaton` | `@onchainai/automation` |
-| `conway-automaton` bin | `clawd-automaton` bin |
-| Remote sandbox API (`api.conway.tech`) | **Local shell** `src/shell/client.ts` |
-| Conway paid inference | **OpenRouter only** (`src/inference/`) |
-| `src/conway/*` | `src/shell/*` + CJS packages + **`zk-primitives/`** |
+| Package | `@onchainai/automation` |
+| Bins | `automaton` · `clawd-automaton` → `dist/index.js` |
+| Inference | **OpenRouter only** (`src/inference/`) — free router by default |
+| Shell / sandbox | **Local host process** (`src/shell/client.ts`) |
+| Compute credits | **`CLAWD_CREDITS_CENTS`** + `getCreditsBalance()` · survival tools `check_credits` / low-compute / distress |
+| Capabilities | CJS packages · `zk-primitives/` · `ooda/` · constitution |
 
-Historical **Conway's Game of Life** mentions in constitution / PiedPiper lineage are algorithm history — not the old vendor. Classical → ZK map: [`zk-primitives/docs/PIEDPIPER_ADAPTATION.md`](zk-primitives/docs/PIEDPIPER_ADAPTATION.md).
+There is **no remote third-party control plane** for sandbox or paid inference. Classical → ZK algorithm map (including Game of Life → Groth16): [`zk-primitives/docs/PIEDPIPER_ADAPTATION.md`](zk-primitives/docs/PIEDPIPER_ADAPTATION.md).
+
+```bash
+export OPENROUTER_API_KEY=sk-or-v1-…
+export INFERENCE_PROVIDER=auto          # or openrouter
+export CLAWD_SANDBOX_ID=local
+export CLAWD_CREDITS_CENTS=10000        # local compute credit balance (cents)
+```
 
 ---
 
