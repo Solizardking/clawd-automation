@@ -198,10 +198,10 @@ extensions copy/
 .discord-tweet-relay-state.json
 sessions/
 *.session
-
+target
 # Sentry / sourcemaps
 .sentryclirc
-
+.env
 # Claude Code / agent local state
 .claude/
 .cursor/
