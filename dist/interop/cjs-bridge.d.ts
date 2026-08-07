@@ -19,7 +19,7 @@
  * Works for both `src/interop/` (tsx/dev) and `dist/interop/` (compiled).
  */
 export declare function resolveSrcRoot(fromDir?: string): string;
-export type CjsCapabilityName = "constitution" | "personas" | "skillhub" | "knowledge" | "x402_knowledge" | "config" | "cli_commands" | "agents" | "base_agent" | "providers" | "unified_ai";
+export type CjsCapabilityName = "constitution" | "personas" | "lobster_council" | "skillhub" | "knowledge" | "x402_knowledge" | "config" | "cli_commands" | "agents" | "base_agent" | "providers" | "unified_ai";
 export interface CjsLoadResult {
     name: CjsCapabilityName;
     ok: boolean;

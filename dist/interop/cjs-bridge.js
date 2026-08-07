@@ -52,6 +52,7 @@ function buildCapabilityPaths(srcRoot) {
     return {
         constitution: path.join(srcRoot, "services", "constitution.js"),
         personas: path.join(srcRoot, "services", "personas.js"),
+        lobster_council: path.join(srcRoot, "services", "lobster-council.js"),
         skillhub: path.join(srcRoot, "services", "skillhub.js"),
         knowledge: path.join(srcRoot, "knowledge", "clawdbrowser.js"),
         x402_knowledge: path.join(srcRoot, "knowledge", "x402-protocol.js"),

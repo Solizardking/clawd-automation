@@ -16,22 +16,40 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 /**
  * Locate zk-primitives root (directory containing MANIFEST.json).
+ *
+ * Resolution order:
+ * 1. CLAWDBOT_ZK_PRIMITIVES_DIR / CLAWD_ZK_PRIMITIVES_DIR (explicit override)
+ * 2. fromDir layout: src/zk or dist/zk → ../../zk-primitives
+ * 3. process.cwd()/zk-primitives
+ * 4. Walk parents of fromDir looking for zk-primitives/MANIFEST.json
  */
 export function resolveZkPrimitivesRoot(fromDir = __dirname) {
-    const candidates = [
-        // src/zk or dist/zk → ../../zk-primitives
-        path.resolve(fromDir, "..", "..", "zk-primitives"),
-        // monorepo root relative to cwd
-        path.resolve(process.cwd(), "zk-primitives"),
-        // env override
-        process.env.CLAWDBOT_ZK_PRIMITIVES_DIR
-            ? path.resolve(process.env.CLAWDBOT_ZK_PRIMITIVES_DIR)
-            : "",
-        process.env.CLAWD_ZK_PRIMITIVES_DIR
-            ? path.resolve(process.env.CLAWD_ZK_PRIMITIVES_DIR)
-            : "",
-    ].filter(Boolean);
+    const candidates = [];
+    // Explicit env overrides win (catalogIntegration.zkRootEnv).
+    if (process.env.CLAWDBOT_ZK_PRIMITIVES_DIR) {
+        candidates.push(path.resolve(process.env.CLAWDBOT_ZK_PRIMITIVES_DIR));
+    }
+    if (process.env.CLAWD_ZK_PRIMITIVES_DIR) {
+        candidates.push(path.resolve(process.env.CLAWD_ZK_PRIMITIVES_DIR));
+    }
+    // Compiled (dist/zk) or source (src/zk) → monorepo root sibling.
+    candidates.push(path.resolve(fromDir, "..", "..", "zk-primitives"));
+    // cwd-relative (npm scripts, smoke from repo root).
+    candidates.push(path.resolve(process.cwd(), "zk-primitives"));
+    // Walk parents of fromDir for nested install layouts.
+    let walk = path.resolve(fromDir);
+    for (let i = 0; i < 8; i++) {
+        candidates.push(path.join(walk, "zk-primitives"));
+        const parent = path.dirname(walk);
+        if (parent === walk)
+            break;
+        walk = parent;
+    }
+    const seen = new Set();
     for (const candidate of candidates) {
+        if (!candidate || seen.has(candidate))
+            continue;
+        seen.add(candidate);
         if (existsSync(path.join(candidate, "MANIFEST.json"))) {
             return candidate;
         }

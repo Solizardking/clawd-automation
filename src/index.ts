@@ -29,6 +29,7 @@ import {
 } from "./runtime/context.js";
 import { getCjsHealth } from "./interop/cjs-bridge.js";
 import { getZkHealth } from "./zk/primitives.js";
+import { getOodaHealth } from "./ooda/bridge.js";
 import type { AutomatonIdentity, AgentState, Skill, SocialClientInterface } from "./types.js";
 
 /** Package version from package.json (keeps --version in sync with npm). */
@@ -280,6 +281,16 @@ async function run(): Promise<void> {
     );
   } catch (err: any) {
     console.warn(`[${new Date().toISOString()}] ZK probe failed: ${err.message}`);
+  }
+
+  // Probe OODA harness + lobster council seats (observer-only)
+  try {
+    const ooda = getOodaHealth();
+    console.log(
+      `[${new Date().toISOString()}] OODA: ${ooda.ok ? "ok" : "missing"} pkg=${ooda.packageName || "n/a"} loop=${ooda.hasLoop}`,
+    );
+  } catch (err: any) {
+    console.warn(`[${new Date().toISOString()}] OODA probe failed: ${err.message}`);
   }
 
   // Initialize state repo (git)

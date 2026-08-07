@@ -66,8 +66,118 @@ describe("Composition graph structure", () => {
     expect(toolsSrc).toMatch(/cjs_capability/);
     expect(toolsSrc).toMatch(/interop\/cjs-bridge/);
     expect(toolsSrc).toMatch(/constitution_context/);
+    expect(toolsSrc).toMatch(/lobster_council/);
+    expect(toolsSrc).toMatch(/ooda_health/);
     expect(toolsSrc).toMatch(/zk_health/);
     expect(toolsSrc).toMatch(/zk_catalog/);
+  });
+
+  it("cjs-bridge registers lobster_council capability", () => {
+    const bridgeSrc = fs.readFileSync(
+      path.join(srcRoot, "interop", "cjs-bridge.ts"),
+      "utf-8",
+    );
+    expect(bridgeSrc).toMatch(/lobster_council/);
+    expect(bridgeSrc).toMatch(/lobster-council\.js/);
+  });
+});
+
+describe("Lobster council + OODA communication", () => {
+  it("loads all six lobster-council seats via CJS service", async () => {
+    const { invokeCjsCapability, loadCjsCapability } = await import(
+      "../interop/cjs-bridge.js"
+    );
+    const loaded = loadCjsCapability("lobster_council");
+    expect(loaded.ok, loaded.error).toBe(true);
+    const manifest = invokeCjsCapability("lobster_council", "getManifest", []);
+    expect(manifest.ok, manifest.error).toBe(true);
+    const m = manifest.result as { present: number; members: Array<{ id: string }> };
+    expect(m.present).toBe(6);
+    const ids = m.members.map((x) => x.id).sort();
+    expect(ids).toEqual(
+      [
+        "activistpinch",
+        "disruptiveshell",
+        "latticeclaw",
+        "moatmaw",
+        "soltoshi",
+        "valueclaw",
+      ].sort(),
+    );
+    const sol = invokeCjsCapability("lobster_council", "loadMember", [
+      "soltoshi",
+    ]);
+    expect(sol.ok).toBe(true);
+    expect((sol.result as { systemRole: string }).systemRole.length).toBeGreaterThan(
+      40,
+    );
+  });
+
+  it("hedge personas compose with council and include councilRoot", async () => {
+    const { invokeCjsCapability } = await import("../interop/cjs-bridge.js");
+    const personaManifest = invokeCjsCapability("personas", "getManifest", []);
+    expect(personaManifest.ok, personaManifest.error).toBe(true);
+    const pm = personaManifest.result as {
+      present: number;
+      councilRoot: string;
+      lobsterCouncil: { present?: number };
+    };
+    expect(pm.present).toBeGreaterThanOrEqual(5);
+    expect(pm.councilRoot).toMatch(/lobster-council/);
+    expect(pm.lobsterCouncil?.present).toBe(6);
+
+    const composed = invokeCjsCapability("lobster_council", "composeWithHedge", [
+      "valueclaw",
+    ]);
+    expect(composed.ok).toBe(true);
+    const c = composed.result as {
+      systemRole: string;
+      hedge: { name: string } | null;
+    };
+    expect(c.systemRole.length).toBeGreaterThan(20);
+    expect(c.hedge?.name).toBeTruthy();
+  });
+
+  it("ooda bridge resolves harness and CLAWD.md", async () => {
+    const { getOodaHealth, getOodaCatalog, getOodaClawdSnippet } = await import(
+      "../ooda/bridge.js"
+    );
+    const health = getOodaHealth();
+    expect(health.ok, health.error).toBe(true);
+    expect(health.hasLoop).toBe(true);
+    expect(health.hasValidate).toBe(true);
+    expect(health.hasClawdMd).toBe(true);
+    expect(health.packageName).toBe("@clawd/ooda-harness");
+    const cat = getOodaCatalog() as { health: { ok: boolean }; scripts: object };
+    expect(cat.health.ok).toBe(true);
+    expect(cat.scripts).toBeTruthy();
+    const snippet = getOodaClawdSnippet(500);
+    expect(snippet.length).toBeGreaterThan(20);
+    expect(snippet).not.toMatch(/unavailable/);
+  });
+
+  it("constitution loader sees laws + root mirror paths", async () => {
+    const { invokeCjsCapability } = await import("../interop/cjs-bridge.js");
+    const manifest = invokeCjsCapability("constitution", "getManifest", []);
+    expect(manifest.ok, manifest.error).toBe(true);
+    const m = manifest.result as {
+      present: number;
+      root: string;
+      rootMirror: string;
+    };
+    expect(m.present).toBeGreaterThanOrEqual(6);
+    expect(m.root).toMatch(/constitution/);
+    expect(m.rootMirror).toBeTruthy();
+    const soul = invokeCjsCapability("constitution", "readDocument", ["soul"]);
+    expect(soul.ok).toBe(true);
+  });
+
+  it("agent-council exposes lobster briefing", () => {
+    const councilPath = path.join(srcRoot, "agents", "agent-council.js");
+    const src = fs.readFileSync(councilPath, "utf-8");
+    expect(src).toMatch(/lobster-council/);
+    expect(src).toMatch(/getLobsterCouncilStatus/);
+    expect(src).toMatch(/briefWithLobster/);
   });
 });
 

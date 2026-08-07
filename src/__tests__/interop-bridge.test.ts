@@ -45,6 +45,7 @@ describe("CJS interop bridge", () => {
     expect(names).toContain("x402_knowledge");
     expect(names).toContain("knowledge");
     expect(names).toContain("personas");
+    expect(names).toContain("lobster_council");
     expect(names).toContain("skillhub");
     expect(names).toContain("config");
     expect(names).toContain("cli_commands");

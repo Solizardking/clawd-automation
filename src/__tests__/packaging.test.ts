@@ -55,12 +55,15 @@ describe("package metadata for npm publish", () => {
     expect(pkg.bin["clawd-automaton"]).toBe("dist/index.js");
   });
 
-  it("files allowlist ships dist, CJS surface, constitution, ZK health roots", () => {
+  it("files allowlist ships dist, CJS surface, constitution, council, ooda, ZK", () => {
     const files = pkg.files ?? [];
     const required = [
       "dist",
       "src/services",
       "constitution",
+      "lobster-council",
+      "data/hedge",
+      "ooda",
       "zk-primitives/MANIFEST.json",
       "zk-primitives/client/package.json",
       "zk-primitives/agent/package.json",
@@ -75,6 +78,23 @@ describe("package metadata for npm publish", () => {
       const abs = path.join(ROOT, f);
       expect(existsSync(abs), `missing on disk: ${f}`).toBe(true);
     }
+    // council seats + ooda loop must be present
+    for (const seat of [
+      "soltoshi.json",
+      "valueclaw.json",
+      "latticeclaw.json",
+      "moatmaw.json",
+      "activistpinch.json",
+      "disruptiveshell.json",
+    ]) {
+      expect(existsSync(path.join(ROOT, "lobster-council", seat)), seat).toBe(
+        true,
+      );
+    }
+    expect(existsSync(path.join(ROOT, "ooda", "loop.ts"))).toBe(true);
+    expect(existsSync(path.join(ROOT, "src", "services", "lobster-council.js"))).toBe(
+      true,
+    );
   });
 
   it(".npmignore excludes maps, tests, env, and tarballs", () => {
@@ -159,5 +179,61 @@ describe("runtime roots after install layout", () => {
     expect(existsSync(path.join(c, "CONSTITUTION.md"))).toBe(true);
     const names = readdirSync(c);
     expect(names.length).toBeGreaterThan(3);
+  });
+
+  it("constitution bundle is complete and loadable via dist CJS bridge", async () => {
+    const required = [
+      "CONSTITUTION.md",
+      "IDENTITY.md",
+      "program.md",
+      "README.md",
+      "six-laws.md",
+      "SOUL.md",
+      "strategy.md",
+      "three-laws.md",
+    ];
+    const cdir = path.join(ROOT, "constitution");
+    for (const f of required) {
+      expect(existsSync(path.join(cdir, f)), `missing constitution/${f}`).toBe(
+        true,
+      );
+    }
+
+    // Drive the real shipped interop entry (compiled dist)
+    const bridge = await import(
+      path.join(ROOT, "dist", "interop", "cjs-bridge.js")
+    );
+    const loaded = bridge.loadCjsCapability("constitution");
+    expect(loaded.ok, loaded.error).toBe(true);
+    expect(loaded.path).toMatch(/constitution\.js$/);
+
+    const inv = bridge.invokeCjsCapability(
+      "constitution",
+      "listDocuments",
+      [],
+    );
+    expect(inv.ok, inv.error).toBe(true);
+    const docs = inv.result as Array<{ id: string; exists: boolean; file: string }>;
+    expect(Array.isArray(docs)).toBe(true);
+    expect(docs.length).toBeGreaterThanOrEqual(8);
+    for (const d of docs) {
+      expect(d.exists, `${d.id} missing on disk`).toBe(true);
+    }
+
+    const ctx = bridge.invokeCjsCapability("constitution", "getPromptContext", [
+      { maxChars: 4000 },
+    ]);
+    expect(ctx.ok, ctx.error).toBe(true);
+    expect(String(ctx.result).toLowerCase()).toMatch(/never harm|law i/);
+
+    const attest = bridge.invokeCjsCapability(
+      "constitution",
+      "attestOnChainLaws",
+      [],
+    );
+    expect(attest.ok, attest.error).toBe(true);
+    const body = attest.result as { sha256?: string; document?: string };
+    expect(body.sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(body.document).toBe("three-laws");
   });
 });

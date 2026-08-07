@@ -58,6 +58,12 @@ export interface ZkHealthReport {
 }
 /**
  * Locate zk-primitives root (directory containing MANIFEST.json).
+ *
+ * Resolution order:
+ * 1. CLAWDBOT_ZK_PRIMITIVES_DIR / CLAWD_ZK_PRIMITIVES_DIR (explicit override)
+ * 2. fromDir layout: src/zk or dist/zk → ../../zk-primitives
+ * 3. process.cwd()/zk-primitives
+ * 4. Walk parents of fromDir looking for zk-primitives/MANIFEST.json
  */
 export declare function resolveZkPrimitivesRoot(fromDir?: string): string | null;
 /**

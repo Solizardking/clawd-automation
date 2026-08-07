@@ -23,13 +23,21 @@ Ecosystem: [x402.wtf](https://x402.wtf) · [zk.x402.wtf](https://zk.x402.wtf) ·
 ## Runtime load
 
 ```js
-// CJS (primary interop path)
+// CJS (primary interop path — source)
 const constitution = require('../src/services/constitution');
 constitution.getManifest();
 constitution.getPromptContext({ maxChars: 6000 });
 constitution.attestOnChainLaws();
 
+// After npm run build — dist interop health includes constitution
+// import { loadCjsCapability } from './dist/interop/cjs-bridge.js'
+// loadCjsCapability('constitution')
+
 // Via automaton tool
 // cjs_capability name=constitution method=getManifest
 // constitution_context
 ```
+
+Rust kit (`agent/` crate) resolves the same files via
+`openclawd_solana_kit::constitution::load_constitution()` (prefers
+`three-laws.md`).

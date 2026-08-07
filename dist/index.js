@@ -22,6 +22,7 @@ import { createSocialClient } from "./social/client.js";
 import { createRuntimeContext, toHeartbeatOptions, } from "./runtime/context.js";
 import { getCjsHealth } from "./interop/cjs-bridge.js";
 import { getZkHealth } from "./zk/primitives.js";
+import { getOodaHealth } from "./ooda/bridge.js";
 /** Package version from package.json (keeps --version in sync with npm). */
 function readPackageVersion() {
     try {
@@ -233,6 +234,14 @@ async function run() {
     }
     catch (err) {
         console.warn(`[${new Date().toISOString()}] ZK probe failed: ${err.message}`);
+    }
+    // Probe OODA harness + lobster council seats (observer-only)
+    try {
+        const ooda = getOodaHealth();
+        console.log(`[${new Date().toISOString()}] OODA: ${ooda.ok ? "ok" : "missing"} pkg=${ooda.packageName || "n/a"} loop=${ooda.hasLoop}`);
+    }
+    catch (err) {
+        console.warn(`[${new Date().toISOString()}] OODA probe failed: ${err.message}`);
     }
     // Initialize state repo (git)
     try {

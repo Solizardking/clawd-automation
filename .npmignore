@@ -29,3 +29,8 @@ node_modules/
 .git/
 .pack-evidence/
 *.log
+
+# Nested workspaces / harness local state
+ooda/node_modules/
+ooda/journal/
+agent/target/

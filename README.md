@@ -550,6 +550,11 @@ Self-preservation guards block shell patterns that would delete `wallet.json`, `
 ```text
 automation/
 ├── constitution/               ★ canonical Clawd harness (8 docs, runtime load)
+├── CONSTITUTION.md · CLAWD.md · IDENTITY.md · SOUL.md · six-laws.md  (root mirrors)
+├── lobster-council/            ★ voice seats (soltoshi…disruptiveshell) → CJS service
+├── data/hedge/                 ★ hedge persona bios (compose with council)
+├── ooda/                       ★ paper/devnet OODA harness (@clawd/ooda-harness)
+├── agent/                      ★ openclawd-solana-kit (Rust Solana/EVM agent kit)
 ├── docs/assets/               ★ animated README media
 │   ├── automaton-pulse.svg
 │   ├── depth-cycle.svg
@@ -561,11 +566,13 @@ automation/
 │   ├── zk.md · README.md
 │   ├── client/ · agent/ · programs/ · configs/ · docs/ · tests/
 ├── dist/                      ★ tsc build → bin entry
+├── scripts/                   ★ automaton.sh · verify-pack · postbuild-bin
 ├── src/
 │   ├── index.ts               primary CLI
 │   ├── index.js               secondary Express surface
 │   ├── runtime/               shared RuntimeContext
 │   ├── interop/               CJS bridge (dist-safe SRC_ROOT)
+│   ├── ooda/                  bridge → repo ooda/ harness
 │   ├── zk/                    ZK observer bridge → zk-primitives/
 │   ├── agent/                 loop · tools · prompt · injection defense
 │   ├── heartbeat/             daemon · tasks · cron config
@@ -578,7 +585,6 @@ automation/
 │   ├── services/ agents/ providers/ knowledge/ cli/ config/   (CJS)
 │   ├── config.ts · types.ts
 │   └── __tests__/             loop · heartbeat · survival · composition · bridge · zk
-├── IDENTITY.md · SOUL.md · CONSTITUTION.md · CLAWD.md
 └── package.json               @onchainai/automation
 ```
 
@@ -614,7 +620,7 @@ export CLAWD_ZK_RPC_URL=…
 pnpm install
 pnpm test          # vitest → src/__tests__/**
 pnpm build         # tsc → dist/
-pnpm smoke         # version · help · CJS health · ZK health
+pnpm smoke         # version · help · CJS health · ZK health · OODA health
 pnpm clean         # rm -rf dist
 pnpm dev           # tsx watch src/index.ts
 ```
@@ -624,7 +630,8 @@ pnpm dev           # tsx watch src/index.ts
 - Loop: tool dispatch, forbidden patterns, low-compute, sleep, inbox  
 - Survival: real `checkResources` / `applyTierRestrictions` / funding  
 - Composition: survival imports from loop + heartbeat; shared context  
-- Bridge: all 11 CJS capabilities load under vitest **and** `tsx` **and** `node dist/…`  
+- Bridge: all 12 CJS capabilities (incl. `lobster_council`) load under vitest **and** `tsx` **and** `node dist/…`  
+- Council + OODA: six voice seats in `lobster-council/`, hedge bios in `data/hedge/`, paper loop in `ooda/`
 - Constitution: `getManifest().present === 8`, `getPromptContext` returns six-laws text  
 - **ZK:** `getZkHealth().ok`, manifest operations present, tools registered  
 
