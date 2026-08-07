@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img alt="version" src="https://img.shields.io/badge/version-0.1.0-a855f7?style=for-the-badge"/>
+  <img alt="version" src="https://img.shields.io/badge/version-0.1.1-a855f7?style=for-the-badge"/>
   <img alt="node" src="https://img.shields.io/badge/node-%3E%3D20-00ffa3?style=for-the-badge&logo=nodedotjs&logoColor=black"/>
   <img alt="type" src="https://img.shields.io/badge/module-ESM%20%2B%20CJS%20%2B%20ZK-3b82f6?style=for-the-badge"/>
   <img alt="chain" src="https://img.shields.io/badge/chain-Solana-14F195?style=for-the-badge&logo=solana&logoColor=white"/>
@@ -104,12 +104,13 @@ curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/
 ### npm / npx
 
 ```bash
-npm install -g @onchainai/automation@0.1.0   # public scoped package
-automaton --version                       # → Clawd Automaton v0.1.0
+npm install -g @onchainai/automation@latest   # public scoped package
+automaton --version                       # → Clawd Automaton v…
 automaton --help
 npx @onchainai/automation --version
 
-npm run build && npm publish --access public
+# Maintainers: build, test, then publish (npm 2FA OTP required)
+# NPM_OTP=…… ./scripts/npm-publish.sh
 ```
 
 ### From source
@@ -595,7 +596,7 @@ automation/
 | Flag | Action |
 |------|--------|
 | `--help` / `-h` | Identity + usage |
-| `--version` / `-v` | `Clawd Automaton v0.1.0` |
+| `--version` / `-v` | `Clawd Automaton v0.1.1` |
 | `--run` | Shared context → heartbeat + loop (+ CJS/ZK probes) |
 | `--setup` | Interactive wizard |
 | `--init` | Wallet + config directory |

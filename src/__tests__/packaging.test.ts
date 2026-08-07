@@ -122,12 +122,23 @@ describe("package metadata for npm publish", () => {
     // npm prints "npm notice path" lines for each packed file
     expect(out).toMatch(/dist\/index\.js/);
     expect(out).toMatch(/src\/services\/constitution\.js/);
+    expect(out).toMatch(/src\/services\/lobster-council\.js/);
     expect(out).toMatch(/constitution\//);
+    expect(out).toMatch(/lobster-council\/soltoshi\.json/);
+    expect(out).toMatch(/lobster-council\/disruptiveshell\.json/);
+    expect(out).toMatch(/data\/hedge\//);
+    expect(out).toMatch(/ooda\/loop\.ts/);
+    expect(out).toMatch(/CONSTITUTION\.md/);
+    expect(out).toMatch(/LICENSE/);
+    expect(out).toMatch(/README\.md/);
+    expect(out).toMatch(/zk-primitives\/MANIFEST\.json/);
     // Exclusions driven by .npmignore / dist/.npmignore
     expect(out).not.toMatch(/\.js\.map\b/);
     expect(out).not.toMatch(/\.d\.ts\.map\b/);
     expect(out).not.toMatch(/__tests__/);
     expect(out).not.toMatch(/(^|\s)\.env(\s|$)/);
+    expect(out).not.toMatch(/agent\/target/);
+    expect(out).not.toMatch(/ooda\/node_modules/);
   });
 });
 

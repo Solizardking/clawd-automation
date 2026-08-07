@@ -1,6 +1,6 @@
 {
   "name": "@onchainai/automation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Clawd Automaton — sovereign AI agent runtime (local shell + OpenRouter + own packages)",
   "type": "module",
   "main": "dist/index.js",
@@ -38,6 +38,7 @@
     "IDENTITY.md",
     "SOUL.md",
     "six-laws.md",
+    "program.md",
     "lobster-council",
     "data/hedge",
     "ooda",
@@ -47,8 +48,10 @@
     "zk-primitives/zk.md",
     "zk-primitives/docs",
     "scripts/automaton.sh",
+    "scripts/verify-pack.mjs",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "package.json"
   ],
   "publishConfig": {
     "access": "public",

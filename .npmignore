@@ -30,7 +30,18 @@ node_modules/
 .pack-evidence/
 *.log
 
-# Nested workspaces / harness local state
-ooda/node_modules/
-ooda/journal/
-agent/target/
+# Nested workspaces / harness local state (ooda ships sources only)
+ooda/node_modules/**
+ooda/**/node_modules/**
+ooda/journal/**
+ooda/journal/ticks.jsonl
+ooda/package-lock.json
+**/package-lock.json
+# Rust kit is monorepo-only (not the npm runtime payload)
+agent/**
+.npmignore.test
+vitest.config.ts
+tsconfig.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+package-lock.json
