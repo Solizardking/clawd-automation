@@ -3,7 +3,7 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/Solizardking/clawd-automation/main/scripts/automaton.sh | sh
 #
-# Prefers public npm (@clawd/automaton). Falls back to git clone + build.
+# Prefers public npm (@onchainai/automation). Falls back to git clone + build.
 # Env:
 #   AUTOMATON_VERSION     npm version or tag (default: latest)
 #   AUTOMATON_INSTALL_DIR clone/build dir (default: $HOME/.local/share/clawd-automaton)
@@ -13,7 +13,7 @@
 #   NPM_CONFIG_PREFIX     optional npm global prefix override
 set -eu
 
-PKG_NAME="@clawd/automaton"
+PKG_NAME="@onchainai/automation"
 VERSION="${AUTOMATON_VERSION:-latest}"
 INSTALL_DIR="${AUTOMATON_INSTALL_DIR:-${HOME}/.local/share/clawd-automaton}"
 BIN_DIR="${AUTOMATON_BIN_DIR:-${HOME}/.local/bin}"

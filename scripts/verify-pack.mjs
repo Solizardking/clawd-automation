@@ -72,13 +72,17 @@ try {
   const list = Array.isArray(arr) ? arr : [arr];
   tarballName = list[0]?.filename || list[0]?.id;
 } catch {
-  // fallback: look for clawd-automaton-*.tgz
+  // fallback: any pack tarball in repo root (prefer onchainai-automation-*.tgz)
   const files = readdirSync(ROOT).filter((f) => f.endsWith(".tgz"));
-  tarballName = files.sort().pop();
+  tarballName =
+    files.find((f) => f.startsWith("onchainai-automation-")) ||
+    files.sort().pop();
 }
 if (!tarballName) {
   // npm pack without --json prints the filename
-  const m = r.combined.match(/clawd-automaton-[\d.]+\.tgz/);
+  const m = r.combined.match(
+    /(?:onchainai-automation|clawd-automaton)-[\d.]+\.tgz/,
+  );
   tarballName = m?.[0];
 }
 if (!tarballName) {
@@ -135,16 +139,20 @@ if (r.status !== 0) {
   process.exit(1);
 }
 
-const binJs = path.join(
-  clean,
-  "node_modules",
-  "@clawd",
-  "automaton",
-  "dist",
-  "index.js",
-);
+// Scoped names map to node_modules/@scope/name/
+const pkgParts = String(pkg.name || "").split("/");
+const installedPkgDir =
+  pkgParts.length === 2
+    ? path.join(clean, "node_modules", pkgParts[0], pkgParts[1])
+    : path.join(clean, "node_modules", pkg.name);
+const binJs = path.join(installedPkgDir, "dist", "index.js");
 if (!existsSync(binJs)) {
-  console.error("installed package missing dist/index.js");
+  console.error(
+    "installed package missing dist/index.js at",
+    binJs,
+    "(package name:",
+    pkg.name + ")",
+  );
   process.exit(1);
 }
 
