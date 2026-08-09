@@ -1,9 +1,0 @@
-/Users/8bit/automation/agent/target/debug/deps/alloy_rpc_types_any-bee2507a24653f21.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/receipt.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/block.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/../README.md
-
-/Users/8bit/automation/agent/target/debug/deps/liballoy_rpc_types_any-bee2507a24653f21.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/mod.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/receipt.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/block.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/../README.md
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/lib.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/mod.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/transaction/receipt.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/block.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/alloy-rpc-types-any-0.11.1/src/../README.md:

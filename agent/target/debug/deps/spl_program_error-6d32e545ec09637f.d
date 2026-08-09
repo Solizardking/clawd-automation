@@ -1,7 +1,0 @@
-/Users/8bit/automation/agent/target/debug/deps/spl_program_error-6d32e545ec09637f.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-program-error-0.6.0/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libspl_program_error-6d32e545ec09637f.dylib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-program-error-0.6.0/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libspl_program_error-6d32e545ec09637f.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-program-error-0.6.0/src/lib.rs
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/spl-program-error-0.6.0/src/lib.rs:
