@@ -8,10 +8,17 @@
  *   - can launch new paper/devnet loop runs via child_process and stream
  *     their status back
  *
- * Same safety contract as the harness itself: paper + devnet only. This
- * server never signs or broadcasts anything — it only reads the journal
- * and spawns `loop.ts`, which enforces mode=paper/network=devnet at
- * startup (see validate.ts / observe.ts). Binds to localhost by default.
+ * The OODA loop side (journal tailing, /api/run, /api/stop) keeps the same
+ * safety contract as the harness itself: paper + devnet only. This server
+ * never signs anything itself and spawns `loop.ts`, which enforces
+ * mode=paper/network=devnet at startup (see validate.ts / observe.ts).
+ *
+ * The dashboard also serves a separate live-trading page (trade.html) that
+ * talks to real mainnet via DFlow + Helius (see live.ts) — that surface
+ * proxies quotes/unsigned-transactions/confirmation only; the connected
+ * browser wallet is what signs and broadcasts, never this server.
+ *
+ * Binds to localhost by default.
  *
  * Usage:
  *   npx tsx web/server.ts
@@ -27,12 +34,22 @@ import { fileURLToPath } from 'node:url';
 import { readLastEntries, journalPath } from '../journal.js';
 import { parseClawdConfig } from '../validate.js';
 import type { TickEntry } from '../journal.js';
+import { handleLiveRoute } from './live.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OODA_DIR = join(__dirname, '..');
 const PUBLIC_DIR = join(__dirname, 'public');
 const PORT = parseInt(process.env['OODA_WEB_PORT'] ?? '4173', 10);
 const HOST = process.env['OODA_WEB_HOST'] ?? '127.0.0.1';
+
+const ENV_LOCAL_PATH = join(OODA_DIR, '.env.local');
+if (existsSync(ENV_LOCAL_PATH)) {
+  try {
+    process.loadEnvFile(ENV_LOCAL_PATH);
+  } catch {
+    /* malformed or unreadable .env.local — live-trading routes fall back to dev/no-key mode */
+  }
+}
 
 // ─── Normalised tick shape shared by journal replay + live SSE ────────────────
 
@@ -260,6 +277,16 @@ function readBody(req: IncomingMessage): Promise<string> {
 
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://${req.headers.host}`);
+
+  if (url.pathname.startsWith('/api/live/')) {
+    void handleLiveRoute(req, res, url).then((handled) => {
+      if (!handled) {
+        res.writeHead(404);
+        res.end('not found');
+      }
+    });
+    return;
+  }
 
   if (url.pathname === '/api/journal') {
     const n = Math.min(1000, parseInt(url.searchParams.get('n') ?? '300', 10) || 300);

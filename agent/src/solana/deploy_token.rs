@@ -286,7 +286,6 @@ pub async fn create_launch_tx(
     ));
 
     let (bonding_curve, associated_bonding_curve) = get_bc_and_abc(mint);
-    let mut pool_state = PoolState::new(mint, bonding_curve, associated_bonding_curve);
 
     if let Some(dev_buy) = dev_buy {
         let token_amount = get_pump_token_amount(
@@ -305,9 +304,6 @@ pub async fn create_launch_tx(
             token_amount,
             apply_fee(dev_buy),
         )?);
-
-        pool_state.virtual_sol_reserves += dev_buy;
-        pool_state.virtual_token_reserves -= token_amount;
     }
 
     // static tip of 50000 lamports for the launch
