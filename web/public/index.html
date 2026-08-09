@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🦞 Clawd Automation — Fly machine client</title>
+<link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo">🦞</span>
+    <div>
+      <h1>Clawd Automation</h1>
+      <p class="tagline">Fly machine client · one monorepo, one automation stack</p>
+    </div>
+  </div>
+  <div class="status-pill" id="connection-pill">connecting…</div>
+</header>
+
+<main>
+  <section class="panel modules-panel">
+    <div class="panel-head">
+      <h2>📦 Modules</h2>
+      <button id="refresh-modules" class="btn ghost" title="Re-probe">↻ refresh</button>
+    </div>
+    <div class="module-grid" id="module-grid"><div class="loading">probing modules…</div></div>
+  </section>
+
+  <section class="grid-two">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>🌀 OODA paper loop</h2>
+        <span class="run-badge" id="run-state">idle</span>
+      </div>
+      <form id="run-form" class="run-form">
+        <div class="field">
+          <label for="ticks">Ticks</label>
+          <input id="ticks" type="number" min="1" max="5000" value="50"/>
+        </div>
+        <div class="field">
+          <label for="sleep">Sleep (s)</label>
+          <input id="sleep" type="number" min="0" step="0.1" value="0.25"/>
+        </div>
+        <div class="field">
+          <label for="seed">Seed</label>
+          <input id="seed" type="number" value="42"/>
+        </div>
+        <label class="check">
+          <input id="llm" type="checkbox"/> LLM
+        </label>
+        <label class="check">
+          <input id="goblin" type="checkbox"/> 👺 Goblin
+        </label>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="run-btn">▶ Run paper</button>
+          <button type="button" class="btn danger" id="stop-btn">■ Stop</button>
+        </div>
+      </form>
+      <div class="log-box" id="loop-log">Ready. Paper + devnet only — same safety contract as the CLI harness.</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>📝 Journal</h2>
+        <span class="muted" id="tick-count">0 ticks</span>
+      </div>
+      <div class="journal-list" id="journal-list"><div class="loading">no ticks yet</div></div>
+    </section>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>📚 Docs & files</h2>
+    </div>
+    <div class="doc-links" id="doc-links">
+      <a class="chip" href="/module/agent/README.md" target="_blank">agent/README.md</a>
+      <a class="chip" href="/module/clawd-connectors/README.md" target="_blank">clawd-connectors/README.md</a>
+      <a class="chip" href="/module/constitution/README.md" target="_blank">constitution/README.md</a>
+      <a class="chip" href="/module/ooda/README.md" target="_blank">ooda/README.md</a>
+      <a class="chip" href="/module/zk-primitives/README.md" target="_blank">zk-primitives/README.md</a>
+      <a class="chip" href="/module/knowledge/README.md" target="_blank">knowledge/README.md</a>
+      <a class="chip" href="/module/docs/npm-publish.md" target="_blank">docs/npm-publish.md</a>
+      <a class="chip" href="/module/scripts/automaton.sh" target="_blank">scripts/automaton.sh</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <code>cheshireterminal.ai/automation</code> · <code>github.com/solizardking/automation</code> · <code>x402.wtf</code>
+</footer>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

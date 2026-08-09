@@ -1,0 +1,16 @@
+{
+  "name": "@clawd/automation-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Clawd Automation Fly machine client — a zero-dependency dashboard that hosts and connects to every module in the automation monorepo.",
+  "type": "module",
+  "license": "MIT",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

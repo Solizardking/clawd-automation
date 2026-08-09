@@ -1,0 +1,18 @@
+# Heavy / build-junk dirs — keep the Fly build context lean
+node_modules
+**/node_modules
+ooda/node_modules
+ooda/journal/*.jsonl
+dist
+agent/target
+.git
+.github
+*.log
+*.err
+.env
+.env.local
+keypair.json
+*.tgz
+.coverage
+.cache
+.cargo
