@@ -1,0 +1,47 @@
+# Clawd Automation — Fly machine (root deploy config)
+# Build context = repo root, so the image contains ooda/, agent/, constitution/,
+# knowledge/, clawd-connectors/, zk-primitives/, etc. — everything the client hosts.
+#
+#   cd /Users/8bit/automation
+#   fly deploy
+#
+# (App + volume already created from web/: app "clawd-automation",
+#  volume "automation_journal" in iad.)
+#
+# The deployed loop is paper + devnet only (ooda/loop.ts enforces it). Live
+# trading stays browser-wallet-signed — the server only proxies quotes/confirmation.
+
+app = "clawd-automation"
+
+primary_region = "iad"
+
+[build]
+  dockerfile = "web/Dockerfile"
+
+[env]
+  PORT = "8080"
+  WEB_HOST = "0.0.0.0"
+  # 24/7 paper autorun: continuously rerun ooda/loop.ts
+  OODA_AUTORUN = "1"
+  OODA_TICKS = "100"
+  OODA_SLEEP = "5"
+  OODA_SEED = "42"
+  OODA_LLM = "0"
+  OODA_GOBLIN = "0"
+  OODA_JOURNAL_PATH = "/data/journal/ticks.jsonl"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false  # keep the loop running 24/7
+  auto_start_machines = true
+  min_machines_running = 1
+
+[mounts]
+  source = "automation_journal"
+  destination = "/data"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

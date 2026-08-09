@@ -1,37 +1,12 @@
-# fly.toml app configuration file generated for clawd-automation on 2026-08-09T16:45:10-04:00
+# ⚠️ SUPERSEDED — deploy from the REPO ROOT instead.
 #
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#   cd /Users/8bit/automation
+#   fly deploy
 #
-
-app = 'clawd-automation'
-primary_region = 'iad'
-
-[build]
-  dockerfile = 'Dockerfile'
-
-[env]
-  OODA_AUTORUN = '1'
-  OODA_GOBLIN = '0'
-  OODA_JOURNAL_PATH = '/data/journal/ticks.jsonl'
-  OODA_LLM = '0'
-  OODA_SEED = '42'
-  OODA_SLEEP = '5'
-  OODA_TICKS = '100'
-  PORT = '8080'
-  WEB_HOST = '0.0.0.0'
-
-[[mounts]]
-  source = 'automation_journal'
-  destination = '/data'
-
-[http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = 'off'
-  auto_start_machines = true
-  min_machines_running = 1
-
-[[vm]]
-  cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 512
+# The root /fly.toml uses dockerfile = "web/Dockerfile" with the repo root as
+# the build context, so the image contains ooda/, agent/, constitution/, etc.
+# This file exists only to explain why the original web/-scoped config was
+# replaced (the web/-only context cannot see ooda/package.json).
+#
+# See /fly.toml for the current live configuration (app: clawd-automation,
+# volume: automation_journal, region iad).

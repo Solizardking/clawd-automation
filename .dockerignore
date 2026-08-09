@@ -1,0 +1,28 @@
+# Root-level dockerignore for the Fly build (context = repo root).
+# Keep the image lean while still shipping every module the client hosts.
+
+# Heavy / generated
+node_modules
+**/node_modules
+dist
+agent/target
+ooda/journal/*.jsonl
+
+# Git / VCS
+.git
+.github
+
+# Secrets — never ship
+.env
+.env.local
+keypair.json
+**/*.pem
+
+# Logs / temp
+*.log
+*.err
+*.tgz
+.coverage
+.cache
+.cargo
+.DS_Store
