@@ -18,11 +18,11 @@
  *   OODA_WEB_PORT=4321 npx tsx web/server.ts
  */
 
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import { readFileSync, existsSync, statSync, watch } from 'node:fs';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { join, dirname, extname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 
 import { readLastEntries, journalPath } from '../journal.js';
 import { parseClawdConfig } from '../validate.js';
@@ -112,8 +112,11 @@ function tailJournal(): void {
   const size = statSync(path).size;
   if (size < tailOffset) tailOffset = 0; // journal was cleared/truncated
   if (size === tailOffset) return;
-  const full = readFileSync(path, 'utf8');
-  const chunk = full.slice(tailOffset);
+  // Read as raw bytes and slice by byte offset — statSync().size is a byte
+  // count, so slicing a utf8-decoded string by that index breaks as soon as
+  // the file contains any multi-byte character (offsets drift out of sync).
+  const buf = readFileSync(path);
+  const chunk = buf.subarray(tailOffset, size).toString('utf8');
   tailOffset = size;
   for (const line of chunk.split('\n')) {
     if (!line.trim()) continue;
@@ -121,7 +124,7 @@ function tailJournal(): void {
       const entry = JSON.parse(line) as TickEntry;
       broadcast('tick', fromJournalEntry(entry));
     } catch {
-      /* partial line at EOF — will be re-read next pass since offset only advances on full read */
+      /* malformed/partial line — safe to drop, journal write is append-only */
     }
   }
 }
@@ -250,7 +253,7 @@ function serveStatic(res: ServerResponse, filePath: string): void {
 function readBody(req: IncomingMessage): Promise<string> {
   return new Promise((resolve) => {
     let body = '';
-    req.on('data', (c: Buffer) => (body += c.toString('utf8')));
+    req.on('data', (c: Buffer) => { body += c.toString('utf8'); });
     req.on('end', () => resolve(body));
   });
 }
