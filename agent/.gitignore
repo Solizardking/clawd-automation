@@ -1,4 +1,4 @@
-# target   (temporarily neutralized for git lfs migrate)
+target
 node_modules
 *.tgz
 .env
@@ -9,7 +9,7 @@ node_modules
 **/.keys/
 **/.keys/**
 !.keys/placeholder
-# target   (temporarily neutralized for git lfs migrate)
+target
 # Env files (any name pattern, any depth)
 .env
 .env.*
@@ -198,7 +198,7 @@ extensions copy/
 .discord-tweet-relay-state.json
 sessions/
 *.session
-# target   (temporarily neutralized for git lfs migrate)
+target
 # Sentry / sourcemaps
 .sentryclirc
 .env
@@ -206,4 +206,4 @@ sessions/
 .claude/
 .cursor/
 node_modules
-# target   (temporarily neutralized for git lfs migrate)
+target
