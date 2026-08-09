@@ -10,8 +10,9 @@
 
 FROM node:22-alpine
 
-ENV NODE_ENV=production \
-    OODA_WEB_HOST=0.0.0.0 \
+# NOTE: NODE_ENV=production comes AFTER npm ci — with it set earlier, npm
+# skips devDependencies and tsx (the runtime TS runner) is never baked in.
+ENV OODA_WEB_HOST=0.0.0.0 \
     OODA_AUTORUN=1 \
     OODA_SLEEP=5 \
     OODA_TICKS=100 \
@@ -19,9 +20,11 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 
-# Install all deps — tsx (devDependency) is the runtime TS runner here.
+# Install all deps including devDeps (tsx is the runtime TS runner).
 COPY package.json package-lock.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --include=dev --ignore-scripts
+
+ENV NODE_ENV=production
 
 # Copy app source (respects .dockerignore).
 COPY . .
