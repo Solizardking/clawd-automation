@@ -55,6 +55,13 @@ html, body {
 .badge-on { color: var(--cyan); border-color: rgba(34, 211, 238, 0.35); }
 .badge-warn { color: var(--yellow); border-color: rgba(250, 204, 21, 0.35); }
 .badge-danger { color: var(--red); border-color: rgba(248, 113, 113, 0.35); }
+.badge-live-link {
+  color: var(--red);
+  border-color: rgba(248, 113, 113, 0.4);
+  text-decoration: none;
+  font-weight: 700;
+}
+.badge-live-link:hover { background: rgba(248, 113, 113, 0.08); }
 
 .safety-strip {
   padding: 6px 20px;
