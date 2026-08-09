@@ -25,7 +25,7 @@ RUN npm install --prefix ooda --no-audit --no-fund
 # approve better-sqlite3/esbuild so the ESM runtime builds in-image).
 RUN npm install -g pnpm@latest --no-audit --no-fund \
  && pnpm config set dangerouslyAllowAllBuilds true \
- && pnpm install --frozen-lockfile=false --no-audit
+ && pnpm install --no-frozen-lockfile
 
 # Build the ESM runtime (dist/ powers the version probe). Fail loudly with logs.
 RUN pnpm build > /tmp/root-build.log 2>&1 \
