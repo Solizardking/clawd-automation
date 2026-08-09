@@ -21,16 +21,17 @@ COPY . .
 #   ooda/ — the paper loop (tsx, execa, openai, chalk)
 RUN npm install --prefix ooda --no-audit --no-fund
 
-# Optional: build the ESM runtime (dist/ powers the version probe).
-# Fails are non-fatal — the dashboard still runs without dist/ — but we
-# capture the logs into /tmp so the failure can be inspected via fly ssh.
-RUN (command -v pnpm >/dev/null 2>&1 || npm install -g pnpm@latest --no-audit --no-fund) \
- && (pnpm install --frozen-lockfile=false --no-audit > /tmp/root-install.log 2>&1 \
-       || { echo "=== root pnpm install FAILED ==="; tail -80 /tmp/root-install.log || true; }) \
- && (pnpm build > /tmp/root-build.log 2>&1 \
-       || { echo "=== root pnpm build FAILED ==="; tail -80 /tmp/root-build.log || true; }) \
- && ls -la dist/index.js 2>/dev/null \
- && echo "dist/ built OK"
+# Install the full workspace (pnpm 10 blocks native build scripts by default —
+# approve better-sqlite3/esbuild so the ESM runtime builds in-image).
+RUN npm install -g pnpm@latest --no-audit --no-fund \
+ && pnpm config set dangerouslyAllowAllBuilds true \
+ && pnpm install --frozen-lockfile=false --no-audit
+
+# Build the ESM runtime (dist/ powers the version probe). Fail loudly with logs.
+RUN pnpm build > /tmp/root-build.log 2>&1 \
+      && ls -la dist/index.js \
+      && echo "dist/ built OK" \
+      || { echo "=== root pnpm build FAILED ==="; tail -100 /tmp/root-build.log; exit 1; }
 
 EXPOSE 8080
 
