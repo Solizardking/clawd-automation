@@ -17,6 +17,7 @@
   "scripts": {
     "loop": "tsx loop.ts",
     "tui": "tsx tui.ts",
+    "web": "tsx web/server.ts",
     "lint": "tsc --project tsconfig.json --noEmit",
     "test": "tsx --test test/**/*.test.ts"
   },

@@ -9,5 +9,5 @@
     "allowJs": false,
     "types": ["node"]
   },
-  "include": ["*.ts", "test/**/*.ts"]
+  "include": ["*.ts", "test/**/*.ts", "web/**/*.ts"]
 }
