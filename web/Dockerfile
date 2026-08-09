@@ -4,10 +4,12 @@
 
 FROM node:22-slim
 
-# Minimal deps (git used by the OODA journal commit path)
+# Dependencies: git (OODA journal commits), and build tools so the ESM
+# runtime's native deps (better-sqlite3 etc.) can compile during `pnpm build`.
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git ca-certificates openssl \
+ && apt-get install -y --no-install-recommends \
+      git ca-certificates openssl build-essential python3 \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
