@@ -209,3 +209,8 @@ target
 .cursor/
 node_modules
 target
+
+# Accidental nested clones (move aside intentionally; kept on disk)
+OpenClawd-agent-kit/
+agent/OpenClawd-agent-kit/
+clawd-connectors/clawd-connectors/
