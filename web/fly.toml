@@ -1,47 +1,37 @@
-# Clawd Automation — Fly machine
-# Deploy the automation client + OODA paper loop as a 24/7 Fly machine.
+# fly.toml app configuration file generated for clawd-automation on 2026-08-09T16:45:10-04:00
 #
-#   flyctl launch --copy-config --no-deploy --name clawd-automation
-#   fly volumes create automation_journal --size 1 --region iad
-#   fly secrets set OPENROUTER_API_KEY=...        # optional (LLM paper decisions)
-#   fly secrets set DFLOW_API_KEY=...             # optional (live-quote proxy)
-#   fly secrets set HELIUS_API_KEY=...            # optional (live confirm proxy)
-#   fly deploy
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
-# The deployed loop is paper + devnet only (loop.ts enforces it). Live trading
-# stays browser-wallet-signed — the server only proxies quotes/confirmation.
 
-app = "clawd-automation"
-
-primary_region = "iad"
+app = 'clawd-automation'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8080"
-  WEB_HOST = "0.0.0.0"
-  # 24/7 paper autorun: continuously rerun ooda/loop.ts
-  OODA_AUTORUN = "1"
-  OODA_TICKS = "100"
-  OODA_SLEEP = "5"
-  OODA_SEED = "42"
-  OODA_LLM = "0"
-  OODA_GOBLIN = "0"
-  OODA_JOURNAL_PATH = "/data/journal/ticks.jsonl"
+  OODA_AUTORUN = '1'
+  OODA_GOBLIN = '0'
+  OODA_JOURNAL_PATH = '/data/journal/ticks.jsonl'
+  OODA_LLM = '0'
+  OODA_SEED = '42'
+  OODA_SLEEP = '5'
+  OODA_TICKS = '100'
+  PORT = '8080'
+  WEB_HOST = '0.0.0.0'
+
+[[mounts]]
+  source = 'automation_journal'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = false  # keep the loop running 24/7
+  auto_stop_machines = 'off'
   auto_start_machines = true
   min_machines_running = 1
 
-[mounts]
-  source = "automation_journal"
-  destination = "/data"
-
 [[vm]]
-  cpu_kind = "shared"
+  cpu_kind = 'shared'
   cpus = 1
   memory_mb = 512
