@@ -22,10 +22,15 @@ COPY . .
 RUN npm install --prefix ooda --no-audit --no-fund
 
 # Optional: build the ESM runtime (dist/ powers the version probe).
-# Fails are non-fatal — the dashboard still runs without dist/.
+# Fails are non-fatal — the dashboard still runs without dist/ — but we
+# capture the logs into /tmp so the failure can be inspected via fly ssh.
 RUN (command -v pnpm >/dev/null 2>&1 || npm install -g pnpm@latest --no-audit --no-fund) \
- && (pnpm install --frozen-lockfile=false --no-audit || echo "root pnpm install skipped") \
- && (pnpm build || echo "root pnpm build skipped")
+ && (pnpm install --frozen-lockfile=false --no-audit > /tmp/root-install.log 2>&1 \
+       || { echo "=== root pnpm install FAILED ==="; tail -80 /tmp/root-install.log || true; }) \
+ && (pnpm build > /tmp/root-build.log 2>&1 \
+       || { echo "=== root pnpm build FAILED ==="; tail -80 /tmp/root-build.log || true; }) \
+ && ls -la dist/index.js 2>/dev/null \
+ && echo "dist/ built OK"
 
 EXPOSE 8080
 
