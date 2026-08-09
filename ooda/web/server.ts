@@ -279,7 +279,7 @@ const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://${req.headers.host}`);
 
   if (url.pathname.startsWith('/api/live/')) {
-    void handleLiveRoute(req, res, url).then((handled) => {
+    void handleLiveRoute(res, url).then((handled) => {
       if (!handled) {
         res.writeHead(404);
         res.end('not found');

@@ -13,7 +13,7 @@
  * approves the wallet's own popup.
  */
 
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { ServerResponse } from 'node:http';
 
 const DFLOW_PROD_BASE = 'https://quote-api.dflow.net';
 const DFLOW_DEV_BASE = 'https://dev-quote-api.dflow.net';
@@ -48,11 +48,7 @@ interface SignatureStatusValue {
 }
 
 /** Handles /api/live/* routes. Returns true if the request was handled. */
-export async function handleLiveRoute(
-  req: IncomingMessage,
-  res: ServerResponse,
-  url: URL,
-): Promise<boolean> {
+export async function handleLiveRoute(res: ServerResponse, url: URL): Promise<boolean> {
   if (url.pathname === '/api/live/status') {
     const { mode, apiKey } = dflowHost();
     sendJson(res, 200, {
@@ -82,6 +78,38 @@ export async function handleLiveRoute(
       res.end(body);
     } catch (err) {
       sendJson(res, 502, { error: `DFlow request failed: ${String(err)}` });
+    }
+    return true;
+  }
+
+  if (url.pathname === '/api/live/balance') {
+    const pubkey = url.searchParams.get('pubkey');
+    if (!pubkey) {
+      sendJson(res, 400, { error: 'pubkey query param required' });
+      return true;
+    }
+    try {
+      const rpcRes = await fetch(heliusRpcUrl(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getBalance',
+          params: [pubkey],
+        }),
+      });
+      const json = (await rpcRes.json()) as {
+        result?: { value?: number };
+        error?: { message?: string };
+      };
+      if (json.error) {
+        sendJson(res, 502, { error: json.error.message ?? 'RPC error' });
+        return true;
+      }
+      sendJson(res, 200, { pubkey, lamports: json.result?.value ?? 0 });
+    } catch (err) {
+      sendJson(res, 502, { error: `RPC request failed: ${String(err)}` });
     }
     return true;
   }

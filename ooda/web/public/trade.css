@@ -1,0 +1,67 @@
+/* trade.css — live (mainnet) theme overrides on top of style.css */
+
+.brand h1 { color: var(--red); }
+
+.badge-live {
+  color: var(--red);
+  border-color: rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.08);
+  font-weight: 700;
+}
+
+.live-warning {
+  background: rgba(248, 113, 113, 0.06);
+  color: var(--text);
+  border-bottom-color: rgba(248, 113, 113, 0.3);
+}
+.live-warning strong { color: var(--red); }
+
+.btn-live {
+  background: var(--red);
+  border-color: var(--red);
+  color: #1a0505;
+  font-weight: 700;
+}
+.btn-live:disabled { background: var(--bg); color: var(--text-dim); border-color: var(--panel-border); }
+
+.trade-form label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.trade-form input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 3px;
+  background: var(--bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.trade-form .hint {
+  display: block;
+  color: var(--text-dim);
+  font-size: 10px;
+  margin-top: 3px;
+}
+.trade-row { margin-bottom: 12px; }
+.mint-presets { display: flex; gap: 6px; margin-top: 5px; }
+.mint-preset {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--panel-border);
+  background: var(--bg);
+  color: var(--cyan);
+  cursor: pointer;
+}
+.mint-preset:hover { border-color: var(--cyan); }
+
+.log-error { color: var(--red); }
+.log-ok { color: var(--green); }
+.log-info { color: var(--text-dim); }

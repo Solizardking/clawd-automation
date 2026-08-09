@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OODA — Live Trading</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/trade.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">&#9888;&#65039;</span>
+        <div>
+          <h1>LIVE TRADING</h1>
+          <div class="brand-sub"><a href="/">&larr; back to paper dashboard</a></div>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge badge-live">MAINNET</span>
+        <span class="badge badge-live">REAL FUNDS</span>
+        <span id="dflow-badge" class="badge badge-off">dflow: &mdash;</span>
+      </div>
+    </header>
+
+    <div class="safety-strip live-warning">
+      This page moves real money on Solana mainnet. Every trade is quoted here, but only
+      <strong>your connected wallet</strong> can sign and send it &mdash; approve or reject each one in the wallet
+      popup. This server never holds a private key and cannot trade on its own.
+    </div>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <section class="panel">
+          <h2>Wallet</h2>
+          <div id="wallet-status" class="run-status run-idle">not connected</div>
+          <button id="btn-connect" class="btn btn-primary" style="width:100%">Connect Phantom</button>
+          <button id="btn-disconnect" class="btn btn-danger" style="width:100%; margin-top:8px; display:none">Disconnect</button>
+          <dl class="config-list" style="margin-top:12px">
+            <dt>address</dt><dd id="wallet-address">&mdash;</dd>
+            <dt>SOL balance</dt><dd id="wallet-balance">&mdash;</dd>
+          </dl>
+        </section>
+
+        <section class="panel">
+          <h2>Rails</h2>
+          <dl class="config-list" id="rails-list">
+            <dt>DFlow</dt><dd>&mdash;</dd>
+          </dl>
+        </section>
+      </aside>
+
+      <section class="main">
+        <div class="panel">
+          <h2>Swap (DFlow)</h2>
+          <form id="quote-form" class="trade-form">
+            <div class="trade-row">
+              <label>From (input mint)
+                <input id="f-input-mint" type="text" value="So11111111111111111111111111111111111111112" />
+              </label>
+              <div class="mint-presets">
+                <button type="button" class="mint-preset" data-target="f-input-mint" data-mint="So11111111111111111111111111111111111111112">SOL</button>
+                <button type="button" class="mint-preset" data-target="f-input-mint" data-mint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</button>
+              </div>
+            </div>
+            <div class="trade-row">
+              <label>To (output mint)
+                <input id="f-output-mint" type="text" value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" />
+              </label>
+              <div class="mint-presets">
+                <button type="button" class="mint-preset" data-target="f-output-mint" data-mint="So11111111111111111111111111111111111111112">SOL</button>
+                <button type="button" class="mint-preset" data-target="f-output-mint" data-mint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</button>
+              </div>
+            </div>
+            <label>Amount (atomic units of input mint)
+              <input id="f-amount" type="text" inputmode="numeric" value="1000000" />
+              <span class="hint">e.g. 1000000000 = 1 SOL (9 decimals), 1000000 = 1 USDC (6 decimals)</span>
+            </label>
+            <label>Slippage (bps, or "auto")
+              <input id="f-slippage" type="text" value="auto" />
+            </label>
+            <div class="run-actions">
+              <button type="submit" class="btn btn-primary">Get quote</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel" id="quote-panel" style="display:none">
+          <h2>Quote</h2>
+          <dl class="config-list" id="quote-details"></dl>
+          <div class="run-actions">
+            <button id="btn-sign-send" class="btn btn-live" disabled>Sign &amp; send in wallet</button>
+          </div>
+          <p id="quote-error" class="run-error"></p>
+        </div>
+
+        <div class="panel" id="tx-panel" style="display:none">
+          <h2>Transaction</h2>
+          <dl class="config-list" id="tx-details"></dl>
+        </div>
+
+        <div class="panel">
+          <h2>Activity log</h2>
+          <div class="feed" id="feed"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/trade.js"></script>
+</body>
+</html>
