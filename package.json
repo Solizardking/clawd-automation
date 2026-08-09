@@ -1,6 +1,6 @@
 {
   "name": "@onchainai/automation",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Clawd Automaton — sovereign AI agent runtime (local shell + OpenRouter + own packages)",
   "type": "module",
   "main": "dist/index.js",
@@ -42,6 +42,7 @@
     "lobster-council",
     "data/hedge",
     "ooda",
+    "web",
     "zk-primitives/MANIFEST.json",
     "zk-primitives/client/package.json",
     "zk-primitives/agent/package.json",
