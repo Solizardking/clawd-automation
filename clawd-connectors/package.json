@@ -1,0 +1,58 @@
+{
+  "name": "@openclawd/clawd-connectors",
+  "version": "0.1.0",
+  "description": "Clawd connectors — MCP-powered provider integrations for DFlow, Helius, Jupiter, and Birdeye",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "clawd-connectors": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "tsx --test tests/*.test.ts",
+    "doctor": "tsx src/cli.ts doctor",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "solana",
+    "clawd",
+    "mcp",
+    "connectors",
+    "dflow",
+    "helius",
+    "jupiter",
+    "birdeye",
+    "ai",
+    "agents"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Solizardking",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Solizardking/clawd-core-ai.git",
+    "directory": "clawd-connectors"
+  },
+  "homepage": "https://github.com/Solizardking/clawd-core-ai/tree/main/clawd-connectors#readme",
+  "bugs": {
+    "url": "https://github.com/Solizardking/clawd-core-ai/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
