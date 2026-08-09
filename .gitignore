@@ -205,3 +205,5 @@ target
 # Claude Code / agent local state
 .claude/
 .cursor/
+node_modules
+target
