@@ -1,0 +1,20 @@
+# Never ship secrets or local state into the Fly image.
+.env
+.env.*
+!.env.example
+
+node_modules/
+npm-debug.log*
+
+# Local journal — the Fly volume (OODA_JOURNAL_PATH=/data/journal) is authoritative.
+journal/
+
+# Tests / local tooling not needed at runtime.
+test/
+*.test.ts
+
+# Git / editor noise. NOTE: CLAWD.md / goblin.md are load-bearing config,
+# so *.md is NOT ignored (loop.ts reads them at startup).
+.git/
+.gitignore
+.DS_Store

@@ -1,0 +1,48 @@
+# fly.toml — Clawd OODA harness 24/7 deploy on Fly.io
+#
+# App name: clawd-ooda
+# Primary region: iad (US-East). Set PRIMARY_REGION to your nearest region.
+#
+# First deploy (local CLI, authenticated):
+#   cd ooda
+#   fly launch --copy-config --no-deploy --name clawd-ooda --region iad
+#   fly volumes create ooda_journal --size 1 --region iad
+#   fly secrets set SOLANA_RPC_URL=https://api.devnet.solana.com
+#   fly secrets set OPENAI_API_KEY=...            # optional, enables --llm decisions
+#   fly deploy
+#
+# The journal writes to the persistent volume via OODA_JOURNAL_PATH (see
+# Dockerfile). The loop is paper + devnet ONLY by design — mainnet RPC URLs
+# are rejected at startup (observe.ts rejectMainnet) and never bypassed here.
+
+app = "clawd-ooda"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # 24/7 autorun daemon.
+  OODA_AUTORUN = "1"
+  OODA_TICKS = "500"
+  OODA_SLEEP = "5"
+  OODA_SEED = "42"
+
+  # Persistent journal on the Fly volume.
+  OODA_JOURNAL_PATH = "/data/journal/ticks.jsonl"
+
+[http_service]
+  internal_port = 4173
+  force_https = true
+  auto_stop_machines = false       # keep running 24/7
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 100
+
+[[mounts]]
+  source = "ooda_journal"
+  destination = "/data"

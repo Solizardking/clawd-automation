@@ -23,6 +23,12 @@
  * Usage:
  *   npx tsx web/server.ts
  *   OODA_WEB_PORT=4321 npx tsx web/server.ts
+ *
+ * Fly.io 24/7 mode (see Dockerfile / fly.toml):
+ *   OODA_WEB_HOST=0.0.0.0 (default when PORT is set by Fly)
+ *   OODA_AUTORUN=1        continuously rerun loop.ts forever
+ *   OODA_TICKS / OODA_SLEEP / OODA_SEED / OODA_LLM / OODA_GOBLIN
+ *   OODA_JOURNAL_PATH=... persistent journal path (Fly volume)
  */
 
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
@@ -39,8 +45,18 @@ import { handleLiveRoute } from './live.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OODA_DIR = join(__dirname, '..');
 const PUBLIC_DIR = join(__dirname, 'public');
-const PORT = parseInt(process.env['OODA_WEB_PORT'] ?? '4173', 10);
-const HOST = process.env['OODA_WEB_HOST'] ?? '127.0.0.1';
+// Fly injects PORT; OODA_WEB_PORT wins when set explicitly.
+const PORT = parseInt(process.env['OODA_WEB_PORT'] ?? process.env['PORT'] ?? '4173', 10);
+const HOST = process.env['OODA_WEB_HOST'] ?? '0.0.0.0';
+
+// ─── 24/7 autorun daemon mode (Fly) ─────────────────────────────────────────
+const AUTORUN = process.env['OODA_AUTORUN'] === '1';
+const OODA_TICKS = Math.max(1, parseInt(process.env['OODA_TICKS'] ?? '100', 10) || 100);
+const OODA_SLEEP = Math.max(0, parseFloat(process.env['OODA_SLEEP'] ?? '5') || 0);
+const OODA_SEED = parseInt(process.env['OODA_SEED'] ?? '42', 10) || 42;
+const OODA_LLM = process.env['OODA_LLM'] === '1';
+const OODA_GOBLIN = process.env['OODA_GOBLIN'] === '1';
+const AUTORUN_DELAY_MS = Math.max(1000, parseInt(process.env['OODA_RESTART_MS'] ?? '3000', 10));
 
 const ENV_LOCAL_PATH = join(OODA_DIR, '.env.local');
 if (existsSync(ENV_LOCAL_PATH)) {
@@ -221,9 +237,30 @@ function startRun(opts: RunOpts): { ok: boolean; error?: string } {
     if (runState === 'running') runState = code === 0 ? 'done' : 'error';
     broadcast('status', { state: runState, code });
     tailJournal(); // pick up the final tick immediately rather than wait for poll
+    if (AUTORUN) {
+      // 24/7 daemon: schedule the next run so the journal + dashboard
+      // keep updating forever.
+      process.stdout.write(`[ooda-web] autorun: next run in ${AUTORUN_DELAY_MS}ms\n`);
+      setTimeout(startAutorun, AUTORUN_DELAY_MS);
+    }
   });
 
   return { ok: true };
+}
+
+function startAutorun(): void {
+  if (runningProc || !AUTORUN) return;
+  process.stdout.write(
+    `[ooda-web] autorun: ${OODA_TICKS} ticks sleep=${OODA_SLEEP}s llm=${OODA_LLM} goblin=${OODA_GOBLIN}\n`,
+  );
+  const result = startRun({
+    ticks: OODA_TICKS,
+    sleep: OODA_SLEEP,
+    seed: OODA_SEED,
+    llm: OODA_LLM,
+    goblin: OODA_GOBLIN,
+  });
+  if (!result.ok) process.stderr.write(`[ooda-web] autorun failed to start: ${result.error}\n`);
 }
 
 function stopRun(): { ok: boolean; error?: string } {
@@ -362,4 +399,5 @@ server.listen(PORT, HOST, () => {
   process.stdout.write(`[ooda-web] dashboard  http://${HOST}:${PORT}\n`);
   process.stdout.write(`[ooda-web] journal    ${journalPath()}\n`);
   process.stdout.write(`[ooda-web] paper + devnet only — same safety contract as the CLI harness\n`);
+  if (AUTORUN) startAutorun();
 });

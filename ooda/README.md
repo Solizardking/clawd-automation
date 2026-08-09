@@ -32,6 +32,45 @@ npx tsx ooda/loop.ts --ticks 200 --sleep 0.4 --tui | npx tsx ooda/tui.ts
 npx tsx ooda/loop.ts --goblin --ticks 100 --llm
 ```
 
+## Web dashboard + 24/7 Fly deploy
+
+A zero-dependency browser dashboard lives at `ooda/web/`:
+
+```bash
+npm run web            # starts on http://127.0.0.1:4173
+OODA_WEB_PORT=4321 npx tsx web/server.ts
+```
+
+**Pages**
+
+- `/` — paper dashboard: live price chart, stat cards, positions table, tick feed, run form (ticks/sleep/seed, goblin + LLM toggles), SSE-driven. Tails `journal/ticks.jsonl` for ANY run (including ones started from the CLI in another terminal).
+- `/trade.html` — live (mainnet) trading page: connect a Phantom wallet, get DFlow quotes/unsigned txs via `/api/live/*`, sign & send in the wallet. The server never holds a private key — only proxies quotes/confirmation (Helius fallback RPC).
+
+**Endpoints**: `GET /api/status`, `GET /api/config`, `GET /api/journal?n=`, `GET /api/stream` (SSE), `POST /api/run`, `POST /api/stop`, `GET /api/live/status`, `GET /api/live/order`, `GET /api/live/balance`, `GET /api/live/confirm`.
+
+**24/7 deployment (Fly.io)** — runs the paper loop forever with a persistent journal:
+
+```bash
+cd ooda
+fly launch --copy-config --no-deploy --name clawd-ooda --region iad
+fly volumes create ooda_journal --size 1 --region iad
+fly secrets set SOLANA_RPC_URL=https://api.devnet.solana.com
+fly secrets set OPENAI_API_KEY=...     # optional — enables --llm decisions
+fly deploy
+```
+
+Config lives in [`fly.toml`](fly.toml) + [`Dockerfile`](Dockerfile): binds `0.0.0.0`, honors Fly-injected `PORT`, mounts the journal volume at `/data/journal/ticks.jsonl`, and sets `OODA_AUTORUN=1` so `loop.ts` reruns forever (default 500 ticks @ 5s = ~42 min/run, then auto-restarts). Watch it live at `https://clawd-ooda.fly.dev/`.
+
+| Fly env var | Meaning |
+| --- | --- |
+| `OODA_AUTORUN=1` | continuously rerun the paper loop |
+| `OODA_TICKS` / `OODA_SLEEP` | ticks per run / seconds between ticks |
+| `OODA_SEED` | deterministic seed |
+| `OODA_LLM` / `OODA_GOBLIN` | enable LLM / goblin mode on the deployed loop |
+| `OODA_JOURNAL_PATH` | journal path (defaults to the `/data` volume) |
+
+The deployed loop is **paper + devnet only** — `observe.ts` rejects mainnet RPC URLs at startup and that guard is never bypassed. The live-trading page remains browser-wallet-signed and is unchanged by deployment.
+
 ## Architecture
 
 ```text
@@ -277,6 +316,10 @@ All enforced in code — not just prompt guidance:
 | `ANTHROPIC_MODEL` | clawd-decision | Override Claude model |
 | `SOLANA_RPC_URL` | loop | RPC URL (mainnet URLs rejected) |
 | `MAINNET_OK` | observe | Set to `1` to bypass mainnet guard (still no signing path) |
+| `OODA_WEB_PORT` / `OODA_WEB_HOST` | web | Dashboard bind (Fly injects `PORT`, default host `0.0.0.0`) |
+| `OODA_AUTORUN` / `OODA_TICKS` / `OODA_SLEEP` / `OODA_SEED` / `OODA_LLM` / `OODA_GOBLIN` | web | 24/7 autorun daemon config (Fly) |
+| `DFLOW_API_KEY` | web/live | DFlow prod host + API key for live quotes |
+| `HELIUS_API_KEY` / `HELIUS_RPC_URL` | web/live | Helius balance/confirmation (falls back to public RPC) |
 
 ## Monorepo integration
 
