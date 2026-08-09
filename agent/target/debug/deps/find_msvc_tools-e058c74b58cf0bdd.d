@@ -1,9 +1,3 @@
-/Users/8bit/automation/agent/target/debug/deps/find_msvc_tools-e058c74b58cf0bdd.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/find_tools.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/tool.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libfind_msvc_tools-e058c74b58cf0bdd.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/find_tools.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/tool.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libfind_msvc_tools-e058c74b58cf0bdd.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/find_tools.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/tool.rs
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/lib.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/find_tools.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.10/src/tool.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:e86124e4f5da3263a6bcd1c899d3dbac8017aac2544f2beb5933dab2f58c63cf
+size 1488

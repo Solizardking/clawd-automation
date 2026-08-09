@@ -1,7 +1,3 @@
-/Users/8bit/automation/agent/target/debug/deps/smallvec-e029ed4f289d45fd.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.2/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libsmallvec-e029ed4f289d45fd.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.2/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libsmallvec-e029ed4f289d45fd.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.2/src/lib.rs
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/smallvec-1.15.2/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:82360aa36f624c905219144d80375fdba1615b76f7fd6ef8dca2dcee834e7918
+size 613

@@ -1,8 +1,3 @@
-/Users/8bit/automation/agent/target/debug/deps/shlex-77425ee6c3c7af3f.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/bytes.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libshlex-77425ee6c3c7af3f.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/bytes.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libshlex-77425ee6c3c7af3f.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/lib.rs /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/bytes.rs
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/lib.rs:
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1/src/bytes.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:5e8ee6a778a25e418771cf48ed7daccaaf4bf34c1dec2c2165c132eef3bd93e3
+size 949

@@ -1,7 +1,3 @@
-/Users/8bit/automation/agent/target/debug/deps/cfg_if-9b8dc7c48f6a7b97.d: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libcfg_if-9b8dc7c48f6a7b97.rlib: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4/src/lib.rs
-
-/Users/8bit/automation/agent/target/debug/deps/libcfg_if-9b8dc7c48f6a7b97.rmeta: /Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4/src/lib.rs
-
-/Users/8bit/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4/src/lib.rs:
+version https://git-lfs.github.com/spec/v1
+oid sha256:bb78b46db4c96405ca28bdcf9cadf40364fe7050f3c9f210086d39bc4ab91d64
+size 595
