@@ -46,7 +46,7 @@ OODA_WEB_PORT=4321 npx tsx web/server.ts
 - `/` — paper dashboard: live price chart, stat cards, positions table, tick feed, run form (ticks/sleep/seed, goblin + LLM toggles), SSE-driven. Tails `journal/ticks.jsonl` for ANY run (including ones started from the CLI in another terminal).
 - `/trade.html` — live (mainnet) trading page: connect a Phantom wallet, get DFlow quotes/unsigned txs via `/api/live/*`, sign & send in the wallet. The server never holds a private key — only proxies quotes/confirmation (Helius fallback RPC).
 
-**Endpoints**: `GET /api/status`, `GET /api/config`, `GET /api/journal?n=`, `GET /api/stream` (SSE), `POST /api/run`, `POST /api/stop`, `GET /api/live/status`, `GET /api/live/order`, `GET /api/live/balance`, `GET /api/live/confirm`.
+**Endpoints**: `GET /api/status`, `GET /api/config`, `GET /api/journal?n=`, `GET /api/stream` (SSE), `POST /api/run`, `POST /api/stop`, `GET /api/live/status`, `GET /api/live/order`, `GET /api/live/balance`, `GET /api/live/confirm`, `GET /api/agent/status`, `POST /api/agent/act`.
 
 **24/7 deployment (Fly.io)** — runs the paper loop forever with a persistent journal:
 
@@ -70,6 +70,43 @@ Config lives in [`fly.toml`](fly.toml) + [`Dockerfile`](Dockerfile): binds `0.0.
 | `OODA_JOURNAL_PATH` | journal path (defaults to the `/data` volume) |
 
 The deployed loop is **paper + devnet only** — `observe.ts` rejects mainnet RPC URLs at startup and that guard is never bypassed. The live-trading page remains browser-wallet-signed and is unchanged by deployment.
+
+## OpenClawd Solana Kit bridge — automated trading for any Solana token
+
+`web/agent-kit.ts` proxies `/api/agent/*` to a running
+[`OpenClawd-agent-kit`](../OpenClawd-agent-kit) `kit` HTTP service
+(`cargo run --features full --bin kit`), which exposes a dedicated
+`POST /agent/act` route for exactly this kind of server-to-server caller —
+no Privy user session required, unlike `/stream`. This is a third,
+independent surface alongside the paper loop and the DFlow live page: the
+core OODA loop (`loop.ts`) is untouched and stays paper/devnet-only.
+
+- `GET /api/agent/status` — reports whether `AGENT_KIT_URL` /
+  `AGENT_BRIDGE_KEY` are configured and, if so, proxies the kit's
+  `/agent/health`.
+- `POST /api/agent/act` `{ instruction, preamble? }` — forwards the
+  instruction to the kit with the `X-Agent-Key` shared secret and returns its
+  full tool-call trace. The kit signs with its own wallet
+  (`SOLANA_PRIVATE_KEY` on the kit side) and routes through Jupiter /
+  pump.fun, so `instruction` can name **any SPL token by mint address** —
+  e.g. `"buy 0.05 SOL of <mint>"` or `"what's my SOL balance?"`.
+
+Neither this server nor the browser ever holds the kit's signing key — only
+the shared `AGENT_BRIDGE_KEY` secret is forwarded, same custody model as the
+DFlow live page (server proxies, never signs). Both `AGENT_KIT_URL` and
+`AGENT_BRIDGE_KEY` must be set or every `/api/agent/*` call reports
+unconfigured (503) — this bridge is opt-in and does nothing until wired up.
+
+```bash
+# Point ooda at a locally-running kit
+AGENT_KIT_URL=http://127.0.0.1:6969 AGENT_BRIDGE_KEY=<same value as the kit's AGENT_BRIDGE_KEY> npm run web
+
+# On Fly, point the deployed ooda app at a deployed kit app
+fly secrets set --app clawd-ooda AGENT_KIT_URL=https://<your-kit-app>.fly.dev AGENT_BRIDGE_KEY=...
+```
+
+See [`../OpenClawd-agent-kit/README.md`](../OpenClawd-agent-kit/README.md#http-service)
+for how to run/deploy the kit side and generate `AGENT_BRIDGE_KEY`.
 
 ## Architecture
 
@@ -299,6 +336,14 @@ All enforced in code — not just prompt guidance:
 - Kill-switch halts the process on consecutive losses
 - Every decision (including rejected ones) is journalled
 
+The above governs the core harness (`loop.ts`, `state.ts`, `observe.ts`,
+`validate.ts`) and is never bypassed by the web dashboard. The dashboard adds
+two opt-in, explicitly-invoked live surfaces that are proxies only — neither
+holds a signing key: `/api/live/*` (`web/live.ts`, DFlow quotes for a
+browser wallet to sign) and `/api/agent/*` (`web/agent-kit.ts`, forwards to
+the OpenClawd kit's own signer via a shared secret). Both report
+unconfigured/502 until their env vars are set.
+
 ## Environment Variables
 
 | Variable | Used by | Description |
@@ -320,6 +365,8 @@ All enforced in code — not just prompt guidance:
 | `OODA_AUTORUN` / `OODA_TICKS` / `OODA_SLEEP` / `OODA_SEED` / `OODA_LLM` / `OODA_GOBLIN` | web | 24/7 autorun daemon config (Fly) |
 | `DFLOW_API_KEY` | web/live | DFlow prod host + API key for live quotes |
 | `HELIUS_API_KEY` / `HELIUS_RPC_URL` | web/live | Helius balance/confirmation (falls back to public RPC) |
+| `AGENT_KIT_URL` | web/agent-kit | Base URL of a running OpenClawd-agent-kit `kit` HTTP service, e.g. `http://127.0.0.1:6969` |
+| `AGENT_BRIDGE_KEY` | web/agent-kit | Shared secret forwarded as `X-Agent-Key` to the kit's `/agent/act`; must match the kit's own `AGENT_BRIDGE_KEY` |
 
 ## Monorepo integration
 

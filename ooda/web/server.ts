@@ -40,6 +40,7 @@ import { fileURLToPath } from 'node:url';
 import { readLastEntries, journalPath } from '../journal.js';
 import { parseClawdConfig } from '../validate.js';
 import type { TickEntry } from '../journal.js';
+import { handleAgentKitRoute } from './agent-kit.js';
 import { handleLiveRoute } from './live.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -325,6 +326,16 @@ const server = createServer((req, res) => {
     return;
   }
 
+  if (url.pathname.startsWith('/api/agent/')) {
+    void handleAgentKitRoute(req, res, url).then((handled) => {
+      if (!handled) {
+        res.writeHead(404);
+        res.end('not found');
+      }
+    });
+    return;
+  }
+
   if (url.pathname === '/api/journal') {
     const n = Math.min(1000, parseInt(url.searchParams.get('n') ?? '300', 10) || 300);
     sendJson(res, 200, readLastEntries(n).map(fromJournalEntry));
@@ -332,7 +343,11 @@ const server = createServer((req, res) => {
   }
 
   if (url.pathname === '/api/status') {
-    sendJson(res, 200, { state: runState, journalPath: journalPath() });
+    sendJson(res, 200, {
+      state: runState,
+      journalPath: journalPath(),
+      agentKitConfigured: Boolean(process.env['AGENT_KIT_URL']),
+    });
     return;
   }
 
