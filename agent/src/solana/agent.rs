@@ -3,9 +3,9 @@ use rig::agent::Agent;
 use rig::providers::anthropic::completion::CompletionModel as AnthropicCompletionModel;
 
 use super::tools::{
-    BuyPumpFunToken, DeployPumpFunToken, FetchTokenPrice, GetPortfolio, GetPublicKey,
-    GetSolBalance, GetSplTokenBalance, PerformJupiterSwap, SellPumpFunToken, TransferSol,
-    TransferSplToken,
+    BuyPumpFunToken, CheckTokenSafetyTool, DeployPumpFunToken, FetchTokenPrice, GetPortfolio,
+    GetPublicKey, GetSolBalance, GetSplTokenBalance, PerformJupiterSwap, SellPumpFunToken,
+    TransferSol, TransferSplToken,
 };
 use crate::common::{claude_agent_builder, preamble_common};
 use crate::dexscreener::tools::SearchOnDexScreener;
@@ -23,6 +23,7 @@ pub async fn create_solana_agent(
         .preamble(&preamble)
         .max_tokens(1024)
         .tool(PerformJupiterSwap)
+        .tool(CheckTokenSafetyTool)
         .tool(TransferSol)
         .tool(TransferSplToken)
         .tool(GetPublicKey)

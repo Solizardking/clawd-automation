@@ -9,7 +9,7 @@ The default build is **Solana-first**:
 
 | Feature | What it gives you |
 |---|---|
-| `solana` (default) | Jupiter swaps, SOL/SPL transfers, balances, portfolio, token prices, Pump.fun flows, DexScreener search, local signer |
+| `solana` (default) | Jupiter swaps, SOL/SPL transfers, balances, portfolio, token prices, Token-2022 safety checks, Pump.fun flows, DexScreener search, local signer |
 | `evm` | EVM trading, transfers, balances, approvals via `alloy` |
 | `http` | Actix SSE service + Privy delegated signing (`kit` binary) |
 | `cross-chain` | LiFi quotes and multichain approvals (implies `solana` + `evm`) |
@@ -93,6 +93,10 @@ to `.env`, and the crate auto-loads it via `dotenv`.
 |---|---|---|
 | `ANTHROPIC_API_KEY` | everything | builds agents via `rig-core` |
 | `SOLANA_RPC_URL` | solana | defaults to `https://api.mainnet-beta.solana.com` |
+| `HELIUS_RPC_URL` | solana | private Helius RPC with `?api-key=`; overrides `SOLANA_RPC_URL` when set |
+| `HELIUS_API_KEY` | solana | Helius DAS/metadata endpoints (Token-2022-aware metadata) |
+| `BIRDEYE_API_KEY` | solana | Birdeye market data / liquidity screening (optional) |
+| `JUPITER_API_KEY` | solana | authenticates against `api.jup.ag` (paid tier); falls back to free `quote-api.jup.ag` |
 | `SOLANA_PRIVATE_KEY` | `LocalSolanaSigner` | base58 key — auto-filled by `make setup`; dev only |
 | `ETHEREUM_RPC_URL` | evm | e.g. Arbitrum, Base |
 | `ETHEREUM_PRIVATE_KEY` | evm | `0x`-prefixed hex — dev only |
@@ -141,10 +145,10 @@ async fn main() -> anyhow::Result<()> {
 ### Available agent builders
 
 - `create_solana_agent(preamble)` — Solana trading agent. Attaches:
-  `PerformJupiterSwap`, `TransferSol`, `TransferSplToken`, `GetPublicKey`,
-  `GetSolBalance`, `GetSplTokenBalance`, `FetchTokenPrice`, `GetPortfolio`,
-  `SearchOnDexScreener`, `DeployPumpFunToken`, `BuyPumpFunToken`,
-  `SellPumpFunToken`.
+  `PerformJupiterSwap`, `CheckTokenSafetyTool`, `TransferSol`,
+  `TransferSplToken`, `GetPublicKey`, `GetSolBalance`, `GetSplTokenBalance`,
+  `FetchTokenPrice`, `GetPortfolio`, `SearchOnDexScreener`,
+  `DeployPumpFunToken`, `BuyPumpFunToken`, `SellPumpFunToken`.
 - `create_evm_agent(preamble)` — EVM trading agent (feature `evm`). Attaches
   trade, transfer, balance, and approval tools.
 - `plain_agent()` — bare Claude agent with the shared Clawd preamble, no tools.
@@ -157,6 +161,7 @@ loaded from the monorepo `constitution/` bundle automatically.
 | Area | Tools |
 |---|---|
 | Swaps | `PerformJupiterSwap`, `Trade` (EVM) |
+| Token-2022 safety | `CheckTokenSafetyTool` |
 | Transfers | `TransferSol`, `TransferSplToken`, `TransferEth`, `TransferErc20` |
 | Balances | `GetSolBalance`, `GetSplTokenBalance`, `GetEthBalance`, `GetErc20Balance` |
 | Portfolio / market | `GetPortfolio`, `FetchTokenPrice`, `SearchOnDexScreener` |

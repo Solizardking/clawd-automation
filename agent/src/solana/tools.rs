@@ -17,6 +17,7 @@ use crate::solana::data::PortfolioItem;
 
 use super::data::holdings_to_portfolio;
 use super::deploy_token::create_deploy_token_tx;
+use super::safety::check_token_safety;
 use super::trade::create_trade_transaction;
 use super::trade_pump::{create_buy_pump_fun_tx, create_sell_pump_fun_tx};
 use super::util::parse_pubkey;
@@ -31,6 +32,28 @@ static SOLANA_RPC_URL: Lazy<String> = Lazy::new(|| {
 
 fn create_rpc() -> RpcClient {
     RpcClient::new(SOLANA_RPC_URL.to_string())
+}
+
+#[tool(description = "
+Inspects a token mint for risky SPL Token / Token-2022 extensions before trading.
+
+Checks for:
+- permanent delegate (can transfer/burn every holder's tokens forever)
+- transfer fee / tax (every swap is charged a fee)
+- transfer hook (every transfer CPIs an arbitrary program — can gate sells)
+- freeze authority / frozen-by-default accounts
+- mint close authority and interest-bearing re-basing
+
+Returns a JSON safety report with a top-level `safe` boolean. ALWAYS call this
+BEFORE performing a swap or transfer when the token is not a well-known
+blue-chip (SOL, USDC, USDT, JitoSOL, etc.).
+")]
+pub async fn check_token_safety_tool(mint: String) -> Result<String> {
+    let report = wrap_unsafe(move || async move {
+        check_token_safety(&create_rpc(), &mint).await
+    })
+    .await?;
+    Ok(serde_json::to_string_pretty(&report)?)
 }
 
 #[tool(description = "

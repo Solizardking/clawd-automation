@@ -8,6 +8,7 @@ flows, and SVM-native market context.
 
 ```text
 perform_jupiter_swap(input_mint, input_amount, output_mint, slippage_bps)
+check_token_safety(mint)          # Token-2022 / SPL extension safety inspection
 transfer_sol(to, amount)
 transfer_spl_token(to, amount, mint)
 get_public_key()
@@ -48,6 +49,13 @@ Transaction-producing tools do not sign directly. They create transactions
 inside `execute_solana_transaction`, which pulls the current signer from
 `SignerContext`. If no signer has been bound to the async scope, the call fails
 instead of falling back to a global key.
+
+`check_token_safety(mint)` inspects a mint's SPL Token / Token-2022
+extensions **before** trading and returns a JSON `TokenSafetyReport` with a
+top-level `safe` boolean. It flags permanent delegates, transfer fees (tax
+tokens), transfer hooks (sell-gating CPIs), freeze authorities /
+frozen-by-default accounts, mint-close authorities, and interest-bearing
+re-basing. See [SPL Token-2022 Swaps](./spl_2022.md) for the full design.
 
 Phoenix/Rise perps must follow the same rule. Paper mode is the default, and
 live order placement requires an explicit approval gate after preflight.

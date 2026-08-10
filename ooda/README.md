@@ -365,6 +365,8 @@ unconfigured/502 until their env vars are set.
 | `OODA_AUTORUN` / `OODA_TICKS` / `OODA_SLEEP` / `OODA_SEED` / `OODA_LLM` / `OODA_GOBLIN` | web | 24/7 autorun daemon config (Fly) |
 | `DFLOW_API_KEY` | web/live | DFlow prod host + API key for live quotes |
 | `HELIUS_API_KEY` / `HELIUS_RPC_URL` | web/live | Helius balance/confirmation (falls back to public RPC) |
+| `BIRDEYE_API_KEY` | web/agent-kit | Forwarded to the kit for token-safety / liquidity screening before a swap |
+| `JUPITER_API_KEY` | web/agent-kit | Forwarded to the kit so Jupiter swaps authenticate against `api.jup.ag` (paid tier) |
 | `AGENT_KIT_URL` | web/agent-kit | Base URL of a running OpenClawd-agent-kit `kit` HTTP service, e.g. `http://127.0.0.1:6969` |
 | `AGENT_BRIDGE_KEY` | web/agent-kit | Shared secret forwarded as `X-Agent-Key` to the kit's `/agent/act`; must match the kit's own `AGENT_BRIDGE_KEY` |
 

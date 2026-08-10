@@ -15,6 +15,7 @@
 # Agents
 
 - [Solana](./solana.md)
+- [SPL Token-2022 Swaps](./spl_2022.md)
 - [Phoenix/Rise Perps](./perps.md)
 
 # HTTP Service

@@ -144,6 +144,39 @@ pub struct AccountMeta {
 pub struct Jupiter;
 
 impl Jupiter {
+    /// Returns the Jupiter base URL for the authenticated `api.jup.ag` when
+    /// `JUPITER_API_KEY` is set, otherwise the free/unauthenticated
+    /// `quote-api.jup.ag` endpoint.
+    fn base_url() -> &'static str {
+        let key = std::env::var("JUPITER_API_KEY").unwrap_or_default();
+        if key.trim().is_empty() {
+            "https://quote-api.jup.ag"
+        } else {
+            "https://api.jup.ag"
+        }
+    }
+
+    /// Builds the authenticated reqwest client when `JUPITER_API_KEY` is set.
+    /// The paid tier of api.jup.ag sends `x-api-key` on every request and
+    /// returns higher rate limits + priority routing.
+    fn client() -> Result<reqwest::Client> {
+        let key = std::env::var("JUPITER_API_KEY").unwrap_or_default();
+        let key = key.trim();
+        if key.is_empty() {
+            return Ok(reqwest::Client::new());
+        }
+        let mut headers = reqwest::header::HeaderMap::new();
+        headers.insert(
+            reqwest::header::HeaderName::from_static("x-api-key"),
+            reqwest::header::HeaderValue::from_str(key)
+                .map_err(|e| anyhow!("invalid JUPITER_API_KEY header value: {e}"))?,
+        );
+        Ok(reqwest::Client::builder()
+            .default_headers(headers)
+            .build()
+            .map_err(|e| anyhow!("failed to build authenticated Jupiter client: {e}"))?)
+    }
+
     pub async fn fetch_quote(
         input_mint: &str,
         output_mint: &str,
@@ -151,11 +184,15 @@ impl Jupiter {
         slippage: u16,
     ) -> Result<QuoteResponse> {
         let url = format!(
-            "https://quote-api.jup.ag/v6/quote?inputMint={}&outputMint={}&amount={}&slippageBps={}&asLegacyTransaction=true",
-            input_mint, output_mint, amount, slippage
+            "{}/v6/quote?inputMint={}&outputMint={}&amount={}&slippageBps={}&asLegacyTransaction=true",
+            Self::base_url(),
+            input_mint,
+            output_mint,
+            amount,
+            slippage
         );
 
-        let response = reqwest::get(&url).await?.json::<QuoteResponse>().await?;
+        let response = Self::client()?.get(&url).send().await?.json::<QuoteResponse>().await?;
         Ok(response)
     }
 
@@ -177,9 +214,9 @@ impl Jupiter {
             quote_response,
         };
 
-        let client = reqwest::Client::new();
+        let client = Self::client()?;
         let raw_res = client
-            .post("https://quote-api.jup.ag/v6/swap-instructions")
+            .post(format!("{}/v6/swap-instructions", Self::base_url()))
             .json(&swap_request)
             .send()
             .await?;
