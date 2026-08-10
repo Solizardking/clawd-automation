@@ -1,3 +1,4 @@
+pub mod agent_bridge;
 pub mod agents;
 pub mod middleware;
 pub mod routes;

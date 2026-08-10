@@ -1,0 +1,38 @@
+# fly.toml — OpenClawd Solana Kit `kit` HTTP service on Fly.io
+#
+# App name: clawd-agent-kit (companion to clawd-ooda — see ../ooda/fly.toml
+# and ../ooda/web/agent-kit.ts, which proxies /api/agent/* to this app).
+# Primary region: iad (US-East). Set PRIMARY_REGION to your nearest region.
+#
+# First deploy (local CLI, authenticated):
+#   fly launch --copy-config --no-deploy --name clawd-agent-kit --region iad
+#   fly secrets set ANTHROPIC_API_KEY=...
+#   fly secrets set SOLANA_RPC_URL=https://your-private-rpc...   # Helius/QuickNode/Triton
+#   fly secrets set SOLANA_PRIVATE_KEY=...                       # dev-only local signer
+#   fly secrets set AGENT_BRIDGE_KEY=...                         # openssl rand -hex 32
+#   fly secrets set JUPITER_API_KEY=... HELIUS_API_KEY=... BIRDEYE_API_KEY=...
+#   fly deploy
+#
+# Then, on the ooda app:
+#   fly secrets set --app clawd-ooda AGENT_KIT_URL=https://clawd-agent-kit.fly.dev
+#   fly secrets set --app clawd-ooda AGENT_BRIDGE_KEY=...        # same value as above
+#
+# Stateless request/response service — scales to zero when idle.
+
+app = "clawd-agent-kit"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 6969
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 40

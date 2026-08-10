@@ -5,6 +5,7 @@ use privy::Privy;
 
 use actix_files as fs;
 use super::routes::{auth, healthz, stream};
+use super::agent_bridge::{agent_act, agent_health};
 use super::agents::{get_agent_catalog, get_agent_by_id, mint_agent, create_agent, agents_health};
 use super::state::AppState;
 
@@ -27,6 +28,9 @@ pub async fn run_server(privy: Privy) -> std::io::Result<()> {
             .service(mint_agent)
             .service(create_agent)
             .service(agents_health)
+            // Server-to-server automation bridge (shared-secret auth, local signer)
+            .service(agent_health)
+            .service(agent_act)
             // Static frontend (if ./frontend/ exists)
             .service(
                 fs::Files::new("/", "./frontend")
