@@ -35,6 +35,12 @@ function detailText(detail) {
   if (detail.personas?.length) parts.push(`${detail.personas.length} personas`);
   if (detail.jsonl !== undefined) parts.push(`${detail.jsonl} jsonl · ${detail.md} md`);
   if (detail.scripts?.length) parts.push(`${detail.scripts.length} scripts`);
+  if (detail.agentBridgeConfigured !== undefined) {
+    parts.push(
+      `bridge ${detail.agentBridgeConfigured ? (detail.agentBridgeKeyPresent ? 'key+url' : 'url') : 'off'}`,
+    );
+  }
+  if (detail.liveProxyConfigured) parts.push('live proxy');
   if (detail.port) parts.push(`port ${detail.port}`);
   return parts.join(' · ');
 }

@@ -184,7 +184,15 @@ const MODULES = [
       const hasClawdMd = existsSync(join(ROOT, 'ooda/CLAWD.md'));
       const hasGoblin = existsSync(join(ROOT, 'ooda/goblin.md'));
       const hasLoop = existsSync(join(ROOT, 'ooda/loop.ts'));
-      return { present: hasLoop, package: name, hasClawdMd, hasGoblin };
+      return {
+        present: hasLoop,
+        package: name,
+        hasClawdMd,
+        hasGoblin,
+        agentBridgeConfigured: Boolean(agentKitBase()),
+        agentBridgeKeyPresent: Boolean(agentBridgeKey()),
+        liveProxyConfigured: parseInt(process.env['OODA_LIVE_PORT'] ?? '0', 10) > 0,
+      };
     },
   },
   {
@@ -487,6 +495,17 @@ const server = createServer((req, res) => {
     return;
   }
 
+  // Agent-kit bridge routes — forward to the Rust `kit` HTTP service
+  // (agent/ · openclawd-solana-kit) using the shared AGENT_BRIDGE_KEY,
+  // mirroring ooda/web/agent-kit.ts. Reads AGENT_KIT_URL / AGENT_BRIDGE_KEY
+  // from ooda/.env.local (loaded above).
+  if (path.startsWith('/api/agent/')) {
+    void handleAgentKitRoute(req, res, url).then((handled) => {
+      if (!handled) sendJson(res, 404, { error: 'not found' });
+    });
+    return;
+  }
+
   // ── Core API ────────────────────────────────────────────────
   if (path === '/api/modules') {
     sendJson(res, 200, { modules: probeAll(), root: ROOT });
@@ -593,6 +612,94 @@ async function handleLiveRoute(res, url) {
     proxy.on('error', () => resolve(false));
     proxy.end();
   });
+}
+
+// ─── Agent kit bridge (server-to-server → agent/ kit HTTP service) ───────────
+// Mirrors ooda/web/agent-kit.ts: forwards /api/agent/status and
+// /api/agent/act to the Rust `kit` binary (cargo run --features full --bin kit)
+// with the shared AGENT_BRIDGE_KEY. Nothing here holds a private key — only
+// the shared secret is forwarded. Both vars must be set or the routes report
+// unconfigured (503), matching the ooda dashboard behavior.
+
+function agentKitBase() {
+  const url = (process.env['AGENT_KIT_URL'] ?? '').trim();
+  return url ? url.replace(/\/+$/, '') : undefined;
+}
+
+function agentBridgeKey() {
+  return (process.env['AGENT_BRIDGE_KEY'] ?? '').trim() || undefined;
+}
+
+function readBodyPromise(req) {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', (c) => { body += c.toString('utf8'); });
+    req.on('end', () => resolve(body));
+  });
+}
+
+async function handleAgentKitRoute(req, res, url) {
+  if (url.pathname === '/api/agent/status') {
+    const base = agentKitBase();
+    if (!base) {
+      sendJson(res, 200, { configured: false });
+      return true;
+    }
+    try {
+      const upstream = await fetch(new URL('/agent/health', base));
+      const text = await upstream.text();
+      let body = null;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        body = { raw: text.slice(0, 200) };
+      }
+      sendJson(res, 200, { configured: true, url: base, bridgeKeyPresent: Boolean(agentBridgeKey()), kit: body });
+    } catch (err) {
+      sendJson(res, 502, { configured: true, url: base, error: `agent kit unreachable: ${String(err)}` });
+    }
+    return true;
+  }
+
+  if (url.pathname === '/api/agent/act' && req.method === 'POST') {
+    const base = agentKitBase();
+    const key = agentBridgeKey();
+    if (!base || !key) {
+      sendJson(res, 503, {
+        error: 'agent bridge not configured — set AGENT_KIT_URL and AGENT_BRIDGE_KEY on this server',
+      });
+      return true;
+    }
+    let instruction;
+    let preamble;
+    try {
+      const parsed = JSON.parse(await readBodyPromise(req));
+      if (typeof parsed.instruction !== 'string' || !parsed.instruction.trim()) {
+        sendJson(res, 400, { error: 'instruction (string) is required' });
+        return true;
+      }
+      instruction = parsed.instruction;
+      preamble = typeof parsed.preamble === 'string' ? parsed.preamble : undefined;
+    } catch {
+      sendJson(res, 400, { error: 'invalid JSON body' });
+      return true;
+    }
+    try {
+      const upstream = await fetch(new URL('/agent/act', base), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Agent-Key': key },
+        body: JSON.stringify({ instruction, preamble }),
+      });
+      const body = await upstream.text();
+      res.writeHead(upstream.status, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(body);
+    } catch (err) {
+      sendJson(res, 502, { error: `agent kit request failed: ${String(err)}` });
+    }
+    return true;
+  }
+
+  return false;
 }
 
 server.listen(PORT, HOST, () => {
