@@ -20,7 +20,7 @@
 
 import type { ServerResponse } from 'node:http';
 
-import { AUTOMATION_TARGET_MINT, rpcStatusFields } from './rpc.js';
+import { rpcStatusFields } from './rpc.js';
 
 export { AUTOMATION_TARGET_MINT } from './rpc.js';
 
