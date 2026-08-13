@@ -13,10 +13,11 @@
  * never signs anything itself and spawns `loop.ts`, which enforces
  * mode=paper/network=devnet at startup (see validate.ts / observe.ts).
  *
- * The dashboard also serves a separate live-trading page (trade.html) that
- * talks to real mainnet via DFlow + Helius (see live.ts) — that surface
- * proxies quotes/unsigned-transactions/confirmation only; the connected
- * browser wallet is what signs and broadcasts, never this server.
+ * The dashboard also serves a separate live/automation page (trade.html)
+ * that talks to real mainnet via DFlow + Solana JSON-RPC (see live.ts /
+ * rpc.ts, SOLANA_RPC_URL first) and the OpenClawd kit bridge
+ * (/api/agent/*). Paper loop children are spawned with paperLoopEnv() so a
+ * mainnet automation RPC never leaks into loop.ts.
  *
  * Binds to localhost by default.
  *
