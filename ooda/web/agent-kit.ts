@@ -20,6 +20,10 @@
 
 import type { ServerResponse } from 'node:http';
 
+import { AUTOMATION_TARGET_MINT, rpcStatusFields } from './rpc.js';
+
+export { AUTOMATION_TARGET_MINT } from './rpc.js';
+
 function agentKitBase(): string | undefined {
   const url = process.env['AGENT_KIT_URL']?.trim();
   return url ? url.replace(/\/+$/, '') : undefined;
@@ -51,16 +55,28 @@ export async function handleAgentKitRoute(
 ): Promise<boolean> {
   if (url.pathname === '/api/agent/status') {
     const base = agentKitBase();
+    const rpc = rpcStatusFields();
     if (!base) {
-      sendJson(res, 200, { configured: false });
+      sendJson(res, 200, { configured: false, ...rpc });
       return true;
     }
     try {
       const upstream = await fetch(new URL('/agent/health', base));
       const body = (await upstream.json()) as Record<string, unknown>;
-      sendJson(res, 200, { configured: true, url: base, bridgeKeyPresent: Boolean(agentBridgeKey()), kit: body });
+      sendJson(res, 200, {
+        configured: true,
+        url: base,
+        bridgeKeyPresent: Boolean(agentBridgeKey()),
+        kit: body,
+        ...rpc,
+      });
     } catch (err) {
-      sendJson(res, 502, { configured: true, url: base, error: `agent kit unreachable: ${String(err)}` });
+      sendJson(res, 502, {
+        configured: true,
+        url: base,
+        error: `agent kit unreachable: ${String(err)}`,
+        ...rpc,
+      });
     }
     return true;
   }

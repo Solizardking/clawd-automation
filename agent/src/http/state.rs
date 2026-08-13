@@ -2,13 +2,13 @@ use privy::Privy;
 use std::sync::Arc;
 
 pub struct AppState {
-    pub(crate) privy: Arc<Privy>,
+    pub(crate) privy: Option<Arc<Privy>>,
 }
 
 impl AppState {
-    pub fn new(privy: Privy) -> Self {
+    pub fn new(privy: Option<Privy>) -> Self {
         Self {
-            privy: Arc::new(privy),
+            privy: privy.map(Arc::new),
         }
     }
 }

@@ -19,7 +19,12 @@ pub async fn verify_auth(req: &HttpRequest) -> Result<UserSession> {
         .app_data::<web::Data<AppState>>()
         .ok_or_else(|| anyhow::anyhow!("App state not found"))?;
 
-    match state.privy.authenticate_user(token).await {
+    let privy = state
+        .privy
+        .as_ref()
+        .ok_or_else(|| anyhow::anyhow!("Privy is not configured on this server"))?;
+
+    match privy.authenticate_user(token).await {
         Ok(session) => Ok(session),
         Err(e) => Err(anyhow::anyhow!("Authentication failed: {}", e)),
     }

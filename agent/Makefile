@@ -91,7 +91,7 @@ loop: ## Run the full Solana reasoning-loop example (needs .env values)
 example: simple ## Alias for the simplest demo
 
 .PHONY: serve
-serve: ## Run the HTTP service on 0.0.0.0:6969 (needs Privy env vars)
+serve: ## Run the HTTP service (KIT_BIND, default 0.0.0.0:6969). Privy optional; /agent/* uses SOLANA_RPC_URL.
 	$(CARGO) run --features $(FULL_FEATURES) --bin kit
 
 .PHONY: clean

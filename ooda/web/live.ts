@@ -1,12 +1,14 @@
 /**
- * ooda/web/live.ts — Live (mainnet) trading proxy: DFlow quotes/orders + Helius confirmation.
+ * ooda/web/live.ts — Live (mainnet) trading proxy: DFlow quotes/orders + RPC confirmation.
  *
  * This module never holds a private key and never signs or broadcasts a
  * transaction. It only:
  *   - proxies DFlow's /order endpoint (the Trading API has no CORS, so
  *     browsers must go through a backend) to fetch quotes + unsigned txs
- *   - checks confirmation status via Helius RPC (falls back to the public
- *     mainnet-beta RPC if no Helius key is configured)
+ *   - checks confirmation / balance via Solana JSON-RPC
+ *
+ * RPC selection (see rpc.ts): SOLANA_RPC_URL first, then Helius, then the
+ * public mainnet-beta endpoint.
  *
  * The connected browser wallet (Wallet Standard / Phantom) signs and
  * broadcasts every transaction itself — real funds only move when the user
@@ -14,6 +16,8 @@
  */
 
 import type { ServerResponse } from 'node:http';
+
+import { rpcStatusFields, solanaRpcUrl } from './rpc.js';
 
 const DFLOW_PROD_BASE = 'https://quote-api.dflow.net';
 const DFLOW_DEV_BASE = 'https://dev-quote-api.dflow.net';
@@ -25,13 +29,7 @@ function dflowHost(): { base: string; apiKey?: string; mode: 'prod' | 'dev' } {
     : { base: DFLOW_DEV_BASE, mode: 'dev' };
 }
 
-function heliusRpcUrl(): string {
-  const explicit = process.env['HELIUS_RPC_URL']?.trim();
-  if (explicit) return explicit;
-  const key = process.env['HELIUS_API_KEY']?.trim();
-  if (key) return `https://mainnet.helius-rpc.com/?api-key=${key}`;
-  return 'https://api.mainnet-beta.solana.com';
-}
+export { solanaRpcUrl } from './rpc.js';
 
 function sendJson(res: ServerResponse, status: number, body: unknown): void {
   const payload = JSON.stringify(body);
@@ -55,6 +53,7 @@ export async function handleLiveRoute(res: ServerResponse, url: URL): Promise<bo
       dflow: mode,
       dflowKeyPresent: Boolean(apiKey),
       helius: Boolean(process.env['HELIUS_RPC_URL'] || process.env['HELIUS_API_KEY']),
+      ...rpcStatusFields(),
     });
     return true;
   }
@@ -89,7 +88,7 @@ export async function handleLiveRoute(res: ServerResponse, url: URL): Promise<bo
       return true;
     }
     try {
-      const rpcRes = await fetch(heliusRpcUrl(), {
+      const rpcRes = await fetch(solanaRpcUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -121,7 +120,7 @@ export async function handleLiveRoute(res: ServerResponse, url: URL): Promise<bo
       return true;
     }
     try {
-      const rpcRes = await fetch(heliusRpcUrl(), {
+      const rpcRes = await fetch(solanaRpcUrl(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

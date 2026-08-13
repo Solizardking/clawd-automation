@@ -71,14 +71,27 @@ fn authorize(req: &HttpRequest) -> Result<(), HttpResponse> {
     Ok(())
 }
 
+fn rpc_source() -> &'static str {
+    match std::env::var("SOLANA_RPC_URL") {
+        Ok(v) if !v.trim().is_empty() => "SOLANA_RPC_URL",
+        _ => "default",
+    }
+}
+
 #[get("/agent/health")]
 pub async fn agent_health() -> HttpResponse {
+    let solana_rpc_url = std::env::var("SOLANA_RPC_URL")
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty());
     HttpResponse::Ok().json(json!({
         "status": "ok",
         "bridge_configured": configured_key().is_some(),
         "signer_configured": std::env::var("SOLANA_PRIVATE_KEY")
             .map(|v| !v.is_empty())
             .unwrap_or(false),
+        "rpc_source": rpc_source(),
+        "solana_rpc_url": solana_rpc_url,
     }))
 }
 

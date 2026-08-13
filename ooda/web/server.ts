@@ -42,6 +42,7 @@ import { parseClawdConfig } from '../validate.js';
 import type { TickEntry } from '../journal.js';
 import { handleAgentKitRoute } from './agent-kit.js';
 import { handleLiveRoute } from './live.js';
+import { paperLoopEnv, rpcStatusFields } from './rpc.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OODA_DIR = join(__dirname, '..');
@@ -200,7 +201,7 @@ function startRun(opts: RunOpts): { ok: boolean; error?: string } {
   if (opts.llm) args.push('--llm');
   if (opts.goblin) args.push('--goblin');
 
-  const proc = spawn('npx', args, { cwd: OODA_DIR });
+  const proc = spawn('npx', args, { cwd: OODA_DIR, env: paperLoopEnv() });
   runningProc = proc;
   runState = 'running';
   broadcast('status', { state: runState });
@@ -347,6 +348,7 @@ const server = createServer((req, res) => {
       state: runState,
       journalPath: journalPath(),
       agentKitConfigured: Boolean(process.env['AGENT_KIT_URL']),
+      ...rpcStatusFields(),
     });
     return;
   }

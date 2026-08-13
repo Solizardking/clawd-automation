@@ -9,8 +9,10 @@ use super::agent_bridge::{agent_act, agent_health};
 use super::agents::{get_agent_catalog, get_agent_by_id, mint_agent, create_agent, agents_health};
 use super::state::AppState;
 
-pub async fn run_server(privy: Privy) -> std::io::Result<()> {
+pub async fn run_server(privy: Option<Privy>) -> std::io::Result<()> {
     let state = web::Data::new(AppState::new(privy));
+    let bind = std::env::var("KIT_BIND").unwrap_or_else(|_| "0.0.0.0:6969".to_string());
+    println!("[kit] listening on {bind}");
 
     HttpServer::new(move || {
         App::new()
@@ -38,7 +40,7 @@ pub async fn run_server(privy: Privy) -> std::io::Result<()> {
                     .show_files_listing()
             )
     })
-    .bind("0.0.0.0:6969")?
+    .bind(&bind)?
     .run()
     .await
 }

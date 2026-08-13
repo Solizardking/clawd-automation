@@ -7,9 +7,14 @@
 
 const $ = (id) => document.getElementById(id);
 
+const TARGET_MINT = '8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump';
+
 const els = {
   dflowBadge: $('dflow-badge'),
+  kitBadge: $('kit-badge'),
   railsList: $('rails-list'),
+  kitStatus: $('kit-status'),
+  kitList: $('kit-list'),
   walletStatus: $('wallet-status'),
   btnConnect: $('btn-connect'),
   btnDisconnect: $('btn-disconnect'),
@@ -23,6 +28,11 @@ const els = {
   quotePanel: $('quote-panel'),
   quoteDetails: $('quote-details'),
   quoteError: $('quote-error'),
+  actForm: $('act-form'),
+  fInstruction: $('f-instruction'),
+  btnAct: $('btn-act'),
+  actError: $('act-error'),
+  actResult: $('act-result'),
   btnSignSend: $('btn-sign-send'),
   txPanel: $('tx-panel'),
   txDetails: $('tx-details'),
@@ -62,11 +72,58 @@ async function loadStatus() {
     els.dflowBadge.className = 'badge ' + (status.dflow === 'prod' ? 'badge-on' : 'badge-warn');
     els.railsList.innerHTML = `
       <dt>DFlow</dt><dd>${status.dflow}${status.dflowKeyPresent ? '' : ' (no API key — rate limited)'}</dd>
-      <dt>Helius RPC</dt><dd>${status.helius ? 'configured' : 'public fallback'}</dd>
+      <dt>RPC source</dt><dd>${status.rpcSource ?? '—'}</dd>
+      <dt>RPC</dt><dd title="${escapeHtml(status.rpc ?? '')}">${escapeHtml(shortRpc(status.rpc))}</dd>
+      <dt>target mint</dt><dd title="${escapeHtml(status.targetMint ?? TARGET_MINT)}">${escapeHtml(short(status.targetMint ?? TARGET_MINT))}</dd>
     `;
   } catch {
     els.dflowBadge.textContent = 'dflow: offline';
     els.dflowBadge.className = 'badge badge-off';
+  }
+  await loadKitStatus();
+}
+
+function shortRpc(url) {
+  if (!url) return '—';
+  try {
+    const u = new URL(url);
+    return u.host + (u.pathname === '/' ? '' : u.pathname);
+  } catch {
+    return String(url).slice(0, 48);
+  }
+}
+
+async function loadKitStatus() {
+  if (!els.kitStatus) return;
+  try {
+    const res = await fetch('/api/agent/status');
+    const status = await res.json();
+    const reachable = Boolean(status.configured && status.kit && !status.error);
+    els.kitStatus.textContent = !status.configured
+      ? 'not configured'
+      : status.error
+        ? 'unreachable'
+        : 'reachable';
+    els.kitStatus.className = 'run-status ' + (reachable ? 'run-running' : 'run-idle');
+    if (els.kitBadge) {
+      els.kitBadge.textContent = `kit: ${els.kitStatus.textContent}`;
+      els.kitBadge.className = 'badge ' + (reachable ? 'badge-on' : 'badge-off');
+    }
+    if (els.kitList) {
+      els.kitList.innerHTML = `
+        <dt>target mint</dt><dd>${escapeHtml(status.targetMint ?? TARGET_MINT)}</dd>
+        <dt>rpc source</dt><dd>${escapeHtml(status.rpcSource ?? '—')}</dd>
+        <dt>configured</dt><dd>${status.configured ? 'yes' : 'no'}</dd>
+        <dt>bridge key</dt><dd>${status.bridgeKeyPresent ? 'present' : '—'}</dd>
+      `;
+    }
+  } catch {
+    els.kitStatus.textContent = 'offline';
+    els.kitStatus.className = 'run-status run-error';
+    if (els.kitBadge) {
+      els.kitBadge.textContent = 'kit: offline';
+      els.kitBadge.className = 'badge badge-off';
+    }
   }
 }
 
@@ -256,7 +313,52 @@ async function pollConfirmation(signature) {
   log('info', 'confirmation poll timed out, check explorer link');
 }
 
+// ─── kit automation ─────────────────────────────────────────────────────────
+
+if (els.actForm) {
+  els.actForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (els.actError) els.actError.textContent = '';
+    if (els.actResult) {
+      els.actResult.hidden = true;
+      els.actResult.textContent = '';
+    }
+    const instruction = els.fInstruction?.value.trim();
+    if (!instruction) {
+      if (els.actError) els.actError.textContent = 'instruction is required';
+      return;
+    }
+    if (els.btnAct) els.btnAct.disabled = true;
+    try {
+      const res = await fetch('/api/agent/act', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ instruction }),
+      });
+      const text = await res.text();
+      let parsed;
+      try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+      if (els.actResult) {
+        els.actResult.hidden = false;
+        els.actResult.textContent = JSON.stringify(parsed, null, 2);
+      }
+      if (!res.ok) {
+        const err = parsed.error || `HTTP ${res.status}`;
+        if (els.actError) els.actError.textContent = String(err);
+        log('error', `kit act failed: ${err}`);
+      } else {
+        log('ok', 'kit act returned');
+      }
+    } catch (err) {
+      if (els.actError) els.actError.textContent = String(err.message ?? err);
+      log('error', `kit act failed: ${err.message ?? err}`);
+    } finally {
+      if (els.btnAct) els.btnAct.disabled = false;
+    }
+  });
+}
+
 // ─── boot ───────────────────────────────────────────────────────────────────
 
 loadStatus();
-log('info', 'ready — connect a wallet to trade');
+log('info', `ready — default mint ${TARGET_MINT}`);

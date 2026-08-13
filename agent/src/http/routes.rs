@@ -149,8 +149,19 @@ async fn stream(
     println!("prompt: {}", prompt);
     println!("messages: {:?}", messages);
 
+    let Some(privy) = state.privy.clone() else {
+        let error_event = sse::Event::Data(sse::Data::new(
+            serde_json::to_string(&StreamResponse::Error(
+                "Privy is not configured on this server".to_string(),
+            ))
+            .unwrap(),
+        ));
+        let _ = tx.send(error_event).await;
+        return sse::Sse::from_infallible_receiver(rx);
+    };
+
     let signer: Arc<dyn TransactionSigner> =
-        Arc::new(PrivySigner::new(state.privy.clone(), user_session.clone()));
+        Arc::new(PrivySigner::new(privy, user_session.clone()));
 
     spawn_with_signer(signer, || async move {
         let reasoning_loop = ReasoningLoop::new(agent).with_stdout(false);

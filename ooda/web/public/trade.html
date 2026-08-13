@@ -13,7 +13,7 @@
       <div class="brand">
         <span class="brand-mark">&#9888;&#65039;</span>
         <div>
-          <h1>LIVE TRADING</h1>
+          <h1>LIVE / AUTOMATION</h1>
           <div class="brand-sub"><a href="/">&larr; back to paper dashboard</a></div>
         </div>
       </div>
@@ -21,6 +21,7 @@
         <span class="badge badge-live">MAINNET</span>
         <span class="badge badge-live">REAL FUNDS</span>
         <span id="dflow-badge" class="badge badge-off">dflow: &mdash;</span>
+        <span id="kit-badge" class="badge badge-off">kit: &mdash;</span>
       </div>
     </header>
 
@@ -49,6 +50,14 @@
             <dt>DFlow</dt><dd>&mdash;</dd>
           </dl>
         </section>
+
+        <section class="panel">
+          <h2>Kit automation</h2>
+          <div id="kit-status" class="run-status run-idle">checking&hellip;</div>
+          <dl class="config-list" id="kit-list">
+            <dt>target mint</dt><dd>8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump</dd>
+          </dl>
+        </section>
       </aside>
 
       <section class="main">
@@ -66,9 +75,10 @@
             </div>
             <div class="trade-row">
               <label>To (output mint)
-                <input id="f-output-mint" type="text" value="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" />
+                <input id="f-output-mint" type="text" value="8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump" />
               </label>
               <div class="mint-presets">
+                <button type="button" class="mint-preset" data-target="f-output-mint" data-mint="8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump">PUMP</button>
                 <button type="button" class="mint-preset" data-target="f-output-mint" data-mint="So11111111111111111111111111111111111111112">SOL</button>
                 <button type="button" class="mint-preset" data-target="f-output-mint" data-mint="EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v">USDC</button>
               </div>
@@ -98,6 +108,21 @@
         <div class="panel" id="tx-panel" style="display:none">
           <h2>Transaction</h2>
           <dl class="config-list" id="tx-details"></dl>
+        </div>
+
+        <div class="panel">
+          <h2>Kit instruction</h2>
+          <form id="act-form" class="trade-form">
+            <label>Natural-language instruction (kit signs with its own wallet)
+              <textarea id="f-instruction" rows="4">Do not trade. Report this wallet's public key and SOL balance only. Automation target mint: 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump</textarea>
+              <span class="hint">Sent to POST /api/agent/act. Unauthenticated callers are refused. Default mint 8cHzQHUS2s2h8TzCmfqPKYiM4dSt4roa3n7MyRLApump.</span>
+            </label>
+            <div class="run-actions">
+              <button type="submit" id="btn-act" class="btn btn-primary">Send to kit</button>
+            </div>
+          </form>
+          <p id="act-error" class="run-error"></p>
+          <pre id="act-result" class="act-result" hidden></pre>
         </div>
 
         <div class="panel">
